@@ -1,0 +1,29 @@
+## setup the TUTROOT directory, you may want to make this an absolute path
+export TUTROOT=`cd ../..; pwd`
+
+## setup the gopath correctly
+## the first element in gopath is for external dependencies and 
+## 'go get' will install things there.  order of these matters.
+export GOPATH=$TUTROOT/external:$TUTROOT
+
+
+## this should point to your go install if it is not installed in a 
+## a system-wide location (ala via brew)
+#export GOROOT=~/go14.src/go
+
+## the path needs to include go1.4+
+##
+## you should put the exact path you want to use in here, don't use 
+## PATH=$PATH:...  because that will bite you later.
+
+##if you set GOROOT
+## export PATH=$GOROOT/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PWD/external/bin
+## otherwise
+export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$TUTROOT/external/bin:$TUTROOT/bin
+
+##
+## ENVIRONMENT FOR LOCAL DEVELOPMENT
+##
+export FRESNO_TEST=true  ##allows you to differentiate running on heroku or not
+export HEROKU_NAME=damp-sierra-7161 ##put your heroku app name
+export PORT=5000
