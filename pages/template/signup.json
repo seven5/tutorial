@@ -1,0 +1,36 @@
+{
+	"title":"Sign Up",
+	"css_page": "/fixed/index.css",
+	"js_file" : "signup.js",
+
+	"first_name": {
+		"id":"first_name",
+		"type": "text",
+		"label_text": "First Name",
+		"placeholder": "John"
+	},
+	"last_name": {
+		"id":"last_name",
+		"type": "text",
+		"label_text": "Last Name",
+		"placeholder": "Public"
+	},
+	"email": {
+		"id":"email",
+		"type": "text",
+		"label_text": "Email",
+		"placeholder": "foo@example.com"
+	},
+	"password": {
+		"id":"password",
+		"type": "password",
+		"label_text": "Password",
+		"placeholder": ""
+	},
+	"confirm_password": {
+		"id":"confirm_password",
+		"type": "password",
+		"label_text": "Confirm Password",
+		"placeholder": ""
+	}
+}

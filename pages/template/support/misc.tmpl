@@ -1,0 +1,19 @@
+
+{{define "MISC_FOOTER"}}
+  <hr>
+
+  <footer>
+    <p style="font-variant:small-caps;">&copy; Fresno Rocked The House In {{year}}</p>
+  </footer>
+{{end}}
+
+{{define "MISC_JSLOAD"}}
+    <script src="/fixed/jquery-2.1.1.js"></script>
+    {{if .js_file}}
+      <script src="{{.js_file}}"></script>
+      {{range .js_additional}}
+        <script src="{{.}}"></script>
+      {{end}}
+    {{end}}
+{{end}}
+ls

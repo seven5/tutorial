@@ -1,0 +1,19 @@
+{{define "FORM_6WIDE_TEXT"}}
+ 	<div class="form-group" id="fg_{{.id}}">
+    	<label for={{.id}} class="col-sm-2 control-label">
+    		{{.label_text}}
+    	</label>
+    	<div class="col-sm-6">
+      		<input type="{{.type}}" 
+      		maxlen="63" 
+      		class="form-control" 
+      		id="{{.id}}" 
+      		placeholder="{{.placeholder}}"/>
+    	</div>
+    	<div class="col-sm-4">
+    		<label class="text-info control-label" 
+    		id="feedback_{{.id}}"></label>
+    	</div>
+
+  </div>
+ {{end}}
