@@ -1,0 +1,24 @@
+{{ define "EDIT_POST"}}
+    <div class ="row">
+	   <form class="col-sm-offset-1 col-sm-9">
+ 		   <div class="form-group">
+    	 	<label for="title">Post Title</label>
+    		<input type="text" class="form-control" id="title" placeholder="Title of post">
+  		</div>
+
+  		<div class="form-group">
+    		<label for="content">Post Content</label>
+    		<textarea class="form-control" rows=20 id="content" placeholder="Put your markdown here."></textarea>
+  		</div>
+
+  		<div class="form-group">
+        <div class="col-sm-2">
+            <button id="post" class="disabled btn btn-primary">Post</button>
+        </div>
+        <div class="col-sm-offset-8 col-sm-2">
+            <button id="cancel" class="btn btn-danger">Cancel</button>
+        </div>
+  		</div>
+	   </form>
+	 </div>
+{{end}}

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+	{{template "BOOTSTRAP_HEAD_SECTION" .}}
+
+<body>
+	<div id="primary" class="container">
+	{{template "PAGE_NAV_BAR"}}
+
+    <h3>Sign Up For Fresno</h3>
+	 {{template "PAGE_ERR_AREA"}}
+
+	<form class="form-horizontal">
+
+		{{template "FORM_5WIDE_TEXT" .first_name}}
+		{{template "FORM_5WIDE_TEXT" .last_name}}
+		{{template "FORM_5WIDE_TEXT" .email}}
+		{{template "FORM_5WIDE_TEXT" .password}}
+		{{template "FORM_5WIDE_TEXT" .confirm_password}}
+  	
+  		<div class="form-group">
+    		<div class="col-sm-offset-2 col-sm-6">
+      			<button id="signup" class="disabled btn btn-primary">Sign up</button>
+    		</div>
+  		</div>
+	</form>
+
+	 {{template "MISC_FOOTER" .}}
+	
+  </div> <!--container -->
+  <div id="secondary" class="container hide">
+    <div class="row">
+      <h3 class="col-sm-12" class="bg-warning">You are already logged in.</h3>
+    </div>
+   {{template "MISC_FOOTER" .}}
+  </div>
+
+	{{template "MISC_JSLOAD" .}}
+</body>
+</html>

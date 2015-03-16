@@ -1,0 +1,50 @@
+## setup the TUTROOT directory, you may want to make this an absolute path
+## because this will blow up if you source this directory from somewhere
+## other than "."
+export TUTROOT=`cd ../..; pwd`
+
+## setup the gopath correctly. 
+export GOPATH=$TUTROOT
+
+
+## this should point to your go install if it is not installed in a 
+## a system-wide location (ala via brew)
+#export GOROOT=~/go14.src/go
+
+## the path needs to include go1.4+
+##
+## you should put the exact path you want to use in here, don't use 
+## PATH=$PATH:...  because that will bite you later.
+
+##if you set GOROOT
+## export PATH=$GOROOT/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$TUTROOT/bin
+#otherwise
+export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$TUTROOT/bin:$TUTROOT/src/tutorial/Godeps/_workspace/bin
+
+##
+## ENVIRONMENT FOR LOCAL DEVELOPMENT
+##
+export FRESNO_TEST=true  ##allows you to differentiate running on heroku or not
+export HEROKU_NAME=damp-sierra-7161 ##put your heroku app name
+export PORT=5000
+
+### It is actually a good idea to run on a different port (not 5432) to 
+### prevent your application from interfering with other things that expect
+### postgres to be on the standard port.
+export PGPORT=5432
+##assumes USER is set correctly, and probably will break if it has spaces
+export DATABASE_URL="postgres://$USER@localhost:$PGPORT/fresno"
+
+##assumes USER is set correctly, and probably will break if it has spaces
+export PGUSER="$USER"
+export PGSSLMODE=disable
+
+##for use in testing only, this a weak key!  
+#try: godep go intstall github.com/seven5/seven5/key2hex
+#try: Godeps/_workspace/bin/key2hex foo 
+export SERVER_SESSION_KEY='777936327336633637393632726b4476'
+
+##where is the static content we should be serving up? note that this is 
+##a relative directory so you must be in "." when you run fresno.
+export STATIC_DIR=static
+

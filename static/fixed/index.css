@@ -1,0 +1,32 @@
+/* fresno css defs*/
+
+body {
+	padding-top: 60px;
+    padding-bottom: 40px;
+}
+
+.blog-entry {
+	border: 1px solid black;
+	margin-bottom: 20px;
+}
+
+.shaded {
+	background-color: #eeeeee;
+}
+
+.blog-text {
+	font-family: arial;
+	margin-bottom: 10px;
+}
+
+button#newpost {
+	margin-left: 20px;
+}
+
+span.top-space {
+	margin-top:20px;
+}
+
+button.left-space {
+	margin-left:5px;
+}
