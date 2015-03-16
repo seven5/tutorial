@@ -40,7 +40,7 @@ export PGUSER="$USER"
 export PGSSLMODE=disable
 
 ##for use in testing only, this a weak key!  
-#try: godep go intstall github.com/seven5/seven5/key2hex
+#try: godep go install github.com/seven5/seven5/key2hex
 #try: Godeps/_workspace/bin/key2hex foo 
 export SERVER_SESSION_KEY='777936327336633637393632726b4476'
 
