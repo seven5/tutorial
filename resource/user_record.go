@@ -48,8 +48,7 @@ func (self *UserRecordResource) PostQbs(i interface{}, pb s5.PBundle, q *qbs.Qbs
 	}
 	//just to make doubly sure we don't inadvently trust data from the client we
 	//use the newly created ur which is a zero value at this point
-	ur.Admin = false    //nuke the site from orbit
-	ur.Disabled = false //its the only way to be sure
+	ur.Admin = false //nuke the site from orbit, its the only way to be sure
 	if strings.Index(e, "@") == -1 {
 		return nil, s5.HTTPError(http.StatusBadRequest, fmt.Sprintf("email address not ok: %s", proposed.EmailAddr))
 	}

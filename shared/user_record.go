@@ -6,6 +6,5 @@ type UserRecord struct {
 	LastName  string
 	EmailAddr string
 	Password  string
-	Disabled  bool
 	Admin     bool
 }

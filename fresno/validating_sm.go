@@ -95,7 +95,6 @@ func (self *fresnoValidatingSessionManager) ValidateCredentials(username, pwd st
 // to send to the client side of the wire when returning a user record.
 func (self *fresnoValidatingSessionManager) SendUserDetails(i interface{}, w http.ResponseWriter) error {
 	ur := i.(*shared.UserRecord)
-	ur.Disabled = false
 	ur.Password = ""
 	return s5.SendJson(w, ur)
 }
