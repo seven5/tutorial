@@ -3,9 +3,9 @@
 ## other than "."
 export TUTROOT=`cd ../..; pwd`
 
-## setup the gopath correctly. 
-export GOPATH=$TUTROOT
-
+## setup the gopath correctly. the second element is needed to make gopherjs
+## work correctly
+export GOPATH=$TUTROOT:$TUTROOT/src/tutorial/Godeps/_workspace
 
 ## this should point to your go install if it is not installed in a 
 ## a system-wide location (ala via brew)
