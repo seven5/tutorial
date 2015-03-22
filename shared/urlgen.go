@@ -9,6 +9,8 @@ const (
 	MOST_RECENT  = 0
 	OFFSET_PARAM = "offset"
 	LIMIT_PARAM  = "limit"
+
+	MARKDOWN_PARAM = "markdown"
 )
 
 func init() {
@@ -88,7 +90,7 @@ func (u *urlgen) PostResource() string {
 func (u *urlgen) Post(id int64, wantMarkdown bool) string {
 	base := u.PostResource() + "/" + fmt.Sprint(id)
 	if wantMarkdown {
-		base += "?markdown=true"
+		base += "?" + MARKDOWN_PARAM + "=true"
 	}
 	return base
 }

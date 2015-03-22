@@ -69,6 +69,8 @@ func newCheck(pb s5.PBundle) (bool, error) {
 	return true, nil
 }
 
+//anybody can view a post but to edit you have to be an admin or
+//you have to be the owner of the post
 func viewEditCheck(pb s5.PBundle, id int64, isView bool) (bool, error) {
 	if isView {
 		return true, nil
@@ -126,7 +128,7 @@ func setup() *fresnoConfig {
 	//what do we do if given empty URL, note we use the SINGULAR here
 	homepage := s5.ComponentResult{
 		Status: http.StatusMovedPermanently,
-		Redir:  "/posts/index.html",
+		Redir:  "/post/index.html",
 	}
 
 	postComponent := s5.NewSimpleIdComponent("post", existCheck, newCheck, viewEditCheck)

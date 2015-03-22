@@ -33,7 +33,7 @@ func (self *PostResource) FindQbs(id int64, pb s5.PBundle, q *qbs.Qbs) (interfac
 	//don't show the password
 	p.Author.Password = ""
 
-	_, wantMarkdown := pb.Query("markdown")
+	_, wantMarkdown := pb.Query(shared.MARKDOWN_PARAM)
 	if wantMarkdown {
 		p.Text = markdown(p.TextShort + p.Text)
 		p.TextShort = ""
