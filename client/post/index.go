@@ -64,7 +64,7 @@ func (self *indexPage) addPost(p *shared.Post) {
 //called to remove a post from the *server* and if that succeeds, *then*
 //remove it from the client display
 func (self *indexPage) deletePost(model *postModel) {
-	chDelete, chDeleteErr := s5.AjaxDelete(model.orig, shared.URLGen.Post(model.orig.Id))
+	chDelete, chDeleteErr := s5.AjaxDelete(model.orig, shared.URLGen.Post(model.orig.Id, false))
 	go func() {
 		select {
 		case <-chDelete:

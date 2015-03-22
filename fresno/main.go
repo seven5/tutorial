@@ -8,6 +8,7 @@ import (
 	"os"
 
 	//_ "github.com/gopherjs/gopherjs" //force godep to save this package
+	//_ "github.com/gopherjs/jquery"   //force godep to save this package
 	//_ "github.com/tools/godep"       //force godep to save this package
 
 	_ "github.com/lib/pq"

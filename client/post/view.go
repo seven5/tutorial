@@ -125,7 +125,7 @@ func (self *viewPostPage) Start() {
 	self.StandardPage.GetLoggedInUser()
 	self.StandardPage.AddBlogNav(false)
 	self.StandardPage.AddLeftNav("#", "View #"+fmt.Sprint(self.id), true)
-	content, errorChan := s5.AjaxGet(&shared.Post{}, shared.URLGen.Post(self.id)+"?markdown=true")
+	content, errorChan := s5.AjaxGet(&shared.Post{}, shared.URLGen.Post(self.id, true))
 	go func() {
 		select {
 		case raw := <-content:

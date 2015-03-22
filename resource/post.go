@@ -59,7 +59,6 @@ func (self *PostResource) IndexQbs(pb s5.PBundle, q *qbs.Qbs) (interface{}, erro
 	}
 	for _, p := range posts {
 		author := p.Author
-		author.EmailAddr = ""
 		author.Password = ""
 		p.TextShort = markdown(p.TextShort)
 		p.Text = markdown(p.Text)

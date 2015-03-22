@@ -67,7 +67,7 @@ type feedbackInfo struct {
 
 //called after the dom is ready
 func (s *signupPage) Start() {
-
+	print("hello, world")
 	//note that these will PANIC if the dom element cannot be found
 	//usually this happens when you change your HTML and don't change
 	//the corresponding code. these ids are controlled by the json in

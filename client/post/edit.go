@@ -40,7 +40,7 @@ func main() {
 		uicommon.SetCurrentPage(shared.URLGen.PostView(id))
 	}, func(p *shared.Post) (chan interface{}, chan s5.AjaxError) {
 		p.Id = id
-		return s5.AjaxPut(p, shared.URLGen.Post(id))
+		return s5.AjaxPut(p, shared.URLGen.Post(id, false))
 	})
 
 	//
@@ -48,7 +48,7 @@ func main() {
 	// to initialize the form
 	//
 	ep.SetupFunc = func() {
-		content, errorChan := s5.AjaxGet(&shared.Post{}, shared.URLGen.Post(id))
+		content, errorChan := s5.AjaxGet(&shared.Post{}, shared.URLGen.Post(id, false))
 		go func() {
 			select {
 			case raw := <-content:

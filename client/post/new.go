@@ -13,7 +13,7 @@ func main() {
 
 	// create a new instance of the edit/new post page with our choices
 	// that are right for new
-	ep := uicommon.NewEditPostPage("/posts/", func() {
+	ep := uicommon.NewEditPostPage(shared.URLGen.IndexPage(), func() {
 		//nothing to do
 	}, func() {
 		uicommon.SetCurrentPage(shared.URLGen.IndexPage())

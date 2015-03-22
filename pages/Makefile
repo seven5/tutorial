@@ -1,5 +1,5 @@
 #gopherjs does the same dependency checking as go tool, so there is no harm
-#in just building things with it everytime (its also fast)
+#in just building things with it everytime (it's also fast)
 .PHONY: ../static/en/web/signup.js
 .PHONY: ../static/en/web/login.js
 .PHONY: ../static/en/web/post/index.js
@@ -13,36 +13,27 @@ GOPHERJSOPTS:=
 ## WARNING: This makefile does not have dependencies on libraries used by the 
 ## WARNING: go packages in pages such as seven5.  If you change those libraries
 ## WARNING: you have to do "make clean; make" to rebuild and include the new
-## WARNING: library versions.
+## WARNING: library versions.  This is rare.
 ##
 
-all:  ../static/en/web/post/index.html \
-	../static/en/web/post/index.js \
-	../static/en/web/signup.html \
-	../static/en/web/signup.js \
-	../static/en/web/login.html \
-	../static/en/web/login.js \
-	../static/en/web/post/new.html \
-	../static/en/web/post/new.js \
-	../static/en/web/post/edit.html \
-	../static/en/web/post/edit.js \
-	../static/en/web/post/view.html \
-	../static/en/web/post/view.js
+PAGES:=../static/en/web/signup.html ../static/en/web/login.html ../static/en/web/post/index.html \
+	../static/en/web/post/new.html ../static/en/web/post/edit.html ../static/en/web/post/view.html
+
+JS:=../static/en/web/signup.js ../static/en/web/login.js ../static/en/web/post/index.js \
+	../static/en/web/post/new.js ../static/en/web/post/edit.js ../static/en/web/post/view.js
+
+JSMAPS:=../static/en/web/signup.js.map ../static/en/web/login.js.map ../static/en/web/post/index.js.map \
+	../static/en/web/post/new.js.map ../static/en/web/post/edit.js.map ../static/en/web/post/view.js.map
+
+all: $(PAGES) $(JS) $(JSMAPS)
 
 clean:
-	rm -rf \
-	 ../static/en/web/post/index.html \
-	 ../static/en/web/login.html \
-	../static/en/web/signup.html \
-	../static/en/web/post/new.html \
-	../static/en/web/post/edit.html \
-	../static/en/web/post/view.html \
-	../static/fixed/en/web/post/index.js* \
-	../static/fixed/en/web/signup.js* \
-	../static/fixed/en/web/login.js* \
-	../static/fixed/en/web/post/new.js* \
-	../static/fixed/en/web/post/edit.js* \
-	../static/fixed/en/web/post/view.js*
+	rm -rf $(PAGES) $(JS) $(JSMAPS)
+
+html: $(PAGES)
+
+js: $(JS)
+
 
 ##
 ## CLIENT SIDE
@@ -64,6 +55,7 @@ clean:
 
 ../static/en/web/post/view.js:
 	gopherjs build $(GOPHERJSOPTS) -o  ../static/en/web/post/view.js ../client/post/view.go
+
 
 ##
 ## HTML PAGES

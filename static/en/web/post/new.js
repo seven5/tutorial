@@ -1383,10 +1383,10 @@ var $curGoroutine = $dummyGoroutine, $totalGoroutines = 0, $awakeGoroutines = 0,
 var $go = function(fun, args, direct) {
   $totalGoroutines++;
   $awakeGoroutines++;
-  var goroutine = function() {
+  var $goroutine = function() {
     var rescheduled = false;
     try {
-      $curGoroutine = goroutine;
+      $curGoroutine = $goroutine;
       var r = fun.apply(undefined, args);
       if (r && r.$blk !== undefined) {
         fun = function() { r.$blk(); };
@@ -1394,17 +1394,17 @@ var $go = function(fun, args, direct) {
         rescheduled = true;
         return;
       }
-      goroutine.exit = true;
+      $goroutine.exit = true;
     } catch (err) {
-      goroutine.exit = true;
+      $goroutine.exit = true;
       throw err;
     } finally {
       $curGoroutine = $dummyGoroutine;
-      if (goroutine.exit && !rescheduled) { /* also set by runtime.Goexit() */
+      if ($goroutine.exit && !rescheduled) { /* also set by runtime.Goexit() */
         $totalGoroutines--;
-        goroutine.asleep = true;
+        $goroutine.asleep = true;
       }
-      if (goroutine.asleep && !rescheduled) {
+      if ($goroutine.asleep && !rescheduled) {
         $awakeGoroutines--;
         if ($awakeGoroutines === 0 && $totalGoroutines !== 0 && $checkForDeadlock) {
           console.error("fatal error: all goroutines are asleep - deadlock!");
@@ -1412,11 +1412,11 @@ var $go = function(fun, args, direct) {
       }
     }
   };
-  goroutine.asleep = false;
-  goroutine.exit = false;
-  goroutine.deferStack = [];
-  goroutine.panicStack = [];
-  $schedule(goroutine, direct);
+  $goroutine.asleep = false;
+  $goroutine.exit = false;
+  $goroutine.deferStack = [];
+  $goroutine.panicStack = [];
+  $schedule($goroutine, direct);
 };
 
 var $scheduled = [], $schedulerLoopActive = false;
@@ -2087,12 +2087,13 @@ $packages["github.com/gopherjs/gopherjs/js"] = (function() {
 	ptrType$1.methods = [{prop: "Error", name: "Error", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Stack", name: "Stack", pkg: "", typ: $funcType([], [$String], false)}];
 	Object.init([{prop: "object", name: "object", pkg: "github.com/gopherjs/gopherjs/js", typ: ptrType, tag: ""}]);
 	Error.init([{prop: "Object", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		init();
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["runtime"] = (function() {
@@ -2127,7 +2128,7 @@ $packages["runtime"] = (function() {
 		e = $ifaceNil;
 		e = new TypeAssertionError.ptr("", "", "", "");
 	};
-	GOROOT = $pkg.GOROOT = function() {
+	GOROOT = function() {
 		var $ptr, goroot, process;
 		process = $global.process;
 		if (process === undefined) {
@@ -2139,9 +2140,11 @@ $packages["runtime"] = (function() {
 		}
 		return "/usr/local/Cellar/go/1.4.1/libexec";
 	};
-	SetFinalizer = $pkg.SetFinalizer = function(x, f) {
+	$pkg.GOROOT = GOROOT;
+	SetFinalizer = function(x, f) {
 		var $ptr, f, x;
 	};
+	$pkg.SetFinalizer = SetFinalizer;
 	TypeAssertionError.ptr.prototype.RuntimeError = function() {
 		var $ptr;
 	};
@@ -2177,13 +2180,14 @@ $packages["runtime"] = (function() {
 	errorString.methods = [{prop: "RuntimeError", name: "RuntimeError", pkg: "", typ: $funcType([], [], false)}, {prop: "Error", name: "Error", pkg: "", typ: $funcType([], [$String], false)}];
 	Error.init([{prop: "Error", name: "Error", pkg: "", typ: $funcType([], [$String], false)}, {prop: "RuntimeError", name: "RuntimeError", pkg: "", typ: $funcType([], [], false)}]);
 	TypeAssertionError.init([{prop: "interfaceString", name: "interfaceString", pkg: "runtime", typ: $String, tag: ""}, {prop: "concreteString", name: "concreteString", pkg: "runtime", typ: $String, tag: ""}, {prop: "assertedString", name: "assertedString", pkg: "runtime", typ: $String, tag: ""}, {prop: "missingMethod", name: "missingMethod", pkg: "runtime", typ: $String, tag: ""}]);
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = js.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		init();
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["errors"] = (function() {
@@ -2197,10 +2201,11 @@ $packages["errors"] = (function() {
 		this.s = s_;
 	});
 	ptrType = $ptrType(errorString);
-	New = $pkg.New = function(text) {
+	New = function(text) {
 		var $ptr, text;
 		return new errorString.ptr(text);
 	};
+	$pkg.New = New;
 	errorString.ptr.prototype.Error = function() {
 		var $ptr, e;
 		e = this;
@@ -2209,17 +2214,18 @@ $packages["errors"] = (function() {
 	errorString.prototype.Error = function() { return this.$val.Error(); };
 	ptrType.methods = [{prop: "Error", name: "Error", pkg: "", typ: $funcType([], [$String], false)}];
 	errorString.init([{prop: "s", name: "s", pkg: "errors", typ: $String, tag: ""}]);
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["sync/atomic"] = (function() {
 	var $pkg = {}, $init, js, CompareAndSwapInt32, AddInt32, LoadUint32, StoreInt32, StoreUint32;
 	js = $packages["github.com/gopherjs/gopherjs/js"];
-	CompareAndSwapInt32 = $pkg.CompareAndSwapInt32 = function(addr, old, new$1) {
+	CompareAndSwapInt32 = function(addr, old, new$1) {
 		var $ptr, addr, new$1, old;
 		if (addr.$get() === old) {
 			addr.$set(new$1);
@@ -2227,30 +2233,36 @@ $packages["sync/atomic"] = (function() {
 		}
 		return false;
 	};
-	AddInt32 = $pkg.AddInt32 = function(addr, delta) {
+	$pkg.CompareAndSwapInt32 = CompareAndSwapInt32;
+	AddInt32 = function(addr, delta) {
 		var $ptr, addr, delta, new$1;
 		new$1 = addr.$get() + delta >> 0;
 		addr.$set(new$1);
 		return new$1;
 	};
-	LoadUint32 = $pkg.LoadUint32 = function(addr) {
+	$pkg.AddInt32 = AddInt32;
+	LoadUint32 = function(addr) {
 		var $ptr, addr;
 		return addr.$get();
 	};
-	StoreInt32 = $pkg.StoreInt32 = function(addr, val) {
+	$pkg.LoadUint32 = LoadUint32;
+	StoreInt32 = function(addr, val) {
 		var $ptr, addr, val;
 		addr.$set(val);
 	};
-	StoreUint32 = $pkg.StoreUint32 = function(addr, val) {
+	$pkg.StoreInt32 = StoreInt32;
+	StoreUint32 = function(addr, val) {
 		var $ptr, addr, val;
 		addr.$set(val);
 	};
-	$init = $pkg.$init = function() {
+	$pkg.StoreUint32 = StoreUint32;
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = js.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["sync"] = (function() {
@@ -2368,7 +2380,7 @@ $packages["sync"] = (function() {
 	runtime_Syncsemcheck = function(size) {
 		var $ptr, size;
 	};
-	Pool.ptr.prototype.Get = function $blocking_Get() {
+	Pool.ptr.prototype.Get = function() {
 		var $ptr, _r, p, x, x$1, x$2, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; p = $f.p; x = $f.x; x$1 = $f.x$1; x$2 = $f.x$2; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
@@ -2386,7 +2398,7 @@ $packages["sync"] = (function() {
 		x$2 = (x = p.store, x$1 = p.store.$length - 1 >> 0, ((x$1 < 0 || x$1 >= x.$length) ? $throwRuntimeError("index out of range") : x.$array[x.$offset + x$1]));
 		p.store = $subslice(p.store, 0, (p.store.$length - 1 >> 0));
 		return x$2;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Get }; } $f.$ptr = $ptr; $f._r = _r; $f.p = p; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Pool.ptr.prototype.Get }; } $f.$ptr = $ptr; $f._r = _r; $f.p = p; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Pool.prototype.Get = function() { return this.$val.Get(); };
 	Pool.ptr.prototype.Put = function(x) {
@@ -2401,7 +2413,7 @@ $packages["sync"] = (function() {
 	runtime_registerPoolCleanup = function(cleanup) {
 		var $ptr, cleanup;
 	};
-	runtime_Semacquire = function $blocking_runtime_Semacquire(s) {
+	runtime_Semacquire = function(s) {
 		var $ptr, _entry, _key, _r, ch, s, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _key = $f._key; _r = $f._r; ch = $f.ch; s = $f.s; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		/* */ if (s.$get() === 0) { $s = 1; continue; }
@@ -2413,9 +2425,9 @@ $packages["sync"] = (function() {
 			_r[0];
 		/* } */ case 2:
 		s.$set(s.$get() - (1) >>> 0);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_runtime_Semacquire }; } $f.$ptr = $ptr; $f._entry = _entry; $f._key = _key; $f._r = _r; $f.ch = ch; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: runtime_Semacquire }; } $f.$ptr = $ptr; $f._entry = _entry; $f._key = _key; $f._r = _r; $f.ch = ch; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	runtime_Semrelease = function $blocking_runtime_Semrelease(s) {
+	runtime_Semrelease = function(s) {
 		var $ptr, _entry, _key, ch, s, w, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _key = $f._key; ch = $f.ch; s = $f.s; w = $f.w; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		s.$set(s.$get() + (1) >>> 0);
@@ -2430,9 +2442,9 @@ $packages["sync"] = (function() {
 			delete semWaiters[s.$key()];
 		}
 		$r = $send(ch, true); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_runtime_Semrelease }; } $f.$ptr = $ptr; $f._entry = _entry; $f._key = _key; $f.ch = ch; $f.s = s; $f.w = w; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: runtime_Semrelease }; } $f.$ptr = $ptr; $f._entry = _entry; $f._key = _key; $f.ch = ch; $f.s = s; $f.w = w; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	Mutex.ptr.prototype.Lock = function $blocking_Lock() {
+	Mutex.ptr.prototype.Lock = function() {
 		var $ptr, awoke, m, new$1, old, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; awoke = $f.awoke; m = $f.m; new$1 = $f.new$1; old = $f.old; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		m = this;
@@ -2459,10 +2471,10 @@ $packages["sync"] = (function() {
 				awoke = true;
 			/* } */ case 4:
 		/* } */ $s = 1; continue; case 2:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Lock }; } $f.$ptr = $ptr; $f.awoke = awoke; $f.m = m; $f.new$1 = new$1; $f.old = old; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Mutex.ptr.prototype.Lock }; } $f.$ptr = $ptr; $f.awoke = awoke; $f.m = m; $f.new$1 = new$1; $f.old = old; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Mutex.prototype.Lock = function() { return this.$val.Lock(); };
-	Mutex.ptr.prototype.Unlock = function $blocking_Unlock() {
+	Mutex.ptr.prototype.Unlock = function() {
 		var $ptr, m, new$1, old, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; m = $f.m; new$1 = $f.new$1; old = $f.old; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		m = this;
@@ -2484,10 +2496,10 @@ $packages["sync"] = (function() {
 			/* } */ case 4:
 			old = m.state;
 		/* } */ $s = 1; continue; case 2:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Unlock }; } $f.$ptr = $ptr; $f.m = m; $f.new$1 = new$1; $f.old = old; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Mutex.ptr.prototype.Unlock }; } $f.$ptr = $ptr; $f.m = m; $f.new$1 = new$1; $f.old = old; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Mutex.prototype.Unlock = function() { return this.$val.Unlock(); };
-	Once.ptr.prototype.Do = function $blocking_Do(f) {
+	Once.ptr.prototype.Do = function(f) {
 		var $ptr, f, o, $s, $deferred, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; f = $f.f; o = $f.o; $s = $f.$s; $deferred = $f.$deferred; $r = $f.$r; } var $err = null; try { s: while (true) { switch ($s) { case 0: $deferred = []; $deferred.index = $curGoroutine.deferStack.length; $curGoroutine.deferStack.push($deferred);
 		o = this;
@@ -2502,7 +2514,7 @@ $packages["sync"] = (function() {
 			$deferred.push([atomic.StoreUint32, [(o.$ptr_done || (o.$ptr_done = new ptrType$2(function() { return this.$target.done; }, function($v) { this.$target.done = $v; }, o))), 1]]);
 			$r = f(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* } */ case 3:
-		/* */ $s = -1; case -1: } return; } } catch(err) { $err = err; $s = -1; } finally { $callDeferred($deferred, $err); if($curGoroutine.asleep) { if ($f === undefined) { $f = { $blk: $blocking_Do }; } $f.$ptr = $ptr; $f.f = f; $f.o = o; $f.$s = $s; $f.$deferred = $deferred; $f.$r = $r; return $f; } }
+		/* */ $s = -1; case -1: } return; } } catch(err) { $err = err; $s = -1; } finally { $callDeferred($deferred, $err); if($curGoroutine.asleep) { if ($f === undefined) { $f = { $blk: Once.ptr.prototype.Do }; } $f.$ptr = $ptr; $f.f = f; $f.o = o; $f.$s = $s; $f.$deferred = $deferred; $f.$r = $r; return $f; } }
 	};
 	Once.prototype.Do = function(f) { return this.$val.Do(f); };
 	poolCleanup = function() {
@@ -2552,7 +2564,7 @@ $packages["sync"] = (function() {
 		s = $clone(new syncSema.ptr(), syncSema);
 		runtime_Syncsemcheck(12);
 	};
-	RWMutex.ptr.prototype.RLock = function $blocking_RLock() {
+	RWMutex.ptr.prototype.RLock = function() {
 		var $ptr, rw, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; rw = $f.rw; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		rw = this;
@@ -2561,10 +2573,10 @@ $packages["sync"] = (function() {
 		/* if (atomic.AddInt32((rw.$ptr_readerCount || (rw.$ptr_readerCount = new ptrType$4(function() { return this.$target.readerCount; }, function($v) { this.$target.readerCount = $v; }, rw))), 1) < 0) { */ case 1:
 			$r = runtime_Semacquire((rw.$ptr_readerSem || (rw.$ptr_readerSem = new ptrType$2(function() { return this.$target.readerSem; }, function($v) { this.$target.readerSem = $v; }, rw)))); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* } */ case 2:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_RLock }; } $f.$ptr = $ptr; $f.rw = rw; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: RWMutex.ptr.prototype.RLock }; } $f.$ptr = $ptr; $f.rw = rw; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	RWMutex.prototype.RLock = function() { return this.$val.RLock(); };
-	RWMutex.ptr.prototype.RUnlock = function $blocking_RUnlock() {
+	RWMutex.ptr.prototype.RUnlock = function() {
 		var $ptr, r, rw, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; r = $f.r; rw = $f.rw; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		rw = this;
@@ -2582,10 +2594,10 @@ $packages["sync"] = (function() {
 				$r = runtime_Semrelease((rw.$ptr_writerSem || (rw.$ptr_writerSem = new ptrType$2(function() { return this.$target.writerSem; }, function($v) { this.$target.writerSem = $v; }, rw)))); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			/* } */ case 4:
 		/* } */ case 2:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_RUnlock }; } $f.$ptr = $ptr; $f.r = r; $f.rw = rw; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: RWMutex.ptr.prototype.RUnlock }; } $f.$ptr = $ptr; $f.r = r; $f.rw = rw; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	RWMutex.prototype.RUnlock = function() { return this.$val.RUnlock(); };
-	RWMutex.ptr.prototype.Lock = function $blocking_Lock() {
+	RWMutex.ptr.prototype.Lock = function() {
 		var $ptr, r, rw, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; r = $f.r; rw = $f.rw; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		rw = this;
@@ -2596,10 +2608,10 @@ $packages["sync"] = (function() {
 		/* if (!((r === 0)) && !((atomic.AddInt32((rw.$ptr_readerWait || (rw.$ptr_readerWait = new ptrType$4(function() { return this.$target.readerWait; }, function($v) { this.$target.readerWait = $v; }, rw))), r) === 0))) { */ case 2:
 			$r = runtime_Semacquire((rw.$ptr_writerSem || (rw.$ptr_writerSem = new ptrType$2(function() { return this.$target.writerSem; }, function($v) { this.$target.writerSem = $v; }, rw)))); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* } */ case 3:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Lock }; } $f.$ptr = $ptr; $f.r = r; $f.rw = rw; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: RWMutex.ptr.prototype.Lock }; } $f.$ptr = $ptr; $f.r = r; $f.rw = rw; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	RWMutex.prototype.Lock = function() { return this.$val.Lock(); };
-	RWMutex.ptr.prototype.Unlock = function $blocking_Unlock() {
+	RWMutex.ptr.prototype.Unlock = function() {
 		var $ptr, i, r, rw, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; i = $f.i; r = $f.r; rw = $f.rw; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		rw = this;
@@ -2615,7 +2627,7 @@ $packages["sync"] = (function() {
 			i = i + (1) >> 0;
 		/* } */ $s = 1; continue; case 2:
 		$r = rw.w.Unlock(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Unlock }; } $f.$ptr = $ptr; $f.i = i; $f.r = r; $f.rw = rw; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: RWMutex.ptr.prototype.Unlock }; } $f.$ptr = $ptr; $f.i = i; $f.r = r; $f.rw = rw; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	RWMutex.prototype.Unlock = function() { return this.$val.Unlock(); };
 	RWMutex.ptr.prototype.RLocker = function() {
@@ -2624,20 +2636,20 @@ $packages["sync"] = (function() {
 		return $pointerOfStructConversion(rw, ptrType$7);
 	};
 	RWMutex.prototype.RLocker = function() { return this.$val.RLocker(); };
-	rlocker.ptr.prototype.Lock = function $blocking_Lock() {
+	rlocker.ptr.prototype.Lock = function() {
 		var $ptr, r, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; r = $f.r; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		r = this;
 		$r = $pointerOfStructConversion(r, ptrType$8).RLock(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Lock }; } $f.$ptr = $ptr; $f.r = r; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: rlocker.ptr.prototype.Lock }; } $f.$ptr = $ptr; $f.r = r; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	rlocker.prototype.Lock = function() { return this.$val.Lock(); };
-	rlocker.ptr.prototype.Unlock = function $blocking_Unlock() {
+	rlocker.ptr.prototype.Unlock = function() {
 		var $ptr, r, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; r = $f.r; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		r = this;
 		$r = $pointerOfStructConversion(r, ptrType$8).RUnlock(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Unlock }; } $f.$ptr = $ptr; $f.r = r; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: rlocker.ptr.prototype.Unlock }; } $f.$ptr = $ptr; $f.r = r; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	rlocker.prototype.Unlock = function() { return this.$val.Unlock(); };
 	ptrType.methods = [{prop: "Get", name: "Get", pkg: "", typ: $funcType([], [$emptyInterface], false)}, {prop: "Put", name: "Put", pkg: "", typ: $funcType([$emptyInterface], [], false)}, {prop: "getSlow", name: "getSlow", pkg: "sync", typ: $funcType([], [$emptyInterface], false)}, {prop: "pin", name: "pin", pkg: "sync", typ: $funcType([], [ptrType$6], false)}, {prop: "pinSlow", name: "pinSlow", pkg: "sync", typ: $funcType([], [ptrType$6], false)}];
@@ -2653,7 +2665,7 @@ $packages["sync"] = (function() {
 	syncSema.init([{prop: "lock", name: "lock", pkg: "sync", typ: $Uintptr, tag: ""}, {prop: "head", name: "head", pkg: "sync", typ: $UnsafePointer, tag: ""}, {prop: "tail", name: "tail", pkg: "sync", typ: $UnsafePointer, tag: ""}]);
 	RWMutex.init([{prop: "w", name: "w", pkg: "sync", typ: Mutex, tag: ""}, {prop: "writerSem", name: "writerSem", pkg: "sync", typ: $Uint32, tag: ""}, {prop: "readerSem", name: "readerSem", pkg: "sync", typ: $Uint32, tag: ""}, {prop: "readerCount", name: "readerCount", pkg: "sync", typ: $Int32, tag: ""}, {prop: "readerWait", name: "readerWait", pkg: "sync", typ: $Int32, tag: ""}]);
 	rlocker.init([{prop: "w", name: "w", pkg: "sync", typ: Mutex, tag: ""}, {prop: "writerSem", name: "writerSem", pkg: "sync", typ: $Uint32, tag: ""}, {prop: "readerSem", name: "readerSem", pkg: "sync", typ: $Uint32, tag: ""}, {prop: "readerCount", name: "readerCount", pkg: "sync", typ: $Int32, tag: ""}, {prop: "readerWait", name: "readerWait", pkg: "sync", typ: $Int32, tag: ""}]);
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = runtime.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
@@ -2664,6 +2676,7 @@ $packages["sync"] = (function() {
 		init$1();
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["io"] = (function() {
@@ -2675,7 +2688,7 @@ $packages["io"] = (function() {
 	RuneReader = $pkg.RuneReader = $newType(8, $kindInterface, "io.RuneReader", "RuneReader", "io", null);
 	stringWriter = $pkg.stringWriter = $newType(8, $kindInterface, "io.stringWriter", "stringWriter", "io", null);
 	sliceType = $sliceType($Uint8);
-	WriteString = $pkg.WriteString = function $blocking_WriteString(w, s) {
+	WriteString = function(w, s) {
 		var $ptr, _r, _r$1, _tuple, _tuple$1, _tuple$2, err, n, ok, s, sw, w, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; _tuple$2 = $f._tuple$2; err = $f.err; n = $f.n; ok = $f.ok; s = $f.s; sw = $f.sw; w = $f.w; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		n = 0;
@@ -2691,13 +2704,14 @@ $packages["io"] = (function() {
 		_r$1 = w.Write(new sliceType($stringToBytes(s))); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_tuple$2 = _r$1; n = _tuple$2[0]; err = _tuple$2[1];
 		return [n, err];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_WriteString }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f._tuple$2 = _tuple$2; $f.err = err; $f.n = n; $f.ok = ok; $f.s = s; $f.sw = sw; $f.w = w; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: WriteString }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f._tuple$2 = _tuple$2; $f.err = err; $f.n = n; $f.ok = ok; $f.s = s; $f.sw = sw; $f.w = w; $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.WriteString = WriteString;
 	Reader.init([{prop: "Read", name: "Read", pkg: "", typ: $funcType([sliceType], [$Int, $error], false)}]);
 	Writer.init([{prop: "Write", name: "Write", pkg: "", typ: $funcType([sliceType], [$Int, $error], false)}]);
 	RuneReader.init([{prop: "ReadRune", name: "ReadRune", pkg: "", typ: $funcType([], [$Int32, $Int, $error], false)}]);
 	stringWriter.init([{prop: "WriteString", name: "WriteString", pkg: "", typ: $funcType([$String], [$Int, $error], false)}]);
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = errors.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
@@ -2712,6 +2726,7 @@ $packages["io"] = (function() {
 		$pkg.ErrClosedPipe = errors.New("io: read/write on closed pipe");
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["unicode"] = (function() {
@@ -2805,21 +2820,23 @@ $packages["unicode"] = (function() {
 		}
 		return r;
 	};
-	IsDigit = $pkg.IsDigit = function(r) {
+	IsDigit = function(r) {
 		var $ptr, r;
 		if (r <= 255) {
 			return 48 <= r && r <= 57;
 		}
 		return isExcludingLatin($pkg.Digit, r);
 	};
-	IsLetter = $pkg.IsLetter = function(r) {
+	$pkg.IsDigit = IsDigit;
+	IsLetter = function(r) {
 		var $ptr, r, x;
 		if ((r >>> 0) <= 255) {
 			return !(((((x = (r << 24 >>> 24), ((x < 0 || x >= properties.length) ? $throwRuntimeError("index out of range") : properties[x])) & 96) >>> 0) === 0));
 		}
 		return isExcludingLatin($pkg.Letter, r);
 	};
-	IsSpace = $pkg.IsSpace = function(r) {
+	$pkg.IsLetter = IsLetter;
+	IsSpace = function(r) {
 		var $ptr, _ref, r;
 		if ((r >>> 0) <= 255) {
 			_ref = r;
@@ -2830,6 +2847,7 @@ $packages["unicode"] = (function() {
 		}
 		return isExcludingLatin($pkg.White_Space, r);
 	};
+	$pkg.IsSpace = IsSpace;
 	is16 = function(ranges, r) {
 		var $ptr, _i, _q, _r, _r$1, _ref, hi, i, lo, m, r, range_, range_$1, ranges;
 		if (ranges.$length <= 18 || r <= 255) {
@@ -2915,11 +2933,12 @@ $packages["unicode"] = (function() {
 		}
 		return false;
 	};
-	To = $pkg.To = function(_case, r) {
+	To = function(_case, r) {
 		var $ptr, _case, r;
 		return to(_case, r, $pkg.CaseRanges);
 	};
-	ToUpper = $pkg.ToUpper = function(r) {
+	$pkg.To = To;
+	ToUpper = function(r) {
 		var $ptr, r;
 		if (r <= 127) {
 			if (97 <= r && r <= 122) {
@@ -2929,7 +2948,8 @@ $packages["unicode"] = (function() {
 		}
 		return To(0, r);
 	};
-	ToLower = $pkg.ToLower = function(r) {
+	$pkg.ToUpper = ToUpper;
+	ToLower = function(r) {
 		var $ptr, r;
 		if (r <= 127) {
 			if (65 <= r && r <= 90) {
@@ -2939,7 +2959,8 @@ $packages["unicode"] = (function() {
 		}
 		return To(1, r);
 	};
-	SimpleFold = $pkg.SimpleFold = function(r) {
+	$pkg.ToLower = ToLower;
+	SimpleFold = function(r) {
 		var $ptr, _q, hi, l, lo, m, r;
 		lo = 0;
 		hi = caseOrbit.$length;
@@ -2961,13 +2982,14 @@ $packages["unicode"] = (function() {
 		}
 		return ToUpper(r);
 	};
+	$pkg.SimpleFold = SimpleFold;
 	RangeTable.init([{prop: "R16", name: "R16", pkg: "", typ: sliceType, tag: ""}, {prop: "R32", name: "R32", pkg: "", typ: sliceType$1, tag: ""}, {prop: "LatinOffset", name: "LatinOffset", pkg: "", typ: $Int, tag: ""}]);
 	Range16.init([{prop: "Lo", name: "Lo", pkg: "", typ: $Uint16, tag: ""}, {prop: "Hi", name: "Hi", pkg: "", typ: $Uint16, tag: ""}, {prop: "Stride", name: "Stride", pkg: "", typ: $Uint16, tag: ""}]);
 	Range32.init([{prop: "Lo", name: "Lo", pkg: "", typ: $Uint32, tag: ""}, {prop: "Hi", name: "Hi", pkg: "", typ: $Uint32, tag: ""}, {prop: "Stride", name: "Stride", pkg: "", typ: $Uint32, tag: ""}]);
 	CaseRange.init([{prop: "Lo", name: "Lo", pkg: "", typ: $Uint32, tag: ""}, {prop: "Hi", name: "Hi", pkg: "", typ: $Uint32, tag: ""}, {prop: "Delta", name: "Delta", pkg: "", typ: d, tag: ""}]);
 	d.init($Int32, 3);
 	foldPair.init([{prop: "From", name: "From", pkg: "", typ: $Uint16, tag: ""}, {prop: "To", name: "To", pkg: "", typ: $Uint16, tag: ""}]);
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_L = new RangeTable.ptr(new sliceType([new Range16.ptr(65, 90, 1), new Range16.ptr(97, 122, 1), new Range16.ptr(170, 181, 11), new Range16.ptr(186, 192, 6), new Range16.ptr(193, 214, 1), new Range16.ptr(216, 246, 1), new Range16.ptr(248, 705, 1), new Range16.ptr(710, 721, 1), new Range16.ptr(736, 740, 1), new Range16.ptr(748, 750, 2), new Range16.ptr(880, 884, 1), new Range16.ptr(886, 887, 1), new Range16.ptr(890, 893, 1), new Range16.ptr(895, 902, 7), new Range16.ptr(904, 906, 1), new Range16.ptr(908, 910, 2), new Range16.ptr(911, 929, 1), new Range16.ptr(931, 1013, 1), new Range16.ptr(1015, 1153, 1), new Range16.ptr(1162, 1327, 1), new Range16.ptr(1329, 1366, 1), new Range16.ptr(1369, 1377, 8), new Range16.ptr(1378, 1415, 1), new Range16.ptr(1488, 1514, 1), new Range16.ptr(1520, 1522, 1), new Range16.ptr(1568, 1610, 1), new Range16.ptr(1646, 1647, 1), new Range16.ptr(1649, 1747, 1), new Range16.ptr(1749, 1765, 16), new Range16.ptr(1766, 1774, 8), new Range16.ptr(1775, 1786, 11), new Range16.ptr(1787, 1788, 1), new Range16.ptr(1791, 1808, 17), new Range16.ptr(1810, 1839, 1), new Range16.ptr(1869, 1957, 1), new Range16.ptr(1969, 1994, 25), new Range16.ptr(1995, 2026, 1), new Range16.ptr(2036, 2037, 1), new Range16.ptr(2042, 2048, 6), new Range16.ptr(2049, 2069, 1), new Range16.ptr(2074, 2084, 10), new Range16.ptr(2088, 2112, 24), new Range16.ptr(2113, 2136, 1), new Range16.ptr(2208, 2226, 1), new Range16.ptr(2308, 2361, 1), new Range16.ptr(2365, 2384, 19), new Range16.ptr(2392, 2401, 1), new Range16.ptr(2417, 2432, 1), new Range16.ptr(2437, 2444, 1), new Range16.ptr(2447, 2448, 1), new Range16.ptr(2451, 2472, 1), new Range16.ptr(2474, 2480, 1), new Range16.ptr(2482, 2486, 4), new Range16.ptr(2487, 2489, 1), new Range16.ptr(2493, 2510, 17), new Range16.ptr(2524, 2525, 1), new Range16.ptr(2527, 2529, 1), new Range16.ptr(2544, 2545, 1), new Range16.ptr(2565, 2570, 1), new Range16.ptr(2575, 2576, 1), new Range16.ptr(2579, 2600, 1), new Range16.ptr(2602, 2608, 1), new Range16.ptr(2610, 2611, 1), new Range16.ptr(2613, 2614, 1), new Range16.ptr(2616, 2617, 1), new Range16.ptr(2649, 2652, 1), new Range16.ptr(2654, 2674, 20), new Range16.ptr(2675, 2676, 1), new Range16.ptr(2693, 2701, 1), new Range16.ptr(2703, 2705, 1), new Range16.ptr(2707, 2728, 1), new Range16.ptr(2730, 2736, 1), new Range16.ptr(2738, 2739, 1), new Range16.ptr(2741, 2745, 1), new Range16.ptr(2749, 2768, 19), new Range16.ptr(2784, 2785, 1), new Range16.ptr(2821, 2828, 1), new Range16.ptr(2831, 2832, 1), new Range16.ptr(2835, 2856, 1), new Range16.ptr(2858, 2864, 1), new Range16.ptr(2866, 2867, 1), new Range16.ptr(2869, 2873, 1), new Range16.ptr(2877, 2908, 31), new Range16.ptr(2909, 2911, 2), new Range16.ptr(2912, 2913, 1), new Range16.ptr(2929, 2947, 18), new Range16.ptr(2949, 2954, 1), new Range16.ptr(2958, 2960, 1), new Range16.ptr(2962, 2965, 1), new Range16.ptr(2969, 2970, 1), new Range16.ptr(2972, 2974, 2), new Range16.ptr(2975, 2979, 4), new Range16.ptr(2980, 2984, 4), new Range16.ptr(2985, 2986, 1), new Range16.ptr(2990, 3001, 1), new Range16.ptr(3024, 3077, 53), new Range16.ptr(3078, 3084, 1), new Range16.ptr(3086, 3088, 1), new Range16.ptr(3090, 3112, 1), new Range16.ptr(3114, 3129, 1), new Range16.ptr(3133, 3160, 27), new Range16.ptr(3161, 3168, 7), new Range16.ptr(3169, 3205, 36), new Range16.ptr(3206, 3212, 1), new Range16.ptr(3214, 3216, 1), new Range16.ptr(3218, 3240, 1), new Range16.ptr(3242, 3251, 1), new Range16.ptr(3253, 3257, 1), new Range16.ptr(3261, 3294, 33), new Range16.ptr(3296, 3297, 1), new Range16.ptr(3313, 3314, 1), new Range16.ptr(3333, 3340, 1), new Range16.ptr(3342, 3344, 1), new Range16.ptr(3346, 3386, 1), new Range16.ptr(3389, 3406, 17), new Range16.ptr(3424, 3425, 1), new Range16.ptr(3450, 3455, 1), new Range16.ptr(3461, 3478, 1), new Range16.ptr(3482, 3505, 1), new Range16.ptr(3507, 3515, 1), new Range16.ptr(3517, 3520, 3), new Range16.ptr(3521, 3526, 1), new Range16.ptr(3585, 3632, 1), new Range16.ptr(3634, 3635, 1), new Range16.ptr(3648, 3654, 1), new Range16.ptr(3713, 3714, 1), new Range16.ptr(3716, 3719, 3), new Range16.ptr(3720, 3722, 2), new Range16.ptr(3725, 3732, 7), new Range16.ptr(3733, 3735, 1), new Range16.ptr(3737, 3743, 1), new Range16.ptr(3745, 3747, 1), new Range16.ptr(3749, 3751, 2), new Range16.ptr(3754, 3755, 1), new Range16.ptr(3757, 3760, 1), new Range16.ptr(3762, 3763, 1), new Range16.ptr(3773, 3776, 3), new Range16.ptr(3777, 3780, 1), new Range16.ptr(3782, 3804, 22), new Range16.ptr(3805, 3807, 1), new Range16.ptr(3840, 3904, 64), new Range16.ptr(3905, 3911, 1), new Range16.ptr(3913, 3948, 1), new Range16.ptr(3976, 3980, 1), new Range16.ptr(4096, 4138, 1), new Range16.ptr(4159, 4176, 17), new Range16.ptr(4177, 4181, 1), new Range16.ptr(4186, 4189, 1), new Range16.ptr(4193, 4197, 4), new Range16.ptr(4198, 4206, 8), new Range16.ptr(4207, 4208, 1), new Range16.ptr(4213, 4225, 1), new Range16.ptr(4238, 4256, 18), new Range16.ptr(4257, 4293, 1), new Range16.ptr(4295, 4301, 6), new Range16.ptr(4304, 4346, 1), new Range16.ptr(4348, 4680, 1), new Range16.ptr(4682, 4685, 1), new Range16.ptr(4688, 4694, 1), new Range16.ptr(4696, 4698, 2), new Range16.ptr(4699, 4701, 1), new Range16.ptr(4704, 4744, 1), new Range16.ptr(4746, 4749, 1), new Range16.ptr(4752, 4784, 1), new Range16.ptr(4786, 4789, 1), new Range16.ptr(4792, 4798, 1), new Range16.ptr(4800, 4802, 2), new Range16.ptr(4803, 4805, 1), new Range16.ptr(4808, 4822, 1), new Range16.ptr(4824, 4880, 1), new Range16.ptr(4882, 4885, 1), new Range16.ptr(4888, 4954, 1), new Range16.ptr(4992, 5007, 1), new Range16.ptr(5024, 5108, 1), new Range16.ptr(5121, 5740, 1), new Range16.ptr(5743, 5759, 1), new Range16.ptr(5761, 5786, 1), new Range16.ptr(5792, 5866, 1), new Range16.ptr(5873, 5880, 1), new Range16.ptr(5888, 5900, 1), new Range16.ptr(5902, 5905, 1), new Range16.ptr(5920, 5937, 1), new Range16.ptr(5952, 5969, 1), new Range16.ptr(5984, 5996, 1), new Range16.ptr(5998, 6000, 1), new Range16.ptr(6016, 6067, 1), new Range16.ptr(6103, 6108, 5), new Range16.ptr(6176, 6263, 1), new Range16.ptr(6272, 6312, 1), new Range16.ptr(6314, 6320, 6), new Range16.ptr(6321, 6389, 1), new Range16.ptr(6400, 6430, 1), new Range16.ptr(6480, 6509, 1), new Range16.ptr(6512, 6516, 1), new Range16.ptr(6528, 6571, 1), new Range16.ptr(6593, 6599, 1), new Range16.ptr(6656, 6678, 1), new Range16.ptr(6688, 6740, 1), new Range16.ptr(6823, 6917, 94), new Range16.ptr(6918, 6963, 1), new Range16.ptr(6981, 6987, 1), new Range16.ptr(7043, 7072, 1), new Range16.ptr(7086, 7087, 1), new Range16.ptr(7098, 7141, 1), new Range16.ptr(7168, 7203, 1), new Range16.ptr(7245, 7247, 1), new Range16.ptr(7258, 7293, 1), new Range16.ptr(7401, 7404, 1), new Range16.ptr(7406, 7409, 1), new Range16.ptr(7413, 7414, 1), new Range16.ptr(7424, 7615, 1), new Range16.ptr(7680, 7957, 1), new Range16.ptr(7960, 7965, 1), new Range16.ptr(7968, 8005, 1), new Range16.ptr(8008, 8013, 1), new Range16.ptr(8016, 8023, 1), new Range16.ptr(8025, 8031, 2), new Range16.ptr(8032, 8061, 1), new Range16.ptr(8064, 8116, 1), new Range16.ptr(8118, 8124, 1), new Range16.ptr(8126, 8130, 4), new Range16.ptr(8131, 8132, 1), new Range16.ptr(8134, 8140, 1), new Range16.ptr(8144, 8147, 1), new Range16.ptr(8150, 8155, 1), new Range16.ptr(8160, 8172, 1), new Range16.ptr(8178, 8180, 1), new Range16.ptr(8182, 8188, 1), new Range16.ptr(8305, 8319, 14), new Range16.ptr(8336, 8348, 1), new Range16.ptr(8450, 8455, 5), new Range16.ptr(8458, 8467, 1), new Range16.ptr(8469, 8473, 4), new Range16.ptr(8474, 8477, 1), new Range16.ptr(8484, 8490, 2), new Range16.ptr(8491, 8493, 1), new Range16.ptr(8495, 8505, 1), new Range16.ptr(8508, 8511, 1), new Range16.ptr(8517, 8521, 1), new Range16.ptr(8526, 8579, 53), new Range16.ptr(8580, 11264, 2684), new Range16.ptr(11265, 11310, 1), new Range16.ptr(11312, 11358, 1), new Range16.ptr(11360, 11492, 1), new Range16.ptr(11499, 11502, 1), new Range16.ptr(11506, 11507, 1), new Range16.ptr(11520, 11557, 1), new Range16.ptr(11559, 11565, 6), new Range16.ptr(11568, 11623, 1), new Range16.ptr(11631, 11648, 17), new Range16.ptr(11649, 11670, 1), new Range16.ptr(11680, 11686, 1), new Range16.ptr(11688, 11694, 1), new Range16.ptr(11696, 11702, 1), new Range16.ptr(11704, 11710, 1), new Range16.ptr(11712, 11718, 1), new Range16.ptr(11720, 11726, 1), new Range16.ptr(11728, 11734, 1), new Range16.ptr(11736, 11742, 1), new Range16.ptr(11823, 12293, 470), new Range16.ptr(12294, 12337, 43), new Range16.ptr(12338, 12341, 1), new Range16.ptr(12347, 12348, 1), new Range16.ptr(12353, 12438, 1), new Range16.ptr(12445, 12447, 1), new Range16.ptr(12449, 12538, 1), new Range16.ptr(12540, 12543, 1), new Range16.ptr(12549, 12589, 1), new Range16.ptr(12593, 12686, 1), new Range16.ptr(12704, 12730, 1), new Range16.ptr(12784, 12799, 1), new Range16.ptr(13312, 19893, 1), new Range16.ptr(19968, 40908, 1), new Range16.ptr(40960, 42124, 1), new Range16.ptr(42192, 42237, 1), new Range16.ptr(42240, 42508, 1), new Range16.ptr(42512, 42527, 1), new Range16.ptr(42538, 42539, 1), new Range16.ptr(42560, 42606, 1), new Range16.ptr(42623, 42653, 1), new Range16.ptr(42656, 42725, 1), new Range16.ptr(42775, 42783, 1), new Range16.ptr(42786, 42888, 1), new Range16.ptr(42891, 42894, 1), new Range16.ptr(42896, 42925, 1), new Range16.ptr(42928, 42929, 1), new Range16.ptr(42999, 43009, 1), new Range16.ptr(43011, 43013, 1), new Range16.ptr(43015, 43018, 1), new Range16.ptr(43020, 43042, 1), new Range16.ptr(43072, 43123, 1), new Range16.ptr(43138, 43187, 1), new Range16.ptr(43250, 43255, 1), new Range16.ptr(43259, 43274, 15), new Range16.ptr(43275, 43301, 1), new Range16.ptr(43312, 43334, 1), new Range16.ptr(43360, 43388, 1), new Range16.ptr(43396, 43442, 1), new Range16.ptr(43471, 43488, 17), new Range16.ptr(43489, 43492, 1), new Range16.ptr(43494, 43503, 1), new Range16.ptr(43514, 43518, 1), new Range16.ptr(43520, 43560, 1), new Range16.ptr(43584, 43586, 1), new Range16.ptr(43588, 43595, 1), new Range16.ptr(43616, 43638, 1), new Range16.ptr(43642, 43646, 4), new Range16.ptr(43647, 43695, 1), new Range16.ptr(43697, 43701, 4), new Range16.ptr(43702, 43705, 3), new Range16.ptr(43706, 43709, 1), new Range16.ptr(43712, 43714, 2), new Range16.ptr(43739, 43741, 1), new Range16.ptr(43744, 43754, 1), new Range16.ptr(43762, 43764, 1), new Range16.ptr(43777, 43782, 1), new Range16.ptr(43785, 43790, 1), new Range16.ptr(43793, 43798, 1), new Range16.ptr(43808, 43814, 1), new Range16.ptr(43816, 43822, 1), new Range16.ptr(43824, 43866, 1), new Range16.ptr(43868, 43871, 1), new Range16.ptr(43876, 43877, 1), new Range16.ptr(43968, 44002, 1), new Range16.ptr(44032, 55203, 1), new Range16.ptr(55216, 55238, 1), new Range16.ptr(55243, 55291, 1), new Range16.ptr(63744, 64109, 1), new Range16.ptr(64112, 64217, 1), new Range16.ptr(64256, 64262, 1), new Range16.ptr(64275, 64279, 1), new Range16.ptr(64285, 64287, 2), new Range16.ptr(64288, 64296, 1), new Range16.ptr(64298, 64310, 1), new Range16.ptr(64312, 64316, 1), new Range16.ptr(64318, 64320, 2), new Range16.ptr(64321, 64323, 2), new Range16.ptr(64324, 64326, 2), new Range16.ptr(64327, 64433, 1), new Range16.ptr(64467, 64829, 1), new Range16.ptr(64848, 64911, 1), new Range16.ptr(64914, 64967, 1), new Range16.ptr(65008, 65019, 1), new Range16.ptr(65136, 65140, 1), new Range16.ptr(65142, 65276, 1), new Range16.ptr(65313, 65338, 1), new Range16.ptr(65345, 65370, 1), new Range16.ptr(65382, 65470, 1), new Range16.ptr(65474, 65479, 1), new Range16.ptr(65482, 65487, 1), new Range16.ptr(65490, 65495, 1), new Range16.ptr(65498, 65500, 1)]), new sliceType$1([new Range32.ptr(65536, 65547, 1), new Range32.ptr(65549, 65574, 1), new Range32.ptr(65576, 65594, 1), new Range32.ptr(65596, 65597, 1), new Range32.ptr(65599, 65613, 1), new Range32.ptr(65616, 65629, 1), new Range32.ptr(65664, 65786, 1), new Range32.ptr(66176, 66204, 1), new Range32.ptr(66208, 66256, 1), new Range32.ptr(66304, 66335, 1), new Range32.ptr(66352, 66368, 1), new Range32.ptr(66370, 66377, 1), new Range32.ptr(66384, 66421, 1), new Range32.ptr(66432, 66461, 1), new Range32.ptr(66464, 66499, 1), new Range32.ptr(66504, 66511, 1), new Range32.ptr(66560, 66717, 1), new Range32.ptr(66816, 66855, 1), new Range32.ptr(66864, 66915, 1), new Range32.ptr(67072, 67382, 1), new Range32.ptr(67392, 67413, 1), new Range32.ptr(67424, 67431, 1), new Range32.ptr(67584, 67589, 1), new Range32.ptr(67592, 67594, 2), new Range32.ptr(67595, 67637, 1), new Range32.ptr(67639, 67640, 1), new Range32.ptr(67644, 67647, 3), new Range32.ptr(67648, 67669, 1), new Range32.ptr(67680, 67702, 1), new Range32.ptr(67712, 67742, 1), new Range32.ptr(67840, 67861, 1), new Range32.ptr(67872, 67897, 1), new Range32.ptr(67968, 68023, 1), new Range32.ptr(68030, 68031, 1), new Range32.ptr(68096, 68112, 16), new Range32.ptr(68113, 68115, 1), new Range32.ptr(68117, 68119, 1), new Range32.ptr(68121, 68147, 1), new Range32.ptr(68192, 68220, 1), new Range32.ptr(68224, 68252, 1), new Range32.ptr(68288, 68295, 1), new Range32.ptr(68297, 68324, 1), new Range32.ptr(68352, 68405, 1), new Range32.ptr(68416, 68437, 1), new Range32.ptr(68448, 68466, 1), new Range32.ptr(68480, 68497, 1), new Range32.ptr(68608, 68680, 1), new Range32.ptr(69635, 69687, 1), new Range32.ptr(69763, 69807, 1), new Range32.ptr(69840, 69864, 1), new Range32.ptr(69891, 69926, 1), new Range32.ptr(69968, 70002, 1), new Range32.ptr(70006, 70019, 13), new Range32.ptr(70020, 70066, 1), new Range32.ptr(70081, 70084, 1), new Range32.ptr(70106, 70144, 38), new Range32.ptr(70145, 70161, 1), new Range32.ptr(70163, 70187, 1), new Range32.ptr(70320, 70366, 1), new Range32.ptr(70405, 70412, 1), new Range32.ptr(70415, 70416, 1), new Range32.ptr(70419, 70440, 1), new Range32.ptr(70442, 70448, 1), new Range32.ptr(70450, 70451, 1), new Range32.ptr(70453, 70457, 1), new Range32.ptr(70461, 70493, 32), new Range32.ptr(70494, 70497, 1), new Range32.ptr(70784, 70831, 1), new Range32.ptr(70852, 70853, 1), new Range32.ptr(70855, 71040, 185), new Range32.ptr(71041, 71086, 1), new Range32.ptr(71168, 71215, 1), new Range32.ptr(71236, 71296, 60), new Range32.ptr(71297, 71338, 1), new Range32.ptr(71840, 71903, 1), new Range32.ptr(71935, 72384, 449), new Range32.ptr(72385, 72440, 1), new Range32.ptr(73728, 74648, 1), new Range32.ptr(77824, 78894, 1), new Range32.ptr(92160, 92728, 1), new Range32.ptr(92736, 92766, 1), new Range32.ptr(92880, 92909, 1), new Range32.ptr(92928, 92975, 1), new Range32.ptr(92992, 92995, 1), new Range32.ptr(93027, 93047, 1), new Range32.ptr(93053, 93071, 1), new Range32.ptr(93952, 94020, 1), new Range32.ptr(94032, 94099, 67), new Range32.ptr(94100, 94111, 1), new Range32.ptr(110592, 110593, 1), new Range32.ptr(113664, 113770, 1), new Range32.ptr(113776, 113788, 1), new Range32.ptr(113792, 113800, 1), new Range32.ptr(113808, 113817, 1), new Range32.ptr(119808, 119892, 1), new Range32.ptr(119894, 119964, 1), new Range32.ptr(119966, 119967, 1), new Range32.ptr(119970, 119973, 3), new Range32.ptr(119974, 119977, 3), new Range32.ptr(119978, 119980, 1), new Range32.ptr(119982, 119993, 1), new Range32.ptr(119995, 119997, 2), new Range32.ptr(119998, 120003, 1), new Range32.ptr(120005, 120069, 1), new Range32.ptr(120071, 120074, 1), new Range32.ptr(120077, 120084, 1), new Range32.ptr(120086, 120092, 1), new Range32.ptr(120094, 120121, 1), new Range32.ptr(120123, 120126, 1), new Range32.ptr(120128, 120132, 1), new Range32.ptr(120134, 120138, 4), new Range32.ptr(120139, 120144, 1), new Range32.ptr(120146, 120485, 1), new Range32.ptr(120488, 120512, 1), new Range32.ptr(120514, 120538, 1), new Range32.ptr(120540, 120570, 1), new Range32.ptr(120572, 120596, 1), new Range32.ptr(120598, 120628, 1), new Range32.ptr(120630, 120654, 1), new Range32.ptr(120656, 120686, 1), new Range32.ptr(120688, 120712, 1), new Range32.ptr(120714, 120744, 1), new Range32.ptr(120746, 120770, 1), new Range32.ptr(120772, 120779, 1), new Range32.ptr(124928, 125124, 1), new Range32.ptr(126464, 126467, 1), new Range32.ptr(126469, 126495, 1), new Range32.ptr(126497, 126498, 1), new Range32.ptr(126500, 126503, 3), new Range32.ptr(126505, 126514, 1), new Range32.ptr(126516, 126519, 1), new Range32.ptr(126521, 126523, 2), new Range32.ptr(126530, 126535, 5), new Range32.ptr(126537, 126541, 2), new Range32.ptr(126542, 126543, 1), new Range32.ptr(126545, 126546, 1), new Range32.ptr(126548, 126551, 3), new Range32.ptr(126553, 126561, 2), new Range32.ptr(126562, 126564, 2), new Range32.ptr(126567, 126570, 1), new Range32.ptr(126572, 126578, 1), new Range32.ptr(126580, 126583, 1), new Range32.ptr(126585, 126588, 1), new Range32.ptr(126590, 126592, 2), new Range32.ptr(126593, 126601, 1), new Range32.ptr(126603, 126619, 1), new Range32.ptr(126625, 126627, 1), new Range32.ptr(126629, 126633, 1), new Range32.ptr(126635, 126651, 1), new Range32.ptr(131072, 173782, 1), new Range32.ptr(173824, 177972, 1), new Range32.ptr(177984, 178205, 1), new Range32.ptr(194560, 195101, 1)]), 6);
@@ -2982,6 +3004,7 @@ $packages["unicode"] = (function() {
 		caseOrbit = new sliceType$4([new foldPair.ptr(75, 107), new foldPair.ptr(83, 115), new foldPair.ptr(107, 8490), new foldPair.ptr(115, 383), new foldPair.ptr(181, 924), new foldPair.ptr(197, 229), new foldPair.ptr(223, 7838), new foldPair.ptr(229, 8491), new foldPair.ptr(304, 304), new foldPair.ptr(305, 305), new foldPair.ptr(383, 83), new foldPair.ptr(452, 453), new foldPair.ptr(453, 454), new foldPair.ptr(454, 452), new foldPair.ptr(455, 456), new foldPair.ptr(456, 457), new foldPair.ptr(457, 455), new foldPair.ptr(458, 459), new foldPair.ptr(459, 460), new foldPair.ptr(460, 458), new foldPair.ptr(497, 498), new foldPair.ptr(498, 499), new foldPair.ptr(499, 497), new foldPair.ptr(837, 921), new foldPair.ptr(914, 946), new foldPair.ptr(917, 949), new foldPair.ptr(920, 952), new foldPair.ptr(921, 953), new foldPair.ptr(922, 954), new foldPair.ptr(924, 956), new foldPair.ptr(928, 960), new foldPair.ptr(929, 961), new foldPair.ptr(931, 962), new foldPair.ptr(934, 966), new foldPair.ptr(937, 969), new foldPair.ptr(946, 976), new foldPair.ptr(949, 1013), new foldPair.ptr(952, 977), new foldPair.ptr(953, 8126), new foldPair.ptr(954, 1008), new foldPair.ptr(956, 181), new foldPair.ptr(960, 982), new foldPair.ptr(961, 1009), new foldPair.ptr(962, 963), new foldPair.ptr(963, 931), new foldPair.ptr(966, 981), new foldPair.ptr(969, 8486), new foldPair.ptr(976, 914), new foldPair.ptr(977, 1012), new foldPair.ptr(981, 934), new foldPair.ptr(982, 928), new foldPair.ptr(1008, 922), new foldPair.ptr(1009, 929), new foldPair.ptr(1012, 920), new foldPair.ptr(1013, 917), new foldPair.ptr(7776, 7777), new foldPair.ptr(7777, 7835), new foldPair.ptr(7835, 7776), new foldPair.ptr(7838, 223), new foldPair.ptr(8126, 837), new foldPair.ptr(8486, 937), new foldPair.ptr(8490, 75), new foldPair.ptr(8491, 197)]);
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["unicode/utf8"] = (function() {
@@ -3146,21 +3169,23 @@ $packages["unicode/utf8"] = (function() {
 		_tmp$48 = 65533; _tmp$49 = 1; _tmp$50 = false; r = _tmp$48; size = _tmp$49; short$1 = _tmp$50;
 		return [r, size, short$1];
 	};
-	DecodeRune = $pkg.DecodeRune = function(p) {
+	DecodeRune = function(p) {
 		var $ptr, _tuple, p, r, size;
 		r = 0;
 		size = 0;
 		_tuple = decodeRuneInternal(p); r = _tuple[0]; size = _tuple[1];
 		return [r, size];
 	};
-	DecodeRuneInString = $pkg.DecodeRuneInString = function(s) {
+	$pkg.DecodeRune = DecodeRune;
+	DecodeRuneInString = function(s) {
 		var $ptr, _tuple, r, s, size;
 		r = 0;
 		size = 0;
 		_tuple = decodeRuneInStringInternal(s); r = _tuple[0]; size = _tuple[1];
 		return [r, size];
 	};
-	DecodeLastRune = $pkg.DecodeLastRune = function(p) {
+	$pkg.DecodeRuneInString = DecodeRuneInString;
+	DecodeLastRune = function(p) {
 		var $ptr, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tmp$6, _tmp$7, _tuple, end, lim, p, r, size, start;
 		r = 0;
 		size = 0;
@@ -3198,7 +3223,8 @@ $packages["unicode/utf8"] = (function() {
 		_tmp$6 = r; _tmp$7 = size; r = _tmp$6; size = _tmp$7;
 		return [r, size];
 	};
-	DecodeLastRuneInString = $pkg.DecodeLastRuneInString = function(s) {
+	$pkg.DecodeLastRune = DecodeLastRune;
+	DecodeLastRuneInString = function(s) {
 		var $ptr, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tmp$6, _tmp$7, _tuple, end, lim, r, s, size, start;
 		r = 0;
 		size = 0;
@@ -3236,7 +3262,8 @@ $packages["unicode/utf8"] = (function() {
 		_tmp$6 = r; _tmp$7 = size; r = _tmp$6; size = _tmp$7;
 		return [r, size];
 	};
-	RuneLen = $pkg.RuneLen = function(r) {
+	$pkg.DecodeLastRuneInString = DecodeLastRuneInString;
+	RuneLen = function(r) {
 		var $ptr, r;
 		if (r < 0) {
 			return -1;
@@ -3253,7 +3280,8 @@ $packages["unicode/utf8"] = (function() {
 		}
 		return -1;
 	};
-	EncodeRune = $pkg.EncodeRune = function(p, r) {
+	$pkg.RuneLen = RuneLen;
+	EncodeRune = function(p, r) {
 		var $ptr, i, p, r;
 		i = (r >>> 0);
 		if (i <= 127) {
@@ -3282,7 +3310,8 @@ $packages["unicode/utf8"] = (function() {
 			return 4;
 		}
 	};
-	RuneCount = $pkg.RuneCount = function(p) {
+	$pkg.EncodeRune = EncodeRune;
+	RuneCount = function(p) {
 		var $ptr, _tuple, i, n, p, size;
 		i = 0;
 		n = 0;
@@ -3299,7 +3328,8 @@ $packages["unicode/utf8"] = (function() {
 		}
 		return n;
 	};
-	RuneCountInString = $pkg.RuneCountInString = function(s) {
+	$pkg.RuneCount = RuneCount;
+	RuneCountInString = function(s) {
 		var $ptr, _i, _ref, _rune, n, s;
 		n = 0;
 		_ref = s;
@@ -3312,15 +3342,18 @@ $packages["unicode/utf8"] = (function() {
 		}
 		return n;
 	};
-	RuneStart = $pkg.RuneStart = function(b) {
+	$pkg.RuneCountInString = RuneCountInString;
+	RuneStart = function(b) {
 		var $ptr, b;
 		return !((((b & 192) >>> 0) === 128));
 	};
-	$init = $pkg.$init = function() {
+	$pkg.RuneStart = RuneStart;
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["bytes"] = (function() {
@@ -3363,7 +3396,7 @@ $packages["bytes"] = (function() {
 	arrayType = $arrayType($Uint8, 4);
 	arrayType$1 = $arrayType($Uint8, 64);
 	ptrType$1 = $ptrType(Reader);
-	IndexByte = $pkg.IndexByte = function(s, c) {
+	IndexByte = function(s, c) {
 		var $ptr, _i, _ref, b, c, i, s;
 		_ref = s;
 		_i = 0;
@@ -3378,7 +3411,8 @@ $packages["bytes"] = (function() {
 		}
 		return -1;
 	};
-	Equal = $pkg.Equal = function(a, b) {
+	$pkg.IndexByte = IndexByte;
+	Equal = function(a, b) {
 		var $ptr, _i, _ref, a, b, c, i;
 		if (!((a.$length === b.$length))) {
 			return false;
@@ -3396,6 +3430,7 @@ $packages["bytes"] = (function() {
 		}
 		return true;
 	};
+	$pkg.Equal = Equal;
 	Buffer.ptr.prototype.Bytes = function() {
 		var $ptr, b;
 		b = this;
@@ -3492,7 +3527,7 @@ $packages["bytes"] = (function() {
 		return [n, err];
 	};
 	Buffer.prototype.WriteString = function(s) { return this.$val.WriteString(s); };
-	Buffer.ptr.prototype.ReadFrom = function $blocking_ReadFrom(r) {
+	Buffer.ptr.prototype.ReadFrom = function(r) {
 		var $ptr, _r, _tmp, _tmp$1, _tmp$2, _tmp$3, _tuple, b, e, err, free, m, n, newBuf, r, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; _tuple = $f._tuple; b = $f.b; e = $f.e; err = $f.err; free = $f.free; m = $f.m; n = $f.n; newBuf = $f.newBuf; r = $f.r; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		n = new $Int64(0, 0);
@@ -3527,7 +3562,7 @@ $packages["bytes"] = (function() {
 		/* } */ $s = 1; continue; case 2:
 		_tmp$2 = n; _tmp$3 = $ifaceNil; n = _tmp$2; err = _tmp$3;
 		return [n, err];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_ReadFrom }; } $f.$ptr = $ptr; $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tuple = _tuple; $f.b = b; $f.e = e; $f.err = err; $f.free = free; $f.m = m; $f.n = n; $f.newBuf = newBuf; $f.r = r; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Buffer.ptr.prototype.ReadFrom }; } $f.$ptr = $ptr; $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tuple = _tuple; $f.b = b; $f.e = e; $f.err = err; $f.free = free; $f.m = m; $f.n = n; $f.newBuf = newBuf; $f.r = r; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Buffer.prototype.ReadFrom = function(r) { return this.$val.ReadFrom(r); };
 	makeSlice = function(n) {
@@ -3542,7 +3577,7 @@ $packages["bytes"] = (function() {
 		return $makeSlice(sliceType, n);
 		/* */ } catch(err) { $err = err; return sliceType.nil; } finally { $callDeferred($deferred, $err); }
 	};
-	Buffer.ptr.prototype.WriteTo = function $blocking_WriteTo(w) {
+	Buffer.ptr.prototype.WriteTo = function(w) {
 		var $ptr, _r, _tmp, _tmp$1, _tmp$2, _tmp$3, _tuple, b, e, err, m, n, nBytes, w, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; _tuple = $f._tuple; b = $f.b; e = $f.e; err = $f.err; m = $f.m; n = $f.n; nBytes = $f.nBytes; w = $f.w; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		n = new $Int64(0, 0);
@@ -3571,7 +3606,7 @@ $packages["bytes"] = (function() {
 		/* } */ case 2:
 		b.Truncate(0);
 		return [n, err];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_WriteTo }; } $f.$ptr = $ptr; $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tuple = _tuple; $f.b = b; $f.e = e; $f.err = err; $f.m = m; $f.n = n; $f.nBytes = nBytes; $f.w = w; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Buffer.ptr.prototype.WriteTo }; } $f.$ptr = $ptr; $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tuple = _tuple; $f.b = b; $f.e = e; $f.err = err; $f.m = m; $f.n = n; $f.nBytes = nBytes; $f.w = w; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Buffer.prototype.WriteTo = function(w) { return this.$val.WriteTo(w); };
 	Buffer.ptr.prototype.WriteByte = function(c) {
@@ -3745,7 +3780,7 @@ $packages["bytes"] = (function() {
 		return [line, err];
 	};
 	Buffer.prototype.ReadString = function(delim) { return this.$val.ReadString(delim); };
-	Map = $pkg.Map = function $blocking_Map(mapping, s) {
+	Map = function(mapping, s) {
 		var $ptr, _r, _tuple, b, i, mapping, maxbytes, nb, nbytes, r, rl, s, wid, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _tuple = $f._tuple; b = $f.b; i = $f.i; mapping = $f.mapping; maxbytes = $f.maxbytes; nb = $f.nb; nbytes = $f.nbytes; r = $f.r; rl = $f.rl; s = $f.s; wid = $f.wid; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		maxbytes = s.$length;
@@ -3777,9 +3812,10 @@ $packages["bytes"] = (function() {
 			i = i + (wid) >> 0;
 		/* } */ $s = 1; continue; case 2:
 		return $subslice(b, 0, nbytes);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Map }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.b = b; $f.i = i; $f.mapping = mapping; $f.maxbytes = maxbytes; $f.nb = nb; $f.nbytes = nbytes; $f.r = r; $f.rl = rl; $f.s = s; $f.wid = wid; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Map }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.b = b; $f.i = i; $f.mapping = mapping; $f.maxbytes = maxbytes; $f.nb = nb; $f.nbytes = nbytes; $f.r = r; $f.rl = rl; $f.s = s; $f.wid = wid; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	EqualFold = $pkg.EqualFold = function(s, t) {
+	$pkg.Map = Map;
+	EqualFold = function(s, t) {
 		var $ptr, _tmp, _tmp$1, _tmp$10, _tmp$11, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tmp$6, _tmp$7, _tmp$8, _tmp$9, _tuple, _tuple$1, r, r$1, r$2, s, size, size$1, sr, t, tr;
 		while (true) {
 			if (!(!((s.$length === 0)) && !((t.$length === 0)))) { break; }
@@ -3820,6 +3856,7 @@ $packages["bytes"] = (function() {
 		}
 		return s.$length === t.$length;
 	};
+	$pkg.EqualFold = EqualFold;
 	Reader.ptr.prototype.Len = function() {
 		var $ptr, r, x, x$1, x$2, x$3, x$4;
 		r = this;
@@ -3950,7 +3987,7 @@ $packages["bytes"] = (function() {
 		return [abs, $ifaceNil];
 	};
 	Reader.prototype.Seek = function(offset, whence) { return this.$val.Seek(offset, whence); };
-	Reader.ptr.prototype.WriteTo = function $blocking_WriteTo(w) {
+	Reader.ptr.prototype.WriteTo = function(w) {
 		var $ptr, _r, _tmp, _tmp$1, _tuple, b, err, m, n, r, w, x, x$1, x$2, x$3, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tuple = $f._tuple; b = $f.b; err = $f.err; m = $f.m; n = $f.n; r = $f.r; w = $f.w; x = $f.x; x$1 = $f.x$1; x$2 = $f.x$2; x$3 = $f.x$3; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		n = new $Int64(0, 0);
@@ -3973,18 +4010,19 @@ $packages["bytes"] = (function() {
 			err = io.ErrShortWrite;
 		}
 		return [n, err];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_WriteTo }; } $f.$ptr = $ptr; $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tuple = _tuple; $f.b = b; $f.err = err; $f.m = m; $f.n = n; $f.r = r; $f.w = w; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.x$3 = x$3; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Reader.ptr.prototype.WriteTo }; } $f.$ptr = $ptr; $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tuple = _tuple; $f.b = b; $f.err = err; $f.m = m; $f.n = n; $f.r = r; $f.w = w; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.x$3 = x$3; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Reader.prototype.WriteTo = function(w) { return this.$val.WriteTo(w); };
-	NewReader = $pkg.NewReader = function(b) {
+	NewReader = function(b) {
 		var $ptr, b;
 		return new Reader.ptr(b, new $Int64(0, 0), -1);
 	};
+	$pkg.NewReader = NewReader;
 	ptrType.methods = [{prop: "Bytes", name: "Bytes", pkg: "", typ: $funcType([], [sliceType], false)}, {prop: "String", name: "String", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Len", name: "Len", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Truncate", name: "Truncate", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Reset", name: "Reset", pkg: "", typ: $funcType([], [], false)}, {prop: "grow", name: "grow", pkg: "bytes", typ: $funcType([$Int], [$Int], false)}, {prop: "Grow", name: "Grow", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Write", name: "Write", pkg: "", typ: $funcType([sliceType], [$Int, $error], false)}, {prop: "WriteString", name: "WriteString", pkg: "", typ: $funcType([$String], [$Int, $error], false)}, {prop: "ReadFrom", name: "ReadFrom", pkg: "", typ: $funcType([io.Reader], [$Int64, $error], false)}, {prop: "WriteTo", name: "WriteTo", pkg: "", typ: $funcType([io.Writer], [$Int64, $error], false)}, {prop: "WriteByte", name: "WriteByte", pkg: "", typ: $funcType([$Uint8], [$error], false)}, {prop: "WriteRune", name: "WriteRune", pkg: "", typ: $funcType([$Int32], [$Int, $error], false)}, {prop: "Read", name: "Read", pkg: "", typ: $funcType([sliceType], [$Int, $error], false)}, {prop: "Next", name: "Next", pkg: "", typ: $funcType([$Int], [sliceType], false)}, {prop: "ReadByte", name: "ReadByte", pkg: "", typ: $funcType([], [$Uint8, $error], false)}, {prop: "ReadRune", name: "ReadRune", pkg: "", typ: $funcType([], [$Int32, $Int, $error], false)}, {prop: "UnreadRune", name: "UnreadRune", pkg: "", typ: $funcType([], [$error], false)}, {prop: "UnreadByte", name: "UnreadByte", pkg: "", typ: $funcType([], [$error], false)}, {prop: "ReadBytes", name: "ReadBytes", pkg: "", typ: $funcType([$Uint8], [sliceType, $error], false)}, {prop: "readSlice", name: "readSlice", pkg: "bytes", typ: $funcType([$Uint8], [sliceType, $error], false)}, {prop: "ReadString", name: "ReadString", pkg: "", typ: $funcType([$Uint8], [$String, $error], false)}];
 	ptrType$1.methods = [{prop: "Len", name: "Len", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Read", name: "Read", pkg: "", typ: $funcType([sliceType], [$Int, $error], false)}, {prop: "ReadAt", name: "ReadAt", pkg: "", typ: $funcType([sliceType, $Int64], [$Int, $error], false)}, {prop: "ReadByte", name: "ReadByte", pkg: "", typ: $funcType([], [$Uint8, $error], false)}, {prop: "UnreadByte", name: "UnreadByte", pkg: "", typ: $funcType([], [$error], false)}, {prop: "ReadRune", name: "ReadRune", pkg: "", typ: $funcType([], [$Int32, $Int, $error], false)}, {prop: "UnreadRune", name: "UnreadRune", pkg: "", typ: $funcType([], [$error], false)}, {prop: "Seek", name: "Seek", pkg: "", typ: $funcType([$Int64, $Int], [$Int64, $error], false)}, {prop: "WriteTo", name: "WriteTo", pkg: "", typ: $funcType([io.Writer], [$Int64, $error], false)}];
 	Buffer.init([{prop: "buf", name: "buf", pkg: "bytes", typ: sliceType, tag: ""}, {prop: "off", name: "off", pkg: "bytes", typ: $Int, tag: ""}, {prop: "runeBytes", name: "runeBytes", pkg: "bytes", typ: arrayType, tag: ""}, {prop: "bootstrap", name: "bootstrap", pkg: "bytes", typ: arrayType$1, tag: ""}, {prop: "lastRead", name: "lastRead", pkg: "bytes", typ: readOp, tag: ""}]);
 	Reader.init([{prop: "s", name: "s", pkg: "bytes", typ: sliceType, tag: ""}, {prop: "i", name: "i", pkg: "bytes", typ: $Int64, tag: ""}, {prop: "prevRune", name: "prevRune", pkg: "bytes", typ: $Int, tag: ""}]);
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = errors.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
@@ -3994,6 +4032,7 @@ $packages["bytes"] = (function() {
 		$pkg.ErrTooLarge = errors.New("bytes.Buffer: too large");
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["encoding"] = (function() {
@@ -4003,11 +4042,12 @@ $packages["encoding"] = (function() {
 	sliceType = $sliceType($Uint8);
 	TextMarshaler.init([{prop: "MarshalText", name: "MarshalText", pkg: "", typ: $funcType([], [sliceType, $error], false)}]);
 	TextUnmarshaler.init([{prop: "UnmarshalText", name: "UnmarshalText", pkg: "", typ: $funcType([sliceType], [$error], false)}]);
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["math"] = (function() {
@@ -4018,7 +4058,7 @@ $packages["math"] = (function() {
 	arrayType$2 = $arrayType($Float64, 1);
 	structType = $structType([{prop: "uint32array", name: "uint32array", pkg: "math", typ: arrayType, tag: ""}, {prop: "float32array", name: "float32array", pkg: "math", typ: arrayType$1, tag: ""}, {prop: "float64array", name: "float64array", pkg: "math", typ: arrayType$2, tag: ""}]);
 	arrayType$3 = $arrayType($Float64, 70);
-	Inf = $pkg.Inf = function(sign) {
+	Inf = function(sign) {
 		var $ptr, sign;
 		if (sign >= 0) {
 			return posInf;
@@ -4026,7 +4066,8 @@ $packages["math"] = (function() {
 			return negInf;
 		}
 	};
-	IsInf = $pkg.IsInf = function(f, sign) {
+	$pkg.Inf = Inf;
+	IsInf = function(f, sign) {
 		var $ptr, f, sign;
 		if (f === posInf) {
 			return sign >= 0;
@@ -4036,16 +4077,19 @@ $packages["math"] = (function() {
 		}
 		return false;
 	};
-	IsNaN = $pkg.IsNaN = function(f) {
+	$pkg.IsInf = IsInf;
+	IsNaN = function(f) {
 		var $ptr, f, is;
 		is = false;
 		is = !((f === f));
 		return is;
 	};
-	NaN = $pkg.NaN = function() {
+	$pkg.IsNaN = IsNaN;
+	NaN = function() {
 		var $ptr;
 		return nan;
 	};
+	$pkg.NaN = NaN;
 	init = function() {
 		var $ptr, ab;
 		ab = new ($global.ArrayBuffer)(8);
@@ -4053,27 +4097,31 @@ $packages["math"] = (function() {
 		buf.float32array = new ($global.Float32Array)(ab);
 		buf.float64array = new ($global.Float64Array)(ab);
 	};
-	Float32bits = $pkg.Float32bits = function(f) {
+	Float32bits = function(f) {
 		var $ptr, f;
 		buf.float32array[0] = f;
 		return buf.uint32array[0];
 	};
-	Float32frombits = $pkg.Float32frombits = function(b) {
+	$pkg.Float32bits = Float32bits;
+	Float32frombits = function(b) {
 		var $ptr, b;
 		buf.uint32array[0] = b;
 		return buf.float32array[0];
 	};
-	Float64bits = $pkg.Float64bits = function(f) {
+	$pkg.Float32frombits = Float32frombits;
+	Float64bits = function(f) {
 		var $ptr, f, x, x$1;
 		buf.float64array[0] = f;
 		return (x = $shiftLeft64(new $Uint64(0, buf.uint32array[1]), 32), x$1 = new $Uint64(0, buf.uint32array[0]), new $Uint64(x.$high + x$1.$high, x.$low + x$1.$low));
 	};
-	Float64frombits = $pkg.Float64frombits = function(b) {
+	$pkg.Float64bits = Float64bits;
+	Float64frombits = function(b) {
 		var $ptr, b;
 		buf.uint32array[0] = (b.$low >>> 0);
 		buf.uint32array[1] = ($shiftRightUint64(b, 32).$low >>> 0);
 		return buf.float64array[0];
 	};
+	$pkg.Float64frombits = Float64frombits;
 	init$1 = function() {
 		var $ptr, _q, i, m, x;
 		pow10tab[0] = 1;
@@ -4086,7 +4134,7 @@ $packages["math"] = (function() {
 			i = i + (1) >> 0;
 		}
 	};
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = js.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
@@ -4101,6 +4149,7 @@ $packages["math"] = (function() {
 		init$1();
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["strconv"] = (function() {
@@ -4678,7 +4727,7 @@ $packages["strconv"] = (function() {
 		_tmp$8 = f; _tmp$9 = err; f = _tmp$8; err = _tmp$9;
 		return [f, err];
 	};
-	ParseFloat = $pkg.ParseFloat = function(s, bitSize) {
+	ParseFloat = function(s, bitSize) {
 		var $ptr, _tmp, _tmp$1, _tmp$2, _tmp$3, _tuple, _tuple$1, bitSize, err, err1, err1$1, f, f1, f1$1, s;
 		f = 0;
 		err = $ifaceNil;
@@ -4691,13 +4740,14 @@ $packages["strconv"] = (function() {
 		_tmp$2 = f1$1; _tmp$3 = err1$1; f = _tmp$2; err = _tmp$3;
 		return [f, err];
 	};
-	NumError.ptr.prototype.Error = function $blocking_Error() {
+	$pkg.ParseFloat = ParseFloat;
+	NumError.ptr.prototype.Error = function() {
 		var $ptr, _r, e, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		e = this;
 		_r = e.Err.Error(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return "strconv." + e.Func + ": " + "parsing " + Quote(e.Num) + ": " + _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Error }; } $f.$ptr = $ptr; $f._r = _r; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: NumError.ptr.prototype.Error }; } $f.$ptr = $ptr; $f._r = _r; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	NumError.prototype.Error = function() { return this.$val.Error(); };
 	syntaxError = function(fn, str) {
@@ -4715,7 +4765,7 @@ $packages["strconv"] = (function() {
 		}
 		return (x = $div64(new $Uint64(4294967295, 4294967295), new $Uint64(0, base), false), new $Uint64(x.$high + 0, x.$low + 1));
 	};
-	ParseUint = $pkg.ParseUint = function(s, base, bitSize) {
+	ParseUint = function(s, base, bitSize) {
 		var $ptr, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, base, bitSize, cutoff, d, err, i, maxVal, n, n1, s, s0, v, x, x$1, $s;
 		/* */ $s = 0; s: while (true) { switch ($s) { case 0:
 		n = new $Uint64(0, 0);
@@ -4819,7 +4869,8 @@ $packages["strconv"] = (function() {
 		return [n, err];
 		/* */ $s = -1; case -1: } return; }
 	};
-	ParseInt = $pkg.ParseInt = function(s, base, bitSize) {
+	$pkg.ParseUint = ParseUint;
+	ParseInt = function(s, base, bitSize) {
 		var $ptr, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tmp$6, _tmp$7, _tmp$8, _tmp$9, _tuple, base, bitSize, cutoff, err, i, n, neg, s, s0, un, x, x$1;
 		i = new $Int64(0, 0);
 		err = $ifaceNil;
@@ -4862,6 +4913,7 @@ $packages["strconv"] = (function() {
 		_tmp$8 = n; _tmp$9 = $ifaceNil; i = _tmp$8; err = _tmp$9;
 		return [i, err];
 	};
+	$pkg.ParseInt = ParseInt;
 	decimal.ptr.prototype.String = function() {
 		var $ptr, a, buf, n, w;
 		a = this;
@@ -5597,14 +5649,16 @@ $packages["strconv"] = (function() {
 		}
 		return true;
 	};
-	FormatFloat = $pkg.FormatFloat = function(f, fmt, prec, bitSize) {
+	FormatFloat = function(f, fmt, prec, bitSize) {
 		var $ptr, bitSize, f, fmt, prec;
 		return $bytesToString(genericFtoa($makeSlice(sliceType$6, 0, max(prec + 4 >> 0, 24)), f, fmt, prec, bitSize));
 	};
-	AppendFloat = $pkg.AppendFloat = function(dst, f, fmt, prec, bitSize) {
+	$pkg.FormatFloat = FormatFloat;
+	AppendFloat = function(dst, f, fmt, prec, bitSize) {
 		var $ptr, bitSize, dst, f, fmt, prec;
 		return genericFtoa(dst, f, fmt, prec, bitSize);
 	};
+	$pkg.AppendFloat = AppendFloat;
 	genericFtoa = function(dst, val, fmt, prec, bitSize) {
 		var $ptr, _ref, _ref$1, _ref$2, _ref$3, _tuple, bitSize, bits, buf, buf$1, digits, digs, dst, exp, f, f$1, flt, fmt, lower, mant, neg, ok, prec, s, shortest, upper, val, x, x$1, x$2, x$3, y, y$1;
 		bits = new $Uint64(0, 0);
@@ -5947,25 +6001,29 @@ $packages["strconv"] = (function() {
 		}
 		return b;
 	};
-	FormatInt = $pkg.FormatInt = function(i, base) {
+	FormatInt = function(i, base) {
 		var $ptr, _tuple, base, i, s;
 		_tuple = formatBits(sliceType$6.nil, new $Uint64(i.$high, i.$low), base, (i.$high < 0 || (i.$high === 0 && i.$low < 0)), false); s = _tuple[1];
 		return s;
 	};
-	Itoa = $pkg.Itoa = function(i) {
+	$pkg.FormatInt = FormatInt;
+	Itoa = function(i) {
 		var $ptr, i;
 		return FormatInt(new $Int64(0, i), 10);
 	};
-	AppendInt = $pkg.AppendInt = function(dst, i, base) {
+	$pkg.Itoa = Itoa;
+	AppendInt = function(dst, i, base) {
 		var $ptr, _tuple, base, dst, i;
 		_tuple = formatBits(dst, new $Uint64(i.$high, i.$low), base, (i.$high < 0 || (i.$high === 0 && i.$low < 0)), true); dst = _tuple[0];
 		return dst;
 	};
-	AppendUint = $pkg.AppendUint = function(dst, i, base) {
+	$pkg.AppendInt = AppendInt;
+	AppendUint = function(dst, i, base) {
 		var $ptr, _tuple, base, dst, i;
 		_tuple = formatBits(dst, i, base, false, true); dst = _tuple[0];
 		return dst;
 	};
+	$pkg.AppendUint = AppendUint;
 	formatBits = function(dst, u, base, neg, append_) {
 		var $ptr, a, append_, b, b$1, base, d, dst, i, j, m, neg, q, q$1, s, s$1, u, x, x$1, x$2, x$3;
 		d = sliceType$6.nil;
@@ -6118,31 +6176,37 @@ $packages["strconv"] = (function() {
 		buf = $append(buf, quote);
 		return $bytesToString(buf);
 	};
-	Quote = $pkg.Quote = function(s) {
+	Quote = function(s) {
 		var $ptr, s;
 		return quoteWith(s, 34, false);
 	};
-	QuoteToASCII = $pkg.QuoteToASCII = function(s) {
+	$pkg.Quote = Quote;
+	QuoteToASCII = function(s) {
 		var $ptr, s;
 		return quoteWith(s, 34, true);
 	};
-	QuoteRune = $pkg.QuoteRune = function(r) {
+	$pkg.QuoteToASCII = QuoteToASCII;
+	QuoteRune = function(r) {
 		var $ptr, r;
 		return quoteWith($encodeRune(r), 39, false);
 	};
-	AppendQuoteRune = $pkg.AppendQuoteRune = function(dst, r) {
+	$pkg.QuoteRune = QuoteRune;
+	AppendQuoteRune = function(dst, r) {
 		var $ptr, dst, r;
 		return $appendSlice(dst, new sliceType$6($stringToBytes(QuoteRune(r))));
 	};
-	QuoteRuneToASCII = $pkg.QuoteRuneToASCII = function(r) {
+	$pkg.AppendQuoteRune = AppendQuoteRune;
+	QuoteRuneToASCII = function(r) {
 		var $ptr, r;
 		return quoteWith($encodeRune(r), 39, true);
 	};
-	AppendQuoteRuneToASCII = $pkg.AppendQuoteRuneToASCII = function(dst, r) {
+	$pkg.QuoteRuneToASCII = QuoteRuneToASCII;
+	AppendQuoteRuneToASCII = function(dst, r) {
 		var $ptr, dst, r;
 		return $appendSlice(dst, new sliceType$6($stringToBytes(QuoteRuneToASCII(r))));
 	};
-	CanBackquote = $pkg.CanBackquote = function(s) {
+	$pkg.AppendQuoteRuneToASCII = AppendQuoteRuneToASCII;
+	CanBackquote = function(s) {
 		var $ptr, _tuple, r, s, wid;
 		while (true) {
 			if (!(s.length > 0)) { break; }
@@ -6163,6 +6227,7 @@ $packages["strconv"] = (function() {
 		}
 		return true;
 	};
+	$pkg.CanBackquote = CanBackquote;
 	unhex = function(b) {
 		var $ptr, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, b, c, ok, v;
 		v = 0;
@@ -6180,7 +6245,7 @@ $packages["strconv"] = (function() {
 		}
 		return [v, ok];
 	};
-	UnquoteChar = $pkg.UnquoteChar = function(s, quote) {
+	UnquoteChar = function(s, quote) {
 		var $ptr, _ref, _ref$1, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tmp$6, _tmp$7, _tuple, _tuple$1, c, c$1, err, j, j$1, multibyte, n, ok, quote, r, s, size, tail, v, v$1, value, x, x$1;
 		value = 0;
 		multibyte = false;
@@ -6294,7 +6359,8 @@ $packages["strconv"] = (function() {
 		tail = s;
 		return [value, multibyte, tail, err];
 	};
-	Unquote = $pkg.Unquote = function(s) {
+	$pkg.UnquoteChar = UnquoteChar;
+	Unquote = function(s) {
 		var $ptr, _q, _ref, _tmp, _tmp$1, _tmp$10, _tmp$11, _tmp$12, _tmp$13, _tmp$14, _tmp$15, _tmp$16, _tmp$17, _tmp$18, _tmp$19, _tmp$2, _tmp$20, _tmp$21, _tmp$3, _tmp$4, _tmp$5, _tmp$6, _tmp$7, _tmp$8, _tmp$9, _tuple, _tuple$1, buf, c, err, err$1, multibyte, n, n$1, quote, r, runeTmp, s, size, ss, t;
 		t = "";
 		err = $ifaceNil;
@@ -6362,6 +6428,7 @@ $packages["strconv"] = (function() {
 		_tmp$20 = $bytesToString(buf); _tmp$21 = $ifaceNil; t = _tmp$20; err = _tmp$21;
 		return [t, err];
 	};
+	$pkg.Unquote = Unquote;
 	contains = function(s, c) {
 		var $ptr, c, i, s;
 		i = 0;
@@ -6402,7 +6469,7 @@ $packages["strconv"] = (function() {
 		}
 		return i;
 	};
-	IsPrint = $pkg.IsPrint = function(r) {
+	IsPrint = function(r) {
 		var $ptr, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, i, i$1, isNotPrint, isNotPrint$1, isPrint, isPrint$1, j, j$1, r, rr, rr$1, x, x$1, x$2, x$3;
 		if (r <= 255) {
 			if (32 <= r && r <= 126) {
@@ -6434,6 +6501,7 @@ $packages["strconv"] = (function() {
 		j$1 = bsearch16(isNotPrint$1, (r << 16 >>> 16));
 		return j$1 >= isNotPrint$1.$length || !((((j$1 < 0 || j$1 >= isNotPrint$1.$length) ? $throwRuntimeError("index out of range") : isNotPrint$1.$array[isNotPrint$1.$offset + j$1]) === (r << 16 >>> 16)));
 	};
+	$pkg.IsPrint = IsPrint;
 	ptrType.methods = [{prop: "Error", name: "Error", pkg: "", typ: $funcType([], [$String], false)}];
 	ptrType$2.methods = [{prop: "set", name: "set", pkg: "strconv", typ: $funcType([$String], [$Bool], false)}, {prop: "floatBits", name: "floatBits", pkg: "strconv", typ: $funcType([ptrType$1], [$Uint64, $Bool], false)}, {prop: "String", name: "String", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Assign", name: "Assign", pkg: "", typ: $funcType([$Uint64], [], false)}, {prop: "Shift", name: "Shift", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Round", name: "Round", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "RoundDown", name: "RoundDown", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "RoundUp", name: "RoundUp", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "RoundedInteger", name: "RoundedInteger", pkg: "", typ: $funcType([], [$Uint64], false)}];
 	ptrType$4.methods = [{prop: "floatBits", name: "floatBits", pkg: "strconv", typ: $funcType([ptrType$1], [$Uint64, $Bool], false)}, {prop: "AssignComputeBounds", name: "AssignComputeBounds", pkg: "", typ: $funcType([$Uint64, $Int, $Bool, ptrType$1], [extFloat, extFloat], false)}, {prop: "Normalize", name: "Normalize", pkg: "", typ: $funcType([], [$Uint], false)}, {prop: "Multiply", name: "Multiply", pkg: "", typ: $funcType([extFloat], [], false)}, {prop: "AssignDecimal", name: "AssignDecimal", pkg: "", typ: $funcType([$Uint64, $Int, $Bool, $Bool, ptrType$1], [$Bool], false)}, {prop: "frexp10", name: "frexp10", pkg: "strconv", typ: $funcType([], [$Int, $Int], false)}, {prop: "FixedDecimal", name: "FixedDecimal", pkg: "", typ: $funcType([ptrType$3, $Int], [$Bool], false)}, {prop: "ShortestDecimal", name: "ShortestDecimal", pkg: "", typ: $funcType([ptrType$3, ptrType$4, ptrType$4], [$Bool], false)}];
@@ -6443,7 +6511,7 @@ $packages["strconv"] = (function() {
 	extFloat.init([{prop: "mant", name: "mant", pkg: "strconv", typ: $Uint64, tag: ""}, {prop: "exp", name: "exp", pkg: "strconv", typ: $Int, tag: ""}, {prop: "neg", name: "neg", pkg: "strconv", typ: $Bool, tag: ""}]);
 	floatInfo.init([{prop: "mantbits", name: "mantbits", pkg: "strconv", typ: $Uint, tag: ""}, {prop: "expbits", name: "expbits", pkg: "strconv", typ: $Uint, tag: ""}, {prop: "bias", name: "bias", pkg: "strconv", typ: $Int, tag: ""}]);
 	decimalSlice.init([{prop: "d", name: "d", pkg: "strconv", typ: sliceType$6, tag: ""}, {prop: "nd", name: "nd", pkg: "strconv", typ: $Int, tag: ""}, {prop: "dp", name: "dp", pkg: "strconv", typ: $Int, tag: ""}, {prop: "neg", name: "neg", pkg: "strconv", typ: $Bool, tag: ""}]);
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = errors.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
@@ -6468,6 +6536,7 @@ $packages["strconv"] = (function() {
 		shifts = $toNativeArray($kindUint, [0, 0, 1, 0, 2, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0]);
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["strings"] = (function() {
@@ -6492,10 +6561,11 @@ $packages["strings"] = (function() {
 	sliceType = $sliceType($Uint8);
 	sliceType$3 = $sliceType($String);
 	ptrType$5 = $ptrType(Reader);
-	IndexByte = $pkg.IndexByte = function(s, c) {
+	IndexByte = function(s, c) {
 		var $ptr, c, s;
 		return $parseInt(s.indexOf($global.String.fromCharCode(c))) >> 0;
 	};
+	$pkg.IndexByte = IndexByte;
 	Reader.ptr.prototype.Len = function() {
 		var $ptr, r, x, x$1, x$2, x$3, x$4;
 		r = this;
@@ -6626,7 +6696,7 @@ $packages["strings"] = (function() {
 		return [abs, $ifaceNil];
 	};
 	Reader.prototype.Seek = function(offset, whence) { return this.$val.Seek(offset, whence); };
-	Reader.ptr.prototype.WriteTo = function $blocking_WriteTo(w) {
+	Reader.ptr.prototype.WriteTo = function(w) {
 		var $ptr, _r, _tmp, _tmp$1, _tuple, err, m, n, r, s, w, x, x$1, x$2, x$3, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tuple = $f._tuple; err = $f.err; m = $f.m; n = $f.n; r = $f.r; s = $f.s; w = $f.w; x = $f.x; x$1 = $f.x$1; x$2 = $f.x$2; x$3 = $f.x$3; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		n = new $Int64(0, 0);
@@ -6649,13 +6719,14 @@ $packages["strings"] = (function() {
 			err = io.ErrShortWrite;
 		}
 		return [n, err];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_WriteTo }; } $f.$ptr = $ptr; $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tuple = _tuple; $f.err = err; $f.m = m; $f.n = n; $f.r = r; $f.s = s; $f.w = w; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.x$3 = x$3; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Reader.ptr.prototype.WriteTo }; } $f.$ptr = $ptr; $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tuple = _tuple; $f.err = err; $f.m = m; $f.n = n; $f.r = r; $f.s = s; $f.w = w; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.x$3 = x$3; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Reader.prototype.WriteTo = function(w) { return this.$val.WriteTo(w); };
-	NewReader = $pkg.NewReader = function(s) {
+	NewReader = function(s) {
 		var $ptr, s;
 		return new Reader.ptr(s, new $Int64(0, 0), -1);
 	};
+	$pkg.NewReader = NewReader;
 	explode = function(s, n) {
 		var $ptr, _tmp, _tmp$1, _tuple, a, ch, cur, i, l, n, s, size;
 		if (n === 0) {
@@ -6727,7 +6798,7 @@ $packages["strings"] = (function() {
 		}
 		return [hash, pow];
 	};
-	Count = $pkg.Count = function(s, sep) {
+	Count = function(s, sep) {
 		var $ptr, _tuple, c, h, hashsep, i, i$1, i$2, lastmatch, n, pow, s, sep, x, x$1;
 		n = 0;
 		if (sep.length === 0) {
@@ -6778,11 +6849,13 @@ $packages["strings"] = (function() {
 		}
 		return n;
 	};
-	ContainsRune = $pkg.ContainsRune = function(s, r) {
+	$pkg.Count = Count;
+	ContainsRune = function(s, r) {
 		var $ptr, r, s;
 		return IndexRune(s, r) >= 0;
 	};
-	Index = $pkg.Index = function(s, sep) {
+	$pkg.ContainsRune = ContainsRune;
+	Index = function(s, sep) {
 		var $ptr, _tuple, h, hashsep, i, i$1, n, pow, s, sep, x, x$1;
 		n = sep.length;
 		if (n === 0) {
@@ -6821,7 +6894,8 @@ $packages["strings"] = (function() {
 		}
 		return -1;
 	};
-	LastIndex = $pkg.LastIndex = function(s, sep) {
+	$pkg.Index = Index;
+	LastIndex = function(s, sep) {
 		var $ptr, _tuple, c, h, hashsep, i, i$1, i$2, last, n, pow, s, sep, x, x$1;
 		n = sep.length;
 		if (n === 0) {
@@ -6870,7 +6944,8 @@ $packages["strings"] = (function() {
 		}
 		return -1;
 	};
-	IndexRune = $pkg.IndexRune = function(s, r) {
+	$pkg.LastIndex = LastIndex;
+	IndexRune = function(s, r) {
 		var $ptr, _i, _ref, _rune, c, i, r, s;
 		if (r < 128) {
 			return IndexByte(s, (r << 24 >>> 24));
@@ -6890,6 +6965,7 @@ $packages["strings"] = (function() {
 		}
 		return -1;
 	};
+	$pkg.IndexRune = IndexRune;
 	genSplit = function(s, sep, sepSave, n) {
 		var $ptr, a, c, i, n, na, s, sep, sepSave, start;
 		if (n === 0) {
@@ -6919,11 +6995,12 @@ $packages["strings"] = (function() {
 		((na < 0 || na >= a.$length) ? $throwRuntimeError("index out of range") : a.$array[a.$offset + na] = s.substring(start));
 		return $subslice(a, 0, (na + 1 >> 0));
 	};
-	Split = $pkg.Split = function(s, sep) {
+	Split = function(s, sep) {
 		var $ptr, s, sep;
 		return genSplit(s, sep, 0, -1);
 	};
-	Join = $pkg.Join = function(a, sep) {
+	$pkg.Split = Split;
+	Join = function(a, sep) {
 		var $ptr, _i, _ref, a, b, bp, i, n, s, sep;
 		if (a.$length === 0) {
 			return "";
@@ -6951,11 +7028,13 @@ $packages["strings"] = (function() {
 		}
 		return $bytesToString(b);
 	};
-	HasPrefix = $pkg.HasPrefix = function(s, prefix) {
+	$pkg.Join = Join;
+	HasPrefix = function(s, prefix) {
 		var $ptr, prefix, s;
 		return s.length >= prefix.length && s.substring(0, prefix.length) === prefix;
 	};
-	Map = $pkg.Map = function $blocking_Map(mapping, s) {
+	$pkg.HasPrefix = HasPrefix;
+	Map = function(mapping, s) {
 		var $ptr, _i, _r, _ref, _rune, b, c, i, mapping, maxbytes, nb, nbytes, r, s, wid, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _ref = $f._ref; _rune = $f._rune; b = $f.b; c = $f.c; i = $f.i; mapping = $f.mapping; maxbytes = $f.maxbytes; nb = $f.nb; nbytes = $f.nbytes; r = $f.r; s = $f.s; wid = $f.wid; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		maxbytes = s.length;
@@ -6997,9 +7076,10 @@ $packages["strings"] = (function() {
 			return s;
 		}
 		return $bytesToString($subslice(b, 0, nbytes));
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Map }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f._rune = _rune; $f.b = b; $f.c = c; $f.i = i; $f.mapping = mapping; $f.maxbytes = maxbytes; $f.nb = nb; $f.nbytes = nbytes; $f.r = r; $f.s = s; $f.wid = wid; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Map }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f._rune = _rune; $f.b = b; $f.c = c; $f.i = i; $f.mapping = mapping; $f.maxbytes = maxbytes; $f.nb = nb; $f.nbytes = nbytes; $f.r = r; $f.s = s; $f.wid = wid; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	TrimLeftFunc = $pkg.TrimLeftFunc = function $blocking_TrimLeftFunc(s, f) {
+	$pkg.Map = Map;
+	TrimLeftFunc = function(s, f) {
 		var $ptr, _r, f, i, s, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; f = $f.f; i = $f.i; s = $f.s; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = indexFunc(s, f, false); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
@@ -7008,9 +7088,10 @@ $packages["strings"] = (function() {
 			return "";
 		}
 		return s.substring(i);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_TrimLeftFunc }; } $f.$ptr = $ptr; $f._r = _r; $f.f = f; $f.i = i; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: TrimLeftFunc }; } $f.$ptr = $ptr; $f._r = _r; $f.f = f; $f.i = i; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	TrimRightFunc = $pkg.TrimRightFunc = function $blocking_TrimRightFunc(s, f) {
+	$pkg.TrimLeftFunc = TrimLeftFunc;
+	TrimRightFunc = function(s, f) {
 		var $ptr, _r, _tuple, f, i, s, wid, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _tuple = $f._tuple; f = $f.f; i = $f.i; s = $f.s; wid = $f.wid; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = lastIndexFunc(s, f, false); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
@@ -7022,17 +7103,19 @@ $packages["strings"] = (function() {
 			i = i + (1) >> 0;
 		}
 		return s.substring(0, i);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_TrimRightFunc }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.f = f; $f.i = i; $f.s = s; $f.wid = wid; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: TrimRightFunc }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.f = f; $f.i = i; $f.s = s; $f.wid = wid; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	TrimFunc = $pkg.TrimFunc = function $blocking_TrimFunc(s, f) {
+	$pkg.TrimRightFunc = TrimRightFunc;
+	TrimFunc = function(s, f) {
 		var $ptr, _r, _r$1, f, s, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; f = $f.f; s = $f.s; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = TrimLeftFunc(s, f); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_r$1 = TrimRightFunc(_r, f); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		return _r$1;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_TrimFunc }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.f = f; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: TrimFunc }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.f = f; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	indexFunc = function $blocking_indexFunc(s, f, truth) {
+	$pkg.TrimFunc = TrimFunc;
+	indexFunc = function(s, f, truth) {
 		var $ptr, _r, _tuple, f, r, s, start, truth, wid, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _tuple = $f._tuple; f = $f.f; r = $f.r; s = $f.s; start = $f.start; truth = $f.truth; wid = $f.wid; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		start = 0;
@@ -7052,9 +7135,9 @@ $packages["strings"] = (function() {
 			start = start + (wid) >> 0;
 		/* } */ $s = 1; continue; case 2:
 		return -1;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_indexFunc }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.f = f; $f.r = r; $f.s = s; $f.start = start; $f.truth = truth; $f.wid = wid; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: indexFunc }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.f = f; $f.r = r; $f.s = s; $f.start = start; $f.truth = truth; $f.wid = wid; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	lastIndexFunc = function $blocking_lastIndexFunc(s, f, truth) {
+	lastIndexFunc = function(s, f, truth) {
 		var $ptr, _r, _tuple, f, i, r, s, size, truth, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _tuple = $f._tuple; f = $f.f; i = $f.i; r = $f.r; s = $f.s; size = $f.size; truth = $f.truth; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		i = s.length;
@@ -7070,18 +7153,19 @@ $packages["strings"] = (function() {
 			/* } */ case 4:
 		/* } */ $s = 1; continue; case 2:
 		return -1;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_lastIndexFunc }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.f = f; $f.i = i; $f.r = r; $f.s = s; $f.size = size; $f.truth = truth; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: lastIndexFunc }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.f = f; $f.i = i; $f.r = r; $f.s = s; $f.size = size; $f.truth = truth; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	TrimSpace = $pkg.TrimSpace = function $blocking_TrimSpace(s) {
+	TrimSpace = function(s) {
 		var $ptr, _r, s, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; s = $f.s; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = TrimFunc(s, unicode.IsSpace); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_TrimSpace }; } $f.$ptr = $ptr; $f._r = _r; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: TrimSpace }; } $f.$ptr = $ptr; $f._r = _r; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.TrimSpace = TrimSpace;
 	ptrType$5.methods = [{prop: "Len", name: "Len", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Read", name: "Read", pkg: "", typ: $funcType([sliceType], [$Int, $error], false)}, {prop: "ReadAt", name: "ReadAt", pkg: "", typ: $funcType([sliceType, $Int64], [$Int, $error], false)}, {prop: "ReadByte", name: "ReadByte", pkg: "", typ: $funcType([], [$Uint8, $error], false)}, {prop: "UnreadByte", name: "UnreadByte", pkg: "", typ: $funcType([], [$error], false)}, {prop: "ReadRune", name: "ReadRune", pkg: "", typ: $funcType([], [$Int32, $Int, $error], false)}, {prop: "UnreadRune", name: "UnreadRune", pkg: "", typ: $funcType([], [$error], false)}, {prop: "Seek", name: "Seek", pkg: "", typ: $funcType([$Int64, $Int], [$Int64, $error], false)}, {prop: "WriteTo", name: "WriteTo", pkg: "", typ: $funcType([io.Writer], [$Int64, $error], false)}];
 	Reader.init([{prop: "s", name: "s", pkg: "strings", typ: $String, tag: ""}, {prop: "i", name: "i", pkg: "strings", typ: $Int64, tag: ""}, {prop: "prevRune", name: "prevRune", pkg: "strings", typ: $Int, tag: ""}]);
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = errors.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
@@ -7091,6 +7175,7 @@ $packages["strings"] = (function() {
 		$r = utf8.$init(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["encoding/base64"] = (function() {
@@ -7135,7 +7220,7 @@ $packages["encoding/base64"] = (function() {
 	arrayType$2 = $arrayType($Uint8, 4);
 	arrayType$4 = $arrayType($Uint8, 256);
 	ptrType$1 = $ptrType(encoder);
-	NewEncoding = $pkg.NewEncoding = function(encoder$1) {
+	NewEncoding = function(encoder$1) {
 		var $ptr, e, encoder$1, i, i$1, x, x$1, x$2;
 		e = new Encoding.ptr();
 		e.encode = encoder$1;
@@ -7153,6 +7238,7 @@ $packages["encoding/base64"] = (function() {
 		}
 		return e;
 	};
+	$pkg.NewEncoding = NewEncoding;
 	Encoding.ptr.prototype.Encode = function(dst, src) {
 		var $ptr, _ref, _tmp, _tmp$1, _tmp$2, _tmp$3, b0, b1, b2, b3, dst, enc, src;
 		enc = this;
@@ -7203,7 +7289,7 @@ $packages["encoding/base64"] = (function() {
 		return $bytesToString(buf);
 	};
 	Encoding.prototype.EncodeToString = function(src) { return this.$val.EncodeToString(src); };
-	encoder.ptr.prototype.Write = function $blocking_Write(p) {
+	encoder.ptr.prototype.Write = function(p) {
 		var $ptr, _q, _r, _r$1, _r$2, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tuple, _tuple$1, e, err, i, i$1, n, nn, p, x, x$1, x$2, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _q = $f._q; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; _tmp$4 = $f._tmp$4; _tmp$5 = $f._tmp$5; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; e = $f.e; err = $f.err; i = $f.i; i$1 = $f.i$1; n = $f.n; nn = $f.nn; p = $f.p; x = $f.x; x$1 = $f.x$1; x$2 = $f.x$2; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		n = 0;
@@ -7268,10 +7354,10 @@ $packages["encoding/base64"] = (function() {
 		e.nbuf = p.$length;
 		n = n + (p.$length) >> 0;
 		return [n, err];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Write }; } $f.$ptr = $ptr; $f._q = _q; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tmp$4 = _tmp$4; $f._tmp$5 = _tmp$5; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f.e = e; $f.err = err; $f.i = i; $f.i$1 = i$1; $f.n = n; $f.nn = nn; $f.p = p; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: encoder.ptr.prototype.Write }; } $f.$ptr = $ptr; $f._q = _q; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tmp$4 = _tmp$4; $f._tmp$5 = _tmp$5; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f.e = e; $f.err = err; $f.i = i; $f.i$1 = i$1; $f.n = n; $f.nn = nn; $f.p = p; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	encoder.prototype.Write = function(p) { return this.$val.Write(p); };
-	encoder.ptr.prototype.Close = function $blocking_Close() {
+	encoder.ptr.prototype.Close = function() {
 		var $ptr, _r, _tuple, e, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _tuple = $f._tuple; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		e = this;
@@ -7284,13 +7370,14 @@ $packages["encoding/base64"] = (function() {
 			_tuple = _r; e.err = _tuple[1];
 		/* } */ case 2:
 		return e.err;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Close }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: encoder.ptr.prototype.Close }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	encoder.prototype.Close = function() { return this.$val.Close(); };
-	NewEncoder = $pkg.NewEncoder = function(enc, w) {
+	NewEncoder = function(enc, w) {
 		var $ptr, enc, w;
 		return new encoder.ptr($ifaceNil, enc, w, arrayType.zero(), 0, arrayType$1.zero());
 	};
+	$pkg.NewEncoder = NewEncoder;
 	Encoding.ptr.prototype.EncodedLen = function(n) {
 		var $ptr, _q, enc, n;
 		enc = this;
@@ -7372,7 +7459,7 @@ $packages["encoding/base64"] = (function() {
 		return [n, end, err];
 	};
 	Encoding.prototype.decode = function(dst, src) { return this.$val.decode(dst, src); };
-	Encoding.ptr.prototype.Decode = function $blocking_Decode(dst, src) {
+	Encoding.ptr.prototype.Decode = function(dst, src) {
 		var $ptr, _r, _tuple, dst, enc, err, n, src, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _tuple = $f._tuple; dst = $f.dst; enc = $f.enc; err = $f.err; n = $f.n; src = $f.src; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		n = 0;
@@ -7382,10 +7469,10 @@ $packages["encoding/base64"] = (function() {
 		src = _r;
 		_tuple = enc.decode(dst, src); n = _tuple[0]; err = _tuple[2];
 		return [n, err];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Decode }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.dst = dst; $f.enc = enc; $f.err = err; $f.n = n; $f.src = src; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Encoding.ptr.prototype.Decode }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.dst = dst; $f.enc = enc; $f.err = err; $f.n = n; $f.src = src; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Encoding.prototype.Decode = function(dst, src) { return this.$val.Decode(dst, src); };
-	Encoding.ptr.prototype.DecodeString = function $blocking_DecodeString(s) {
+	Encoding.ptr.prototype.DecodeString = function(s) {
 		var $ptr, _r, _tuple, dbuf, enc, err, n, s, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _tuple = $f._tuple; dbuf = $f.dbuf; enc = $f.enc; err = $f.err; n = $f.n; s = $f.s; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		enc = this;
@@ -7394,7 +7481,7 @@ $packages["encoding/base64"] = (function() {
 		dbuf = $makeSlice(sliceType, enc.DecodedLen(s.length));
 		_tuple = enc.decode(dbuf, new sliceType($stringToBytes(s))); n = _tuple[0]; err = _tuple[2];
 		return [$subslice(dbuf, 0, n), err];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_DecodeString }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.dbuf = dbuf; $f.enc = enc; $f.err = err; $f.n = n; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Encoding.ptr.prototype.DecodeString }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.dbuf = dbuf; $f.enc = enc; $f.err = err; $f.n = n; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Encoding.prototype.DecodeString = function(s) { return this.$val.DecodeString(s); };
 	Encoding.ptr.prototype.DecodedLen = function(n) {
@@ -7408,7 +7495,7 @@ $packages["encoding/base64"] = (function() {
 	CorruptInputError.methods = [{prop: "Error", name: "Error", pkg: "", typ: $funcType([], [$String], false)}];
 	Encoding.init([{prop: "encode", name: "encode", pkg: "encoding/base64", typ: $String, tag: ""}, {prop: "decodeMap", name: "decodeMap", pkg: "encoding/base64", typ: arrayType$4, tag: ""}]);
 	encoder.init([{prop: "err", name: "err", pkg: "encoding/base64", typ: $error, tag: ""}, {prop: "enc", name: "enc", pkg: "encoding/base64", typ: ptrType, tag: ""}, {prop: "w", name: "w", pkg: "encoding/base64", typ: io.Writer, tag: ""}, {prop: "buf", name: "buf", pkg: "encoding/base64", typ: arrayType, tag: ""}, {prop: "nbuf", name: "nbuf", pkg: "encoding/base64", typ: $Int, tag: ""}, {prop: "out", name: "out", pkg: "encoding/base64", typ: arrayType$1, tag: ""}]);
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = bytes.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
@@ -7426,6 +7513,7 @@ $packages["encoding/base64"] = (function() {
 		});
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["syscall"] = (function() {
@@ -7618,7 +7706,7 @@ $packages["syscall"] = (function() {
 		return syscallModule[$externalize(name, $String)];
 		/* */ } catch(err) { $err = err; return null; } finally { $callDeferred($deferred, $err); }
 	};
-	Syscall = $pkg.Syscall = function(trap, a1, a2, a3) {
+	Syscall = function(trap, a1, a2, a3) {
 		var $ptr, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tmp$6, _tmp$7, _tmp$8, a1, a2, a3, array, err, f, r, r1, r2, slice, trap;
 		r1 = 0;
 		r2 = 0;
@@ -7641,7 +7729,8 @@ $packages["syscall"] = (function() {
 		_tmp$6 = (minusOne >>> 0); _tmp$7 = 0; _tmp$8 = 13; r1 = _tmp$6; r2 = _tmp$7; err = _tmp$8;
 		return [r1, r2, err];
 	};
-	Syscall6 = $pkg.Syscall6 = function(trap, a1, a2, a3, a4, a5, a6) {
+	$pkg.Syscall = Syscall;
+	Syscall6 = function(trap, a1, a2, a3, a4, a5, a6) {
 		var $ptr, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, a1, a2, a3, a4, a5, a6, err, f, r, r1, r2, trap;
 		r1 = 0;
 		r2 = 0;
@@ -7658,7 +7747,8 @@ $packages["syscall"] = (function() {
 		_tmp$3 = (minusOne >>> 0); _tmp$4 = 0; _tmp$5 = 13; r1 = _tmp$3; r2 = _tmp$4; err = _tmp$5;
 		return [r1, r2, err];
 	};
-	BytePtrFromString = $pkg.BytePtrFromString = function(s) {
+	$pkg.Syscall6 = Syscall6;
+	BytePtrFromString = function(s) {
 		var $ptr, _i, _ref, array, b, i, s;
 		array = new ($global.Uint8Array)(s.length + 1 >> 0);
 		_ref = new sliceType($stringToBytes(s));
@@ -7676,6 +7766,7 @@ $packages["syscall"] = (function() {
 		array[s.length] = 0;
 		return [array, $ifaceNil];
 	};
+	$pkg.BytePtrFromString = BytePtrFromString;
 	copyenv = function() {
 		var $ptr, _entry, _i, _key, _ref, _tuple, i, j, key, ok, s;
 		env = new $Map();
@@ -7703,7 +7794,7 @@ $packages["syscall"] = (function() {
 			_i++;
 		}
 	};
-	Getenv = $pkg.Getenv = function $blocking_Getenv(key) {
+	Getenv = function(key) {
 		var $ptr, _entry, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tmp$6, _tmp$7, _tuple, found, i, i$1, key, ok, s, value, $s, $deferred, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; _tmp$4 = $f._tmp$4; _tmp$5 = $f._tmp$5; _tmp$6 = $f._tmp$6; _tmp$7 = $f._tmp$7; _tuple = $f._tuple; found = $f.found; i = $f.i; i$1 = $f.i$1; key = $f.key; ok = $f.ok; s = $f.s; value = $f.value; $s = $f.$s; $deferred = $f.$deferred; $r = $f.$r; } var $err = null; try { s: while (true) { switch ($s) { case 0: $deferred = []; $deferred.index = $curGoroutine.deferStack.length; $curGoroutine.deferStack.push($deferred);
 		value = "";
@@ -7732,8 +7823,9 @@ $packages["syscall"] = (function() {
 		}
 		_tmp$6 = ""; _tmp$7 = false; value = _tmp$6; found = _tmp$7;
 		return [value, found];
-		/* */ $s = -1; case -1: } return; } } catch(err) { $err = err; $s = -1; } finally { $callDeferred($deferred, $err); if (!$curGoroutine.asleep) { return  [value, found]; } if($curGoroutine.asleep) { if ($f === undefined) { $f = { $blk: $blocking_Getenv }; } $f.$ptr = $ptr; $f._entry = _entry; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tmp$4 = _tmp$4; $f._tmp$5 = _tmp$5; $f._tmp$6 = _tmp$6; $f._tmp$7 = _tmp$7; $f._tuple = _tuple; $f.found = found; $f.i = i; $f.i$1 = i$1; $f.key = key; $f.ok = ok; $f.s = s; $f.value = value; $f.$s = $s; $f.$deferred = $deferred; $f.$r = $r; return $f; } }
+		/* */ $s = -1; case -1: } return; } } catch(err) { $err = err; $s = -1; } finally { $callDeferred($deferred, $err); if (!$curGoroutine.asleep) { return  [value, found]; } if($curGoroutine.asleep) { if ($f === undefined) { $f = { $blk: Getenv }; } $f.$ptr = $ptr; $f._entry = _entry; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tmp$4 = _tmp$4; $f._tmp$5 = _tmp$5; $f._tmp$6 = _tmp$6; $f._tmp$7 = _tmp$7; $f._tuple = _tuple; $f.found = found; $f.i = i; $f.i$1 = i$1; $f.key = key; $f.ok = ok; $f.s = s; $f.value = value; $f.$s = $s; $f.$deferred = $deferred; $f.$r = $r; return $f; } }
 	};
+	$pkg.Getenv = Getenv;
 	itoa = function(val) {
 		var $ptr, val;
 		if (val < 0) {
@@ -7754,7 +7846,7 @@ $packages["syscall"] = (function() {
 		((i < 0 || i >= buf.length) ? $throwRuntimeError("index out of range") : buf[i] = ((val + 48 >>> 0) << 24 >>> 24));
 		return $bytesToString($subslice(new sliceType(buf), i));
 	};
-	ByteSliceFromString = $pkg.ByteSliceFromString = function(s) {
+	ByteSliceFromString = function(s) {
 		var $ptr, a, i, s;
 		i = 0;
 		while (true) {
@@ -7768,6 +7860,7 @@ $packages["syscall"] = (function() {
 		$copyString(a, s);
 		return [a, $ifaceNil];
 	};
+	$pkg.ByteSliceFromString = ByteSliceFromString;
 	Timespec.ptr.prototype.Unix = function() {
 		var $ptr, _tmp, _tmp$1, nsec, sec, ts;
 		sec = new $Int64(0, 0);
@@ -7783,7 +7876,7 @@ $packages["syscall"] = (function() {
 		return (x = $mul64(ts.Sec, new $Int64(0, 1000000000)), x$1 = ts.Nsec, new $Int64(x.$high + x$1.$high, x.$low + x$1.$low));
 	};
 	Timespec.prototype.Nano = function() { return this.$val.Nano(); };
-	ReadDirent = $pkg.ReadDirent = function(fd, buf) {
+	ReadDirent = function(fd, buf) {
 		var $ptr, _tuple, base, buf, err, fd, n;
 		n = 0;
 		err = $ifaceNil;
@@ -7794,7 +7887,8 @@ $packages["syscall"] = (function() {
 		}
 		return [n, err];
 	};
-	Sysctl = $pkg.Sysctl = function(name) {
+	$pkg.ReadDirent = ReadDirent;
+	Sysctl = function(name) {
 		var $ptr, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tmp$6, _tmp$7, _tmp$8, _tmp$9, _tuple, buf, err, mib, n, n_ptr, name, value, x;
 		value = "";
 		err = $ifaceNil;
@@ -7825,6 +7919,7 @@ $packages["syscall"] = (function() {
 		_tmp$8 = $bytesToString($subslice(buf, 0, n)); _tmp$9 = $ifaceNil; value = _tmp$8; err = _tmp$9;
 		return [value, err];
 	};
+	$pkg.Sysctl = Sysctl;
 	nametomib = function(name) {
 		var $ptr, _q, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tuple, buf, bytes$1, err, mib, n, n_ptr, name, p;
 		mib = sliceType$4.nil;
@@ -7845,7 +7940,7 @@ $packages["syscall"] = (function() {
 		_tmp$4 = $subslice(new sliceType$4(buf), 0, (_q = n / 4, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >>> 0 : $throwRuntimeError("integer divide by zero"))); _tmp$5 = $ifaceNil; mib = _tmp$4; err = _tmp$5;
 		return [mib, err];
 	};
-	ParseDirent = $pkg.ParseDirent = function(buf, max, names) {
+	ParseDirent = function(buf, max, names) {
 		var $ptr, _array, _struct, _tmp, _tmp$1, _tmp$2, _view, buf, bytes$1, consumed, count, dirent, max, name, names, newnames, origlen, x;
 		consumed = 0;
 		count = 0;
@@ -7874,9 +7969,11 @@ $packages["syscall"] = (function() {
 		_tmp = origlen - buf.$length >> 0; _tmp$1 = count; _tmp$2 = names; consumed = _tmp; count = _tmp$1; newnames = _tmp$2;
 		return [consumed, count, newnames];
 	};
-	mmapper.ptr.prototype.Mmap = function $blocking_Mmap(fd, offset, length, prot, flags) {
+	$pkg.ParseDirent = ParseDirent;
+	mmapper.ptr.prototype.Mmap = function(fd, offset, length, prot, flags) {
 		var $ptr, _key, _r, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tuple, addr, b, data, err, errno, fd, flags, length, m, offset, p, prot, sl, $s, $deferred, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _key = $f._key; _r = $f._r; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; _tmp$4 = $f._tmp$4; _tmp$5 = $f._tmp$5; _tuple = $f._tuple; addr = $f.addr; b = $f.b; data = $f.data; err = $f.err; errno = $f.errno; fd = $f.fd; flags = $f.flags; length = $f.length; m = $f.m; offset = $f.offset; p = $f.p; prot = $f.prot; sl = $f.sl; $s = $f.$s; $deferred = $f.$deferred; $r = $f.$r; } var $err = null; try { s: while (true) { switch ($s) { case 0: $deferred = []; $deferred.index = $curGoroutine.deferStack.length; $curGoroutine.deferStack.push($deferred);
+		sl = [sl];
 		data = sliceType.nil;
 		err = $ifaceNil;
 		m = this;
@@ -7890,18 +7987,18 @@ $packages["syscall"] = (function() {
 			_tmp$2 = sliceType.nil; _tmp$3 = errno; data = _tmp$2; err = _tmp$3;
 			return [data, err];
 		}
-		sl = new structType.ptr(addr, length, length);
-		b = sl;
+		sl[0] = new structType.ptr(addr, length, length);
+		b = sl[0];
 		p = $indexPtr(b.$array, b.$offset + (b.$capacity - 1 >> 0), ptrType);
 		$r = m.Mutex.Lock(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$deferred.push([$methodVal(m.Mutex, "Unlock"), []]);
 		_key = p; (m.active || $throwRuntimeError("assignment to entry in nil map"))[_key.$key()] = { k: _key, v: b };
 		_tmp$4 = b; _tmp$5 = $ifaceNil; data = _tmp$4; err = _tmp$5;
 		return [data, err];
-		/* */ $s = -1; case -1: } return; } } catch(err) { $err = err; $s = -1; } finally { $callDeferred($deferred, $err); if (!$curGoroutine.asleep) { return  [data, err]; } if($curGoroutine.asleep) { if ($f === undefined) { $f = { $blk: $blocking_Mmap }; } $f.$ptr = $ptr; $f._key = _key; $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tmp$4 = _tmp$4; $f._tmp$5 = _tmp$5; $f._tuple = _tuple; $f.addr = addr; $f.b = b; $f.data = data; $f.err = err; $f.errno = errno; $f.fd = fd; $f.flags = flags; $f.length = length; $f.m = m; $f.offset = offset; $f.p = p; $f.prot = prot; $f.sl = sl; $f.$s = $s; $f.$deferred = $deferred; $f.$r = $r; return $f; } }
+		/* */ $s = -1; case -1: } return; } } catch(err) { $err = err; $s = -1; } finally { $callDeferred($deferred, $err); if (!$curGoroutine.asleep) { return  [data, err]; } if($curGoroutine.asleep) { if ($f === undefined) { $f = { $blk: mmapper.ptr.prototype.Mmap }; } $f.$ptr = $ptr; $f._key = _key; $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tmp$4 = _tmp$4; $f._tmp$5 = _tmp$5; $f._tuple = _tuple; $f.addr = addr; $f.b = b; $f.data = data; $f.err = err; $f.errno = errno; $f.fd = fd; $f.flags = flags; $f.length = length; $f.m = m; $f.offset = offset; $f.p = p; $f.prot = prot; $f.sl = sl; $f.$s = $s; $f.$deferred = $deferred; $f.$r = $r; return $f; } }
 	};
 	mmapper.prototype.Mmap = function(fd, offset, length, prot, flags) { return this.$val.Mmap(fd, offset, length, prot, flags); };
-	mmapper.ptr.prototype.Munmap = function $blocking_Munmap(data) {
+	mmapper.ptr.prototype.Munmap = function(data) {
 		var $ptr, _entry, _r, b, data, err, errno, m, p, $s, $deferred, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _r = $f._r; b = $f.b; data = $f.data; err = $f.err; errno = $f.errno; m = $f.m; p = $f.p; $s = $f.$s; $deferred = $f.$deferred; $r = $f.$r; } var $err = null; try { s: while (true) { switch ($s) { case 0: $deferred = []; $deferred.index = $curGoroutine.deferStack.length; $curGoroutine.deferStack.push($deferred);
 		err = $ifaceNil;
@@ -7929,7 +8026,7 @@ $packages["syscall"] = (function() {
 		delete m.active[p.$key()];
 		err = $ifaceNil;
 		return err;
-		/* */ $s = -1; case -1: } return; } } catch(err) { $err = err; $s = -1; } finally { $callDeferred($deferred, $err); if (!$curGoroutine.asleep) { return  err; } if($curGoroutine.asleep) { if ($f === undefined) { $f = { $blk: $blocking_Munmap }; } $f.$ptr = $ptr; $f._entry = _entry; $f._r = _r; $f.b = b; $f.data = data; $f.err = err; $f.errno = errno; $f.m = m; $f.p = p; $f.$s = $s; $f.$deferred = $deferred; $f.$r = $r; return $f; } }
+		/* */ $s = -1; case -1: } return; } } catch(err) { $err = err; $s = -1; } finally { $callDeferred($deferred, $err); if (!$curGoroutine.asleep) { return  err; } if($curGoroutine.asleep) { if ($f === undefined) { $f = { $blk: mmapper.ptr.prototype.Munmap }; } $f.$ptr = $ptr; $f._entry = _entry; $f._r = _r; $f.b = b; $f.data = data; $f.err = err; $f.errno = errno; $f.m = m; $f.p = p; $f.$s = $s; $f.$deferred = $deferred; $f.$r = $r; return $f; } }
 	};
 	mmapper.prototype.Munmap = function(data) { return this.$val.Munmap(data); };
 	Errno.prototype.Error = function() {
@@ -7956,20 +8053,22 @@ $packages["syscall"] = (function() {
 		return (e === 35) || (e === 35) || (e === 60);
 	};
 	$ptrType(Errno).prototype.Timeout = function() { return new Errno(this.$get()).Timeout(); };
-	Read = $pkg.Read = function(fd, p) {
+	Read = function(fd, p) {
 		var $ptr, _tuple, err, fd, n, p;
 		n = 0;
 		err = $ifaceNil;
 		_tuple = read(fd, p); n = _tuple[0]; err = _tuple[1];
 		return [n, err];
 	};
-	Write = $pkg.Write = function(fd, p) {
+	$pkg.Read = Read;
+	Write = function(fd, p) {
 		var $ptr, _tuple, err, fd, n, p;
 		n = 0;
 		err = $ifaceNil;
 		_tuple = write(fd, p); n = _tuple[0]; err = _tuple[1];
 		return [n, err];
 	};
+	$pkg.Write = Write;
 	sysctl = function(mib, old, oldlen, new$1, newlen) {
 		var $ptr, _p0, _tuple, e1, err, mib, new$1, newlen, old, oldlen;
 		err = $ifaceNil;
@@ -7985,7 +8084,7 @@ $packages["syscall"] = (function() {
 		}
 		return err;
 	};
-	Close = $pkg.Close = function(fd) {
+	Close = function(fd) {
 		var $ptr, _tuple, e1, err, fd;
 		err = $ifaceNil;
 		_tuple = Syscall(6, (fd >>> 0), 0, 0); e1 = _tuple[2];
@@ -7994,7 +8093,8 @@ $packages["syscall"] = (function() {
 		}
 		return err;
 	};
-	Fchdir = $pkg.Fchdir = function(fd) {
+	$pkg.Close = Close;
+	Fchdir = function(fd) {
 		var $ptr, _tuple, e1, err, fd;
 		err = $ifaceNil;
 		_tuple = Syscall(13, (fd >>> 0), 0, 0); e1 = _tuple[2];
@@ -8003,7 +8103,8 @@ $packages["syscall"] = (function() {
 		}
 		return err;
 	};
-	Fchmod = $pkg.Fchmod = function(fd, mode) {
+	$pkg.Fchdir = Fchdir;
+	Fchmod = function(fd, mode) {
 		var $ptr, _tuple, e1, err, fd, mode;
 		err = $ifaceNil;
 		_tuple = Syscall(124, (fd >>> 0), (mode >>> 0), 0); e1 = _tuple[2];
@@ -8012,7 +8113,8 @@ $packages["syscall"] = (function() {
 		}
 		return err;
 	};
-	Fchown = $pkg.Fchown = function(fd, uid, gid) {
+	$pkg.Fchmod = Fchmod;
+	Fchown = function(fd, uid, gid) {
 		var $ptr, _tuple, e1, err, fd, gid, uid;
 		err = $ifaceNil;
 		_tuple = Syscall(123, (fd >>> 0), (uid >>> 0), (gid >>> 0)); e1 = _tuple[2];
@@ -8021,7 +8123,8 @@ $packages["syscall"] = (function() {
 		}
 		return err;
 	};
-	Fstat = $pkg.Fstat = function(fd, stat) {
+	$pkg.Fchown = Fchown;
+	Fstat = function(fd, stat) {
 		var $ptr, _array, _struct, _tuple, _view, e1, err, fd, stat;
 		err = $ifaceNil;
 		_array = new Uint8Array(144);
@@ -8032,7 +8135,8 @@ $packages["syscall"] = (function() {
 		}
 		return err;
 	};
-	Fsync = $pkg.Fsync = function(fd) {
+	$pkg.Fstat = Fstat;
+	Fsync = function(fd) {
 		var $ptr, _tuple, e1, err, fd;
 		err = $ifaceNil;
 		_tuple = Syscall(95, (fd >>> 0), 0, 0); e1 = _tuple[2];
@@ -8041,7 +8145,8 @@ $packages["syscall"] = (function() {
 		}
 		return err;
 	};
-	Ftruncate = $pkg.Ftruncate = function(fd, length) {
+	$pkg.Fsync = Fsync;
+	Ftruncate = function(fd, length) {
 		var $ptr, _tuple, e1, err, fd, length;
 		err = $ifaceNil;
 		_tuple = Syscall(201, (fd >>> 0), (length.$low >>> 0), 0); e1 = _tuple[2];
@@ -8050,7 +8155,8 @@ $packages["syscall"] = (function() {
 		}
 		return err;
 	};
-	Getdirentries = $pkg.Getdirentries = function(fd, buf, basep) {
+	$pkg.Ftruncate = Ftruncate;
+	Getdirentries = function(fd, buf, basep) {
 		var $ptr, _p0, _tuple, basep, buf, e1, err, fd, n, r0;
 		n = 0;
 		err = $ifaceNil;
@@ -8067,7 +8173,8 @@ $packages["syscall"] = (function() {
 		}
 		return [n, err];
 	};
-	Lstat = $pkg.Lstat = function(path, stat) {
+	$pkg.Getdirentries = Getdirentries;
+	Lstat = function(path, stat) {
 		var $ptr, _array, _p0, _struct, _tuple, _tuple$1, _view, e1, err, path, stat;
 		err = $ifaceNil;
 		_p0 = ptrType.nil;
@@ -8084,7 +8191,8 @@ $packages["syscall"] = (function() {
 		}
 		return err;
 	};
-	Pread = $pkg.Pread = function(fd, p, offset) {
+	$pkg.Lstat = Lstat;
+	Pread = function(fd, p, offset) {
 		var $ptr, _p0, _tuple, e1, err, fd, n, offset, p, r0;
 		n = 0;
 		err = $ifaceNil;
@@ -8101,7 +8209,8 @@ $packages["syscall"] = (function() {
 		}
 		return [n, err];
 	};
-	Pwrite = $pkg.Pwrite = function(fd, p, offset) {
+	$pkg.Pread = Pread;
+	Pwrite = function(fd, p, offset) {
 		var $ptr, _p0, _tuple, e1, err, fd, n, offset, p, r0;
 		n = 0;
 		err = $ifaceNil;
@@ -8118,6 +8227,7 @@ $packages["syscall"] = (function() {
 		}
 		return [n, err];
 	};
+	$pkg.Pwrite = Pwrite;
 	read = function(fd, p) {
 		var $ptr, _p0, _tuple, e1, err, fd, n, p, r0;
 		n = 0;
@@ -8135,7 +8245,7 @@ $packages["syscall"] = (function() {
 		}
 		return [n, err];
 	};
-	Seek = $pkg.Seek = function(fd, offset, whence) {
+	Seek = function(fd, offset, whence) {
 		var $ptr, _tuple, e1, err, fd, newoffset, offset, r0, whence;
 		newoffset = new $Int64(0, 0);
 		err = $ifaceNil;
@@ -8146,6 +8256,7 @@ $packages["syscall"] = (function() {
 		}
 		return [newoffset, err];
 	};
+	$pkg.Seek = Seek;
 	write = function(fd, p) {
 		var $ptr, _p0, _tuple, e1, err, fd, n, p, r0;
 		n = 0;
@@ -8190,7 +8301,7 @@ $packages["syscall"] = (function() {
 	Timespec.init([{prop: "Sec", name: "Sec", pkg: "", typ: $Int64, tag: ""}, {prop: "Nsec", name: "Nsec", pkg: "", typ: $Int64, tag: ""}]);
 	Stat_t.init([{prop: "Dev", name: "Dev", pkg: "", typ: $Int32, tag: ""}, {prop: "Mode", name: "Mode", pkg: "", typ: $Uint16, tag: ""}, {prop: "Nlink", name: "Nlink", pkg: "", typ: $Uint16, tag: ""}, {prop: "Ino", name: "Ino", pkg: "", typ: $Uint64, tag: ""}, {prop: "Uid", name: "Uid", pkg: "", typ: $Uint32, tag: ""}, {prop: "Gid", name: "Gid", pkg: "", typ: $Uint32, tag: ""}, {prop: "Rdev", name: "Rdev", pkg: "", typ: $Int32, tag: ""}, {prop: "Pad_cgo_0", name: "Pad_cgo_0", pkg: "", typ: arrayType$3, tag: ""}, {prop: "Atimespec", name: "Atimespec", pkg: "", typ: Timespec, tag: ""}, {prop: "Mtimespec", name: "Mtimespec", pkg: "", typ: Timespec, tag: ""}, {prop: "Ctimespec", name: "Ctimespec", pkg: "", typ: Timespec, tag: ""}, {prop: "Birthtimespec", name: "Birthtimespec", pkg: "", typ: Timespec, tag: ""}, {prop: "Size", name: "Size", pkg: "", typ: $Int64, tag: ""}, {prop: "Blocks", name: "Blocks", pkg: "", typ: $Int64, tag: ""}, {prop: "Blksize", name: "Blksize", pkg: "", typ: $Int32, tag: ""}, {prop: "Flags", name: "Flags", pkg: "", typ: $Uint32, tag: ""}, {prop: "Gen", name: "Gen", pkg: "", typ: $Uint32, tag: ""}, {prop: "Lspare", name: "Lspare", pkg: "", typ: $Int32, tag: ""}, {prop: "Qspare", name: "Qspare", pkg: "", typ: arrayType$8, tag: ""}]);
 	Dirent.init([{prop: "Ino", name: "Ino", pkg: "", typ: $Uint64, tag: ""}, {prop: "Seekoff", name: "Seekoff", pkg: "", typ: $Uint64, tag: ""}, {prop: "Reclen", name: "Reclen", pkg: "", typ: $Uint16, tag: ""}, {prop: "Namlen", name: "Namlen", pkg: "", typ: $Uint16, tag: ""}, {prop: "Type", name: "Type", pkg: "", typ: $Uint8, tag: ""}, {prop: "Name", name: "Name", pkg: "", typ: arrayType$10, tag: ""}, {prop: "Pad_cgo_0", name: "Pad_cgo_0", pkg: "", typ: arrayType$12, tag: ""}]);
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = bytes.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
@@ -8215,6 +8326,7 @@ $packages["syscall"] = (function() {
 		init();
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["github.com/gopherjs/gopherjs/nosync"] = (function() {
@@ -8323,7 +8435,7 @@ $packages["github.com/gopherjs/gopherjs/nosync"] = (function() {
 		}
 	};
 	WaitGroup.prototype.Wait = function() { return this.$val.Wait(); };
-	Once.ptr.prototype.Do = function $blocking_Do(f) {
+	Once.ptr.prototype.Do = function(f) {
 		var $ptr, f, o, $s, $deferred, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; f = $f.f; o = $f.o; $s = $f.$s; $deferred = $f.$deferred; $r = $f.$r; } var $err = null; try { s: while (true) { switch ($s) { case 0: $deferred = []; $deferred.index = $curGoroutine.deferStack.length; $curGoroutine.deferStack.push($deferred);
 		o = [o];
@@ -8341,10 +8453,10 @@ $packages["github.com/gopherjs/gopherjs/nosync"] = (function() {
 			o[0].done = true;
 		}; })(o), []]);
 		$r = f(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } } catch(err) { $err = err; $s = -1; } finally { $callDeferred($deferred, $err); if($curGoroutine.asleep) { if ($f === undefined) { $f = { $blk: $blocking_Do }; } $f.$ptr = $ptr; $f.f = f; $f.o = o; $f.$s = $s; $f.$deferred = $deferred; $f.$r = $r; return $f; } }
+		/* */ $s = -1; case -1: } return; } } catch(err) { $err = err; $s = -1; } finally { $callDeferred($deferred, $err); if($curGoroutine.asleep) { if ($f === undefined) { $f = { $blk: Once.ptr.prototype.Do }; } $f.$ptr = $ptr; $f.f = f; $f.o = o; $f.$s = $s; $f.$deferred = $deferred; $f.$r = $r; return $f; } }
 	};
 	Once.prototype.Do = function(f) { return this.$val.Do(f); };
-	Pool.ptr.prototype.Get = function $blocking_Get() {
+	Pool.ptr.prototype.Get = function() {
 		var $ptr, _r, p, x, x$1, x$2, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; p = $f.p; x = $f.x; x$1 = $f.x$1; x$2 = $f.x$2; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
@@ -8362,7 +8474,7 @@ $packages["github.com/gopherjs/gopherjs/nosync"] = (function() {
 		x$2 = (x = p.store, x$1 = p.store.$length - 1 >> 0, ((x$1 < 0 || x$1 >= x.$length) ? $throwRuntimeError("index out of range") : x.$array[x.$offset + x$1]));
 		p.store = $subslice(p.store, 0, (p.store.$length - 1 >> 0));
 		return x$2;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Get }; } $f.$ptr = $ptr; $f._r = _r; $f.p = p; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Pool.ptr.prototype.Get }; } $f.$ptr = $ptr; $f._r = _r; $f.p = p; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Pool.prototype.Get = function() { return this.$val.Get(); };
 	Pool.ptr.prototype.Put = function(x) {
@@ -8382,11 +8494,12 @@ $packages["github.com/gopherjs/gopherjs/nosync"] = (function() {
 	WaitGroup.init([{prop: "counter", name: "counter", pkg: "github.com/gopherjs/gopherjs/nosync", typ: $Int, tag: ""}]);
 	Once.init([{prop: "doing", name: "doing", pkg: "github.com/gopherjs/gopherjs/nosync", typ: $Bool, tag: ""}, {prop: "done", name: "done", pkg: "github.com/gopherjs/gopherjs/nosync", typ: $Bool, tag: ""}]);
 	Pool.init([{prop: "store", name: "store", pkg: "github.com/gopherjs/gopherjs/nosync", typ: sliceType, tag: ""}, {prop: "New", name: "New", pkg: "", typ: funcType$1, tag: ""}]);
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["time"] = (function() {
@@ -8755,16 +8868,16 @@ $packages["time"] = (function() {
 		b = $append(b, 46);
 		return $appendSlice(b, $subslice(new sliceType$3(buf), 0, n));
 	};
-	Time.ptr.prototype.String = function $blocking_String() {
+	Time.ptr.prototype.String = function() {
 		var $ptr, _r$1, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = $clone(this, Time);
 		_r$1 = t.Format("2006-01-02 15:04:05.999999999 -0700 MST"); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		return _r$1;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_String }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.String }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.String = function() { return this.$val.String(); };
-	Time.ptr.prototype.Format = function $blocking_Format(layout) {
+	Time.ptr.prototype.Format = function(layout) {
 		var $ptr, _q, _q$1, _q$2, _q$3, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _ref, _tuple$1, _tuple$2, _tuple$3, _tuple$4, abs, absoffset, b, buf, day, hour, hr, hr$1, layout, m, max, min, month, name, offset, prefix, s, sec, std, suffix, t, y, y$1, year, zone$1, zone$2, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _q = $f._q; _q$1 = $f._q$1; _q$2 = $f._q$2; _q$3 = $f._q$3; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _ref = $f._ref; _tuple$1 = $f._tuple$1; _tuple$2 = $f._tuple$2; _tuple$3 = $f._tuple$3; _tuple$4 = $f._tuple$4; abs = $f.abs; absoffset = $f.absoffset; b = $f.b; buf = $f.buf; day = $f.day; hour = $f.hour; hr = $f.hr; hr$1 = $f.hr$1; layout = $f.layout; m = $f.m; max = $f.max; min = $f.min; month = $f.month; name = $f.name; offset = $f.offset; prefix = $f.prefix; s = $f.s; sec = $f.sec; std = $f.std; suffix = $f.suffix; t = $f.t; y = $f.y; y$1 = $f.y$1; year = $f.year; zone$1 = $f.zone$1; zone$2 = $f.zone$2; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = $clone(this, Time);
@@ -8927,7 +9040,7 @@ $packages["time"] = (function() {
 			} }
 		}
 		return $bytesToString(b);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Format }; } $f.$ptr = $ptr; $f._q = _q; $f._q$1 = _q$1; $f._q$2 = _q$2; $f._q$3 = _q$3; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._ref = _ref; $f._tuple$1 = _tuple$1; $f._tuple$2 = _tuple$2; $f._tuple$3 = _tuple$3; $f._tuple$4 = _tuple$4; $f.abs = abs; $f.absoffset = absoffset; $f.b = b; $f.buf = buf; $f.day = day; $f.hour = hour; $f.hr = hr; $f.hr$1 = hr$1; $f.layout = layout; $f.m = m; $f.max = max; $f.min = min; $f.month = month; $f.name = name; $f.offset = offset; $f.prefix = prefix; $f.s = s; $f.sec = sec; $f.std = std; $f.suffix = suffix; $f.t = t; $f.y = y; $f.y$1 = y$1; $f.year = year; $f.zone$1 = zone$1; $f.zone$2 = zone$2; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.Format }; } $f.$ptr = $ptr; $f._q = _q; $f._q$1 = _q$1; $f._q$2 = _q$2; $f._q$3 = _q$3; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._ref = _ref; $f._tuple$1 = _tuple$1; $f._tuple$2 = _tuple$2; $f._tuple$3 = _tuple$3; $f._tuple$4 = _tuple$4; $f.abs = abs; $f.absoffset = absoffset; $f.b = b; $f.buf = buf; $f.day = day; $f.hour = hour; $f.hr = hr; $f.hr$1 = hr$1; $f.layout = layout; $f.m = m; $f.max = max; $f.min = min; $f.month = month; $f.name = name; $f.offset = offset; $f.prefix = prefix; $f.s = s; $f.sec = sec; $f.std = std; $f.suffix = suffix; $f.t = t; $f.y = y; $f.y$1 = y$1; $f.year = year; $f.zone$1 = zone$1; $f.zone$2 = zone$2; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.Format = function(layout) { return this.$val.Format(layout); };
 	quote = function(s) {
@@ -8992,14 +9105,15 @@ $packages["time"] = (function() {
 		}
 		return [value, $ifaceNil];
 	};
-	Parse = $pkg.Parse = function $blocking_Parse(layout, value) {
+	Parse = function(layout, value) {
 		var $ptr, _r$1, layout, value, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; layout = $f.layout; value = $f.value; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r$1 = parse(layout, value, $pkg.UTC, $pkg.Local); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		return _r$1;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Parse }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f.layout = layout; $f.value = value; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Parse }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f.layout = layout; $f.value = value; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	parse = function $blocking_parse(layout, value, defaultLocation, local) {
+	$pkg.Parse = Parse;
+	parse = function(layout, value, defaultLocation, local) {
 		var $ptr, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _ref, _ref$1, _ref$2, _ref$3, _tmp, _tmp$1, _tmp$10, _tmp$11, _tmp$12, _tmp$13, _tmp$14, _tmp$15, _tmp$16, _tmp$17, _tmp$18, _tmp$19, _tmp$2, _tmp$20, _tmp$21, _tmp$22, _tmp$23, _tmp$24, _tmp$25, _tmp$26, _tmp$27, _tmp$28, _tmp$29, _tmp$3, _tmp$30, _tmp$31, _tmp$32, _tmp$33, _tmp$34, _tmp$35, _tmp$36, _tmp$37, _tmp$38, _tmp$39, _tmp$4, _tmp$40, _tmp$41, _tmp$42, _tmp$43, _tmp$5, _tmp$6, _tmp$7, _tmp$8, _tmp$9, _tuple$1, _tuple$10, _tuple$11, _tuple$12, _tuple$13, _tuple$14, _tuple$15, _tuple$16, _tuple$17, _tuple$18, _tuple$19, _tuple$2, _tuple$20, _tuple$21, _tuple$22, _tuple$23, _tuple$24, _tuple$25, _tuple$3, _tuple$4, _tuple$5, _tuple$6, _tuple$7, _tuple$8, _tuple$9, alayout, amSet, avalue, day, defaultLocation, err, hour, hour$1, hr, i, layout, local, min, min$1, mm, month, n, n$1, name, ndigit, nsec, offset, offset$1, ok, ok$1, p, pmSet, prefix, rangeErrString, sec, seconds, sign, ss, std, stdstr, suffix, t, t$1, value, x, x$1, x$2, x$3, x$4, x$5, year, z, zoneName, zoneOffset, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _ref = $f._ref; _ref$1 = $f._ref$1; _ref$2 = $f._ref$2; _ref$3 = $f._ref$3; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$10 = $f._tmp$10; _tmp$11 = $f._tmp$11; _tmp$12 = $f._tmp$12; _tmp$13 = $f._tmp$13; _tmp$14 = $f._tmp$14; _tmp$15 = $f._tmp$15; _tmp$16 = $f._tmp$16; _tmp$17 = $f._tmp$17; _tmp$18 = $f._tmp$18; _tmp$19 = $f._tmp$19; _tmp$2 = $f._tmp$2; _tmp$20 = $f._tmp$20; _tmp$21 = $f._tmp$21; _tmp$22 = $f._tmp$22; _tmp$23 = $f._tmp$23; _tmp$24 = $f._tmp$24; _tmp$25 = $f._tmp$25; _tmp$26 = $f._tmp$26; _tmp$27 = $f._tmp$27; _tmp$28 = $f._tmp$28; _tmp$29 = $f._tmp$29; _tmp$3 = $f._tmp$3; _tmp$30 = $f._tmp$30; _tmp$31 = $f._tmp$31; _tmp$32 = $f._tmp$32; _tmp$33 = $f._tmp$33; _tmp$34 = $f._tmp$34; _tmp$35 = $f._tmp$35; _tmp$36 = $f._tmp$36; _tmp$37 = $f._tmp$37; _tmp$38 = $f._tmp$38; _tmp$39 = $f._tmp$39; _tmp$4 = $f._tmp$4; _tmp$40 = $f._tmp$40; _tmp$41 = $f._tmp$41; _tmp$42 = $f._tmp$42; _tmp$43 = $f._tmp$43; _tmp$5 = $f._tmp$5; _tmp$6 = $f._tmp$6; _tmp$7 = $f._tmp$7; _tmp$8 = $f._tmp$8; _tmp$9 = $f._tmp$9; _tuple$1 = $f._tuple$1; _tuple$10 = $f._tuple$10; _tuple$11 = $f._tuple$11; _tuple$12 = $f._tuple$12; _tuple$13 = $f._tuple$13; _tuple$14 = $f._tuple$14; _tuple$15 = $f._tuple$15; _tuple$16 = $f._tuple$16; _tuple$17 = $f._tuple$17; _tuple$18 = $f._tuple$18; _tuple$19 = $f._tuple$19; _tuple$2 = $f._tuple$2; _tuple$20 = $f._tuple$20; _tuple$21 = $f._tuple$21; _tuple$22 = $f._tuple$22; _tuple$23 = $f._tuple$23; _tuple$24 = $f._tuple$24; _tuple$25 = $f._tuple$25; _tuple$3 = $f._tuple$3; _tuple$4 = $f._tuple$4; _tuple$5 = $f._tuple$5; _tuple$6 = $f._tuple$6; _tuple$7 = $f._tuple$7; _tuple$8 = $f._tuple$8; _tuple$9 = $f._tuple$9; alayout = $f.alayout; amSet = $f.amSet; avalue = $f.avalue; day = $f.day; defaultLocation = $f.defaultLocation; err = $f.err; hour = $f.hour; hour$1 = $f.hour$1; hr = $f.hr; i = $f.i; layout = $f.layout; local = $f.local; min = $f.min; min$1 = $f.min$1; mm = $f.mm; month = $f.month; n = $f.n; n$1 = $f.n$1; name = $f.name; ndigit = $f.ndigit; nsec = $f.nsec; offset = $f.offset; offset$1 = $f.offset$1; ok = $f.ok; ok$1 = $f.ok$1; p = $f.p; pmSet = $f.pmSet; prefix = $f.prefix; rangeErrString = $f.rangeErrString; sec = $f.sec; seconds = $f.seconds; sign = $f.sign; ss = $f.ss; std = $f.std; stdstr = $f.stdstr; suffix = $f.suffix; t = $f.t; t$1 = $f.t$1; value = $f.value; x = $f.x; x$1 = $f.x$1; x$2 = $f.x$2; x$3 = $f.x$3; x$4 = $f.x$4; x$5 = $f.x$5; year = $f.year; z = $f.z; zoneName = $f.zoneName; zoneOffset = $f.zoneOffset; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_tmp = layout; _tmp$1 = value; alayout = _tmp; avalue = _tmp$1;
@@ -9283,7 +9397,7 @@ $packages["time"] = (function() {
 		/* } */ case 9:
 		_r$6 = Date(year, (month >> 0), day, hour, min, sec, nsec, defaultLocation); /* */ $s = 12; case 12: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
 		return [_r$6, $ifaceNil];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_parse }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._ref = _ref; $f._ref$1 = _ref$1; $f._ref$2 = _ref$2; $f._ref$3 = _ref$3; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$10 = _tmp$10; $f._tmp$11 = _tmp$11; $f._tmp$12 = _tmp$12; $f._tmp$13 = _tmp$13; $f._tmp$14 = _tmp$14; $f._tmp$15 = _tmp$15; $f._tmp$16 = _tmp$16; $f._tmp$17 = _tmp$17; $f._tmp$18 = _tmp$18; $f._tmp$19 = _tmp$19; $f._tmp$2 = _tmp$2; $f._tmp$20 = _tmp$20; $f._tmp$21 = _tmp$21; $f._tmp$22 = _tmp$22; $f._tmp$23 = _tmp$23; $f._tmp$24 = _tmp$24; $f._tmp$25 = _tmp$25; $f._tmp$26 = _tmp$26; $f._tmp$27 = _tmp$27; $f._tmp$28 = _tmp$28; $f._tmp$29 = _tmp$29; $f._tmp$3 = _tmp$3; $f._tmp$30 = _tmp$30; $f._tmp$31 = _tmp$31; $f._tmp$32 = _tmp$32; $f._tmp$33 = _tmp$33; $f._tmp$34 = _tmp$34; $f._tmp$35 = _tmp$35; $f._tmp$36 = _tmp$36; $f._tmp$37 = _tmp$37; $f._tmp$38 = _tmp$38; $f._tmp$39 = _tmp$39; $f._tmp$4 = _tmp$4; $f._tmp$40 = _tmp$40; $f._tmp$41 = _tmp$41; $f._tmp$42 = _tmp$42; $f._tmp$43 = _tmp$43; $f._tmp$5 = _tmp$5; $f._tmp$6 = _tmp$6; $f._tmp$7 = _tmp$7; $f._tmp$8 = _tmp$8; $f._tmp$9 = _tmp$9; $f._tuple$1 = _tuple$1; $f._tuple$10 = _tuple$10; $f._tuple$11 = _tuple$11; $f._tuple$12 = _tuple$12; $f._tuple$13 = _tuple$13; $f._tuple$14 = _tuple$14; $f._tuple$15 = _tuple$15; $f._tuple$16 = _tuple$16; $f._tuple$17 = _tuple$17; $f._tuple$18 = _tuple$18; $f._tuple$19 = _tuple$19; $f._tuple$2 = _tuple$2; $f._tuple$20 = _tuple$20; $f._tuple$21 = _tuple$21; $f._tuple$22 = _tuple$22; $f._tuple$23 = _tuple$23; $f._tuple$24 = _tuple$24; $f._tuple$25 = _tuple$25; $f._tuple$3 = _tuple$3; $f._tuple$4 = _tuple$4; $f._tuple$5 = _tuple$5; $f._tuple$6 = _tuple$6; $f._tuple$7 = _tuple$7; $f._tuple$8 = _tuple$8; $f._tuple$9 = _tuple$9; $f.alayout = alayout; $f.amSet = amSet; $f.avalue = avalue; $f.day = day; $f.defaultLocation = defaultLocation; $f.err = err; $f.hour = hour; $f.hour$1 = hour$1; $f.hr = hr; $f.i = i; $f.layout = layout; $f.local = local; $f.min = min; $f.min$1 = min$1; $f.mm = mm; $f.month = month; $f.n = n; $f.n$1 = n$1; $f.name = name; $f.ndigit = ndigit; $f.nsec = nsec; $f.offset = offset; $f.offset$1 = offset$1; $f.ok = ok; $f.ok$1 = ok$1; $f.p = p; $f.pmSet = pmSet; $f.prefix = prefix; $f.rangeErrString = rangeErrString; $f.sec = sec; $f.seconds = seconds; $f.sign = sign; $f.ss = ss; $f.std = std; $f.stdstr = stdstr; $f.suffix = suffix; $f.t = t; $f.t$1 = t$1; $f.value = value; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.x$3 = x$3; $f.x$4 = x$4; $f.x$5 = x$5; $f.year = year; $f.z = z; $f.zoneName = zoneName; $f.zoneOffset = zoneOffset; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: parse }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._ref = _ref; $f._ref$1 = _ref$1; $f._ref$2 = _ref$2; $f._ref$3 = _ref$3; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$10 = _tmp$10; $f._tmp$11 = _tmp$11; $f._tmp$12 = _tmp$12; $f._tmp$13 = _tmp$13; $f._tmp$14 = _tmp$14; $f._tmp$15 = _tmp$15; $f._tmp$16 = _tmp$16; $f._tmp$17 = _tmp$17; $f._tmp$18 = _tmp$18; $f._tmp$19 = _tmp$19; $f._tmp$2 = _tmp$2; $f._tmp$20 = _tmp$20; $f._tmp$21 = _tmp$21; $f._tmp$22 = _tmp$22; $f._tmp$23 = _tmp$23; $f._tmp$24 = _tmp$24; $f._tmp$25 = _tmp$25; $f._tmp$26 = _tmp$26; $f._tmp$27 = _tmp$27; $f._tmp$28 = _tmp$28; $f._tmp$29 = _tmp$29; $f._tmp$3 = _tmp$3; $f._tmp$30 = _tmp$30; $f._tmp$31 = _tmp$31; $f._tmp$32 = _tmp$32; $f._tmp$33 = _tmp$33; $f._tmp$34 = _tmp$34; $f._tmp$35 = _tmp$35; $f._tmp$36 = _tmp$36; $f._tmp$37 = _tmp$37; $f._tmp$38 = _tmp$38; $f._tmp$39 = _tmp$39; $f._tmp$4 = _tmp$4; $f._tmp$40 = _tmp$40; $f._tmp$41 = _tmp$41; $f._tmp$42 = _tmp$42; $f._tmp$43 = _tmp$43; $f._tmp$5 = _tmp$5; $f._tmp$6 = _tmp$6; $f._tmp$7 = _tmp$7; $f._tmp$8 = _tmp$8; $f._tmp$9 = _tmp$9; $f._tuple$1 = _tuple$1; $f._tuple$10 = _tuple$10; $f._tuple$11 = _tuple$11; $f._tuple$12 = _tuple$12; $f._tuple$13 = _tuple$13; $f._tuple$14 = _tuple$14; $f._tuple$15 = _tuple$15; $f._tuple$16 = _tuple$16; $f._tuple$17 = _tuple$17; $f._tuple$18 = _tuple$18; $f._tuple$19 = _tuple$19; $f._tuple$2 = _tuple$2; $f._tuple$20 = _tuple$20; $f._tuple$21 = _tuple$21; $f._tuple$22 = _tuple$22; $f._tuple$23 = _tuple$23; $f._tuple$24 = _tuple$24; $f._tuple$25 = _tuple$25; $f._tuple$3 = _tuple$3; $f._tuple$4 = _tuple$4; $f._tuple$5 = _tuple$5; $f._tuple$6 = _tuple$6; $f._tuple$7 = _tuple$7; $f._tuple$8 = _tuple$8; $f._tuple$9 = _tuple$9; $f.alayout = alayout; $f.amSet = amSet; $f.avalue = avalue; $f.day = day; $f.defaultLocation = defaultLocation; $f.err = err; $f.hour = hour; $f.hour$1 = hour$1; $f.hr = hr; $f.i = i; $f.layout = layout; $f.local = local; $f.min = min; $f.min$1 = min$1; $f.mm = mm; $f.month = month; $f.n = n; $f.n$1 = n$1; $f.name = name; $f.ndigit = ndigit; $f.nsec = nsec; $f.offset = offset; $f.offset$1 = offset$1; $f.ok = ok; $f.ok$1 = ok$1; $f.p = p; $f.pmSet = pmSet; $f.prefix = prefix; $f.rangeErrString = rangeErrString; $f.sec = sec; $f.seconds = seconds; $f.sign = sign; $f.ss = ss; $f.std = std; $f.stdstr = stdstr; $f.suffix = suffix; $f.t = t; $f.t$1 = t$1; $f.value = value; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.x$3 = x$3; $f.x$4 = x$4; $f.x$5 = x$5; $f.year = year; $f.z = z; $f.zoneName = zoneName; $f.zoneOffset = zoneOffset; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	parseTimeZone = function(value) {
 		var $ptr, _ref, _tmp, _tmp$1, _tmp$10, _tmp$11, _tmp$12, _tmp$13, _tmp$14, _tmp$15, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tmp$6, _tmp$7, _tmp$8, _tmp$9, c, length, nUpper, ok, value;
@@ -9445,7 +9559,7 @@ $packages["time"] = (function() {
 		return (x = t.sec, (x.$high === 0 && x.$low === 0)) && (t.nsec === 0);
 	};
 	Time.prototype.IsZero = function() { return this.$val.IsZero(); };
-	Time.ptr.prototype.abs = function $blocking_abs() {
+	Time.ptr.prototype.abs = function() {
 		var $ptr, _r$1, _r$2, _tuple$1, l, offset, sec, t, x, x$1, x$2, x$3, x$4, x$5, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _r$2 = $f._r$2; _tuple$1 = $f._tuple$1; l = $f.l; offset = $f.offset; sec = $f.sec; t = $f.t; x = $f.x; x$1 = $f.x$1; x$2 = $f.x$2; x$3 = $f.x$3; x$4 = $f.x$4; x$5 = $f.x$5; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = $clone(this, Time);
@@ -9472,10 +9586,10 @@ $packages["time"] = (function() {
 			/* } */ case 8:
 		/* } */ case 5:
 		return (x$5 = new $Int64(sec.$high + 2147483646, sec.$low + 450480384), new $Uint64(x$5.$high, x$5.$low));
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_abs }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._tuple$1 = _tuple$1; $f.l = l; $f.offset = offset; $f.sec = sec; $f.t = t; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.x$3 = x$3; $f.x$4 = x$4; $f.x$5 = x$5; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.abs }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._tuple$1 = _tuple$1; $f.l = l; $f.offset = offset; $f.sec = sec; $f.t = t; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.x$3 = x$3; $f.x$4 = x$4; $f.x$5 = x$5; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.abs = function() { return this.$val.abs(); };
-	Time.ptr.prototype.locabs = function $blocking_locabs() {
+	Time.ptr.prototype.locabs = function() {
 		var $ptr, _r$1, _r$2, _tuple$1, abs, l, name, offset, sec, t, x, x$1, x$2, x$3, x$4, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _r$2 = $f._r$2; _tuple$1 = $f._tuple$1; abs = $f.abs; l = $f.l; name = $f.name; offset = $f.offset; sec = $f.sec; t = $f.t; x = $f.x; x$1 = $f.x$1; x$2 = $f.x$2; x$3 = $f.x$3; x$4 = $f.x$4; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		name = "";
@@ -9510,10 +9624,10 @@ $packages["time"] = (function() {
 		/* } */ case 6:
 		abs = (x$4 = new $Int64(sec.$high + 2147483646, sec.$low + 450480384), new $Uint64(x$4.$high, x$4.$low));
 		return [name, offset, abs];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_locabs }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._tuple$1 = _tuple$1; $f.abs = abs; $f.l = l; $f.name = name; $f.offset = offset; $f.sec = sec; $f.t = t; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.x$3 = x$3; $f.x$4 = x$4; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.locabs }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._tuple$1 = _tuple$1; $f.abs = abs; $f.l = l; $f.name = name; $f.offset = offset; $f.sec = sec; $f.t = t; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.x$3 = x$3; $f.x$4 = x$4; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.locabs = function() { return this.$val.locabs(); };
-	Time.ptr.prototype.Date = function $blocking_Date() {
+	Time.ptr.prototype.Date = function() {
 		var $ptr, _r$1, _tuple$1, day, month, t, year, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _tuple$1 = $f._tuple$1; day = $f.day; month = $f.month; t = $f.t; year = $f.year; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		year = 0;
@@ -9523,47 +9637,47 @@ $packages["time"] = (function() {
 		_r$1 = t.date(true); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_tuple$1 = _r$1; year = _tuple$1[0]; month = _tuple$1[1]; day = _tuple$1[2];
 		return [year, month, day];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Date }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._tuple$1 = _tuple$1; $f.day = day; $f.month = month; $f.t = t; $f.year = year; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.Date }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._tuple$1 = _tuple$1; $f.day = day; $f.month = month; $f.t = t; $f.year = year; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.Date = function() { return this.$val.Date(); };
-	Time.ptr.prototype.Year = function $blocking_Year() {
+	Time.ptr.prototype.Year = function() {
 		var $ptr, _r$1, _tuple$1, t, year, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _tuple$1 = $f._tuple$1; t = $f.t; year = $f.year; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = $clone(this, Time);
 		_r$1 = t.date(false); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_tuple$1 = _r$1; year = _tuple$1[0];
 		return year;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Year }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._tuple$1 = _tuple$1; $f.t = t; $f.year = year; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.Year }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._tuple$1 = _tuple$1; $f.t = t; $f.year = year; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.Year = function() { return this.$val.Year(); };
-	Time.ptr.prototype.Month = function $blocking_Month() {
+	Time.ptr.prototype.Month = function() {
 		var $ptr, _r$1, _tuple$1, month, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _tuple$1 = $f._tuple$1; month = $f.month; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = $clone(this, Time);
 		_r$1 = t.date(true); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_tuple$1 = _r$1; month = _tuple$1[1];
 		return month;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Month }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._tuple$1 = _tuple$1; $f.month = month; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.Month }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._tuple$1 = _tuple$1; $f.month = month; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.Month = function() { return this.$val.Month(); };
-	Time.ptr.prototype.Day = function $blocking_Day() {
+	Time.ptr.prototype.Day = function() {
 		var $ptr, _r$1, _tuple$1, day, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _tuple$1 = $f._tuple$1; day = $f.day; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = $clone(this, Time);
 		_r$1 = t.date(true); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_tuple$1 = _r$1; day = _tuple$1[2];
 		return day;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Day }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._tuple$1 = _tuple$1; $f.day = day; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.Day }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._tuple$1 = _tuple$1; $f.day = day; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.Day = function() { return this.$val.Day(); };
-	Time.ptr.prototype.Weekday = function $blocking_Weekday() {
+	Time.ptr.prototype.Weekday = function() {
 		var $ptr, _r$1, _r$2, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _r$2 = $f._r$2; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = $clone(this, Time);
 		_r$1 = t.abs(); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_r$2 = absWeekday(_r$1); /* */ $s = 2; case 2: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		return _r$2;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Weekday }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.Weekday }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.Weekday = function() { return this.$val.Weekday(); };
 	absWeekday = function(abs) {
@@ -9571,7 +9685,7 @@ $packages["time"] = (function() {
 		sec = $div64((new $Uint64(abs.$high + 0, abs.$low + 86400)), new $Uint64(0, 604800), true);
 		return ((_q = (sec.$low >> 0) / 86400, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero")) >> 0);
 	};
-	Time.ptr.prototype.ISOWeek = function $blocking_ISOWeek() {
+	Time.ptr.prototype.ISOWeek = function() {
 		var $ptr, _q, _r$1, _r$2, _r$3, _r$4, _r$5, _tuple$1, day, dec31wday, jan1wday, month, t, wday, week, yday, year, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _q = $f._q; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _tuple$1 = $f._tuple$1; day = $f.day; dec31wday = $f.dec31wday; jan1wday = $f.jan1wday; month = $f.month; t = $f.t; wday = $f.wday; week = $f.week; yday = $f.yday; year = $f.year; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		year = 0;
@@ -9601,10 +9715,10 @@ $packages["time"] = (function() {
 			}
 		}
 		return [year, week];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_ISOWeek }; } $f.$ptr = $ptr; $f._q = _q; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._tuple$1 = _tuple$1; $f.day = day; $f.dec31wday = dec31wday; $f.jan1wday = jan1wday; $f.month = month; $f.t = t; $f.wday = wday; $f.week = week; $f.yday = yday; $f.year = year; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.ISOWeek }; } $f.$ptr = $ptr; $f._q = _q; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._tuple$1 = _tuple$1; $f.day = day; $f.dec31wday = dec31wday; $f.jan1wday = jan1wday; $f.month = month; $f.t = t; $f.wday = wday; $f.week = week; $f.yday = yday; $f.year = year; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.ISOWeek = function() { return this.$val.ISOWeek(); };
-	Time.ptr.prototype.Clock = function $blocking_Clock() {
+	Time.ptr.prototype.Clock = function() {
 		var $ptr, _r$1, _r$2, _tuple$1, hour, min, sec, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _r$2 = $f._r$2; _tuple$1 = $f._tuple$1; hour = $f.hour; min = $f.min; sec = $f.sec; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		hour = 0;
@@ -9615,7 +9729,7 @@ $packages["time"] = (function() {
 		_r$2 = absClock(_r$1); /* */ $s = 2; case 2: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		_tuple$1 = _r$2; hour = _tuple$1[0]; min = _tuple$1[1]; sec = _tuple$1[2];
 		return [hour, min, sec];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Clock }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._tuple$1 = _tuple$1; $f.hour = hour; $f.min = min; $f.sec = sec; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.Clock }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._tuple$1 = _tuple$1; $f.hour = hour; $f.min = min; $f.sec = sec; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.Clock = function() { return this.$val.Clock(); };
 	absClock = function(abs) {
@@ -9630,31 +9744,31 @@ $packages["time"] = (function() {
 		sec = sec - ((min * 60 >> 0)) >> 0;
 		return [hour, min, sec];
 	};
-	Time.ptr.prototype.Hour = function $blocking_Hour() {
+	Time.ptr.prototype.Hour = function() {
 		var $ptr, _q, _r$1, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _q = $f._q; _r$1 = $f._r$1; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = $clone(this, Time);
 		_r$1 = t.abs(); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		return (_q = ($div64(_r$1, new $Uint64(0, 86400), true).$low >> 0) / 3600, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero"));
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Hour }; } $f.$ptr = $ptr; $f._q = _q; $f._r$1 = _r$1; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.Hour }; } $f.$ptr = $ptr; $f._q = _q; $f._r$1 = _r$1; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.Hour = function() { return this.$val.Hour(); };
-	Time.ptr.prototype.Minute = function $blocking_Minute() {
+	Time.ptr.prototype.Minute = function() {
 		var $ptr, _q, _r$1, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _q = $f._q; _r$1 = $f._r$1; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = $clone(this, Time);
 		_r$1 = t.abs(); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		return (_q = ($div64(_r$1, new $Uint64(0, 3600), true).$low >> 0) / 60, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero"));
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Minute }; } $f.$ptr = $ptr; $f._q = _q; $f._r$1 = _r$1; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.Minute }; } $f.$ptr = $ptr; $f._q = _q; $f._r$1 = _r$1; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.Minute = function() { return this.$val.Minute(); };
-	Time.ptr.prototype.Second = function $blocking_Second() {
+	Time.ptr.prototype.Second = function() {
 		var $ptr, _r$1, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = $clone(this, Time);
 		_r$1 = t.abs(); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		return ($div64(_r$1, new $Uint64(0, 60), true).$low >> 0);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Second }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.Second }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.Second = function() { return this.$val.Second(); };
 	Time.ptr.prototype.Nanosecond = function() {
@@ -9663,14 +9777,14 @@ $packages["time"] = (function() {
 		return (t.nsec >> 0);
 	};
 	Time.prototype.Nanosecond = function() { return this.$val.Nanosecond(); };
-	Time.ptr.prototype.YearDay = function $blocking_YearDay() {
+	Time.ptr.prototype.YearDay = function() {
 		var $ptr, _r$1, _tuple$1, t, yday, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _tuple$1 = $f._tuple$1; t = $f.t; yday = $f.yday; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = $clone(this, Time);
 		_r$1 = t.date(false); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_tuple$1 = _r$1; yday = _tuple$1[3];
 		return yday + 1 >> 0;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_YearDay }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._tuple$1 = _tuple$1; $f.t = t; $f.yday = yday; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.YearDay }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._tuple$1 = _tuple$1; $f.t = t; $f.yday = yday; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.YearDay = function() { return this.$val.YearDay(); };
 	Duration.prototype.String = function() {
@@ -9829,7 +9943,7 @@ $packages["time"] = (function() {
 		}
 	};
 	Time.prototype.Sub = function(u) { return this.$val.Sub(u); };
-	Time.ptr.prototype.AddDate = function $blocking_AddDate(years, months$1, days$1) {
+	Time.ptr.prototype.AddDate = function(years, months$1, days$1) {
 		var $ptr, _r$1, _r$2, _r$3, _tuple$1, _tuple$2, day, days$1, hour, min, month, months$1, sec, t, year, years, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _tuple$1 = $f._tuple$1; _tuple$2 = $f._tuple$2; day = $f.day; days$1 = $f.days$1; hour = $f.hour; min = $f.min; month = $f.month; months$1 = $f.months$1; sec = $f.sec; t = $f.t; year = $f.year; years = $f.years; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = $clone(this, Time);
@@ -9839,10 +9953,10 @@ $packages["time"] = (function() {
 		_tuple$2 = _r$2; hour = _tuple$2[0]; min = _tuple$2[1]; sec = _tuple$2[2];
 		_r$3 = Date(year + years >> 0, month + (months$1 >> 0) >> 0, day + days$1 >> 0, hour, min, sec, (t.nsec >> 0), t.loc); /* */ $s = 3; case 3: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
 		return _r$3;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_AddDate }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._tuple$1 = _tuple$1; $f._tuple$2 = _tuple$2; $f.day = day; $f.days$1 = days$1; $f.hour = hour; $f.min = min; $f.month = month; $f.months$1 = months$1; $f.sec = sec; $f.t = t; $f.year = year; $f.years = years; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.AddDate }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._tuple$1 = _tuple$1; $f._tuple$2 = _tuple$2; $f.day = day; $f.days$1 = days$1; $f.hour = hour; $f.min = min; $f.month = month; $f.months$1 = months$1; $f.sec = sec; $f.t = t; $f.year = year; $f.years = years; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.AddDate = function(years, months$1, days$1) { return this.$val.AddDate(years, months$1, days$1); };
-	Time.ptr.prototype.date = function $blocking_date(full) {
+	Time.ptr.prototype.date = function(full) {
 		var $ptr, _r$1, _r$2, _tuple$1, day, full, month, t, yday, year, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _r$2 = $f._r$2; _tuple$1 = $f._tuple$1; day = $f.day; full = $f.full; month = $f.month; t = $f.t; yday = $f.yday; year = $f.year; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		year = 0;
@@ -9854,7 +9968,7 @@ $packages["time"] = (function() {
 		_r$2 = absDate(_r$1, full); /* */ $s = 2; case 2: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		_tuple$1 = _r$2; year = _tuple$1[0]; month = _tuple$1[1]; day = _tuple$1[2]; yday = _tuple$1[3];
 		return [year, month, day, yday];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_date }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._tuple$1 = _tuple$1; $f.day = day; $f.full = full; $f.month = month; $f.t = t; $f.yday = yday; $f.year = year; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.date }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._tuple$1 = _tuple$1; $f.day = day; $f.full = full; $f.month = month; $f.t = t; $f.yday = yday; $f.year = year; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.date = function(full) { return this.$val.date(full); };
 	absDate = function(abs, full) {
@@ -9940,7 +10054,7 @@ $packages["time"] = (function() {
 		return l;
 	};
 	Time.prototype.Location = function() { return this.$val.Location(); };
-	Time.ptr.prototype.Zone = function $blocking_Zone() {
+	Time.ptr.prototype.Zone = function() {
 		var $ptr, _r$1, _tuple$1, name, offset, t, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _tuple$1 = $f._tuple$1; name = $f.name; offset = $f.offset; t = $f.t; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		name = "";
@@ -9949,7 +10063,7 @@ $packages["time"] = (function() {
 		_r$1 = t.loc.lookup((x = t.sec, new $Int64(x.$high + -15, x.$low + 2288912640))); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_tuple$1 = _r$1; name = _tuple$1[0]; offset = _tuple$1[1];
 		return [name, offset];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Zone }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._tuple$1 = _tuple$1; $f.name = name; $f.offset = offset; $f.t = t; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.Zone }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._tuple$1 = _tuple$1; $f.name = name; $f.offset = offset; $f.t = t; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.Zone = function() { return this.$val.Zone(); };
 	Time.ptr.prototype.Unix = function() {
@@ -9964,7 +10078,7 @@ $packages["time"] = (function() {
 		return (x = $mul64(((x$1 = t.sec, new $Int64(x$1.$high + -15, x$1.$low + 2288912640))), new $Int64(0, 1000000000)), x$2 = new $Int64(0, t.nsec), new $Int64(x.$high + x$2.$high, x.$low + x$2.$low));
 	};
 	Time.prototype.UnixNano = function() { return this.$val.UnixNano(); };
-	Time.ptr.prototype.MarshalBinary = function $blocking_MarshalBinary() {
+	Time.ptr.prototype.MarshalBinary = function() {
 		var $ptr, _q, _r$1, _r$2, _tuple$1, enc, offset, offsetMin, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _q = $f._q; _r$1 = $f._r$1; _r$2 = $f._r$2; _tuple$1 = $f._tuple$1; enc = $f.enc; offset = $f.offset; offsetMin = $f.offsetMin; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = $clone(this, Time);
@@ -9988,10 +10102,10 @@ $packages["time"] = (function() {
 		/* } */ case 3:
 		enc = new sliceType$3([1, ($shiftRightInt64(t.sec, 56).$low << 24 >>> 24), ($shiftRightInt64(t.sec, 48).$low << 24 >>> 24), ($shiftRightInt64(t.sec, 40).$low << 24 >>> 24), ($shiftRightInt64(t.sec, 32).$low << 24 >>> 24), ($shiftRightInt64(t.sec, 24).$low << 24 >>> 24), ($shiftRightInt64(t.sec, 16).$low << 24 >>> 24), ($shiftRightInt64(t.sec, 8).$low << 24 >>> 24), (t.sec.$low << 24 >>> 24), ((t.nsec >> 24 >> 0) << 24 >>> 24), ((t.nsec >> 16 >> 0) << 24 >>> 24), ((t.nsec >> 8 >> 0) << 24 >>> 24), (t.nsec << 24 >>> 24), ((offsetMin >> 8 << 16 >> 16) << 24 >>> 24), (offsetMin << 24 >>> 24)]);
 		return [enc, $ifaceNil];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_MarshalBinary }; } $f.$ptr = $ptr; $f._q = _q; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._tuple$1 = _tuple$1; $f.enc = enc; $f.offset = offset; $f.offsetMin = offsetMin; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.MarshalBinary }; } $f.$ptr = $ptr; $f._q = _q; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._tuple$1 = _tuple$1; $f.enc = enc; $f.offset = offset; $f.offsetMin = offsetMin; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.MarshalBinary = function() { return this.$val.MarshalBinary(); };
-	Time.ptr.prototype.UnmarshalBinary = function $blocking_UnmarshalBinary(data$1) {
+	Time.ptr.prototype.UnmarshalBinary = function(data$1) {
 		var $ptr, _r$1, _tuple$1, buf, data$1, localoff, offset, t, x, x$1, x$10, x$11, x$12, x$13, x$14, x$2, x$3, x$4, x$5, x$6, x$7, x$8, x$9, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _tuple$1 = $f._tuple$1; buf = $f.buf; data$1 = $f.data$1; localoff = $f.localoff; offset = $f.offset; t = $f.t; x = $f.x; x$1 = $f.x$1; x$10 = $f.x$10; x$11 = $f.x$11; x$12 = $f.x$12; x$13 = $f.x$13; x$14 = $f.x$14; x$2 = $f.x$2; x$3 = $f.x$3; x$4 = $f.x$4; x$5 = $f.x$5; x$6 = $f.x$6; x$7 = $f.x$7; x$8 = $f.x$8; x$9 = $f.x$9; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = this;
@@ -10029,28 +10143,28 @@ $packages["time"] = (function() {
 			/* } */ case 7:
 		/* } */ case 3:
 		return $ifaceNil;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_UnmarshalBinary }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._tuple$1 = _tuple$1; $f.buf = buf; $f.data$1 = data$1; $f.localoff = localoff; $f.offset = offset; $f.t = t; $f.x = x; $f.x$1 = x$1; $f.x$10 = x$10; $f.x$11 = x$11; $f.x$12 = x$12; $f.x$13 = x$13; $f.x$14 = x$14; $f.x$2 = x$2; $f.x$3 = x$3; $f.x$4 = x$4; $f.x$5 = x$5; $f.x$6 = x$6; $f.x$7 = x$7; $f.x$8 = x$8; $f.x$9 = x$9; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.UnmarshalBinary }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._tuple$1 = _tuple$1; $f.buf = buf; $f.data$1 = data$1; $f.localoff = localoff; $f.offset = offset; $f.t = t; $f.x = x; $f.x$1 = x$1; $f.x$10 = x$10; $f.x$11 = x$11; $f.x$12 = x$12; $f.x$13 = x$13; $f.x$14 = x$14; $f.x$2 = x$2; $f.x$3 = x$3; $f.x$4 = x$4; $f.x$5 = x$5; $f.x$6 = x$6; $f.x$7 = x$7; $f.x$8 = x$8; $f.x$9 = x$9; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.UnmarshalBinary = function(data$1) { return this.$val.UnmarshalBinary(data$1); };
-	Time.ptr.prototype.GobEncode = function $blocking_GobEncode() {
+	Time.ptr.prototype.GobEncode = function() {
 		var $ptr, _r$1, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = $clone(this, Time);
 		_r$1 = t.MarshalBinary(); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		return _r$1;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_GobEncode }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.GobEncode }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.GobEncode = function() { return this.$val.GobEncode(); };
-	Time.ptr.prototype.GobDecode = function $blocking_GobDecode(data$1) {
+	Time.ptr.prototype.GobDecode = function(data$1) {
 		var $ptr, _r$1, data$1, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; data$1 = $f.data$1; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = this;
 		_r$1 = t.UnmarshalBinary(data$1); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		return _r$1;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_GobDecode }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f.data$1 = data$1; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.GobDecode }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f.data$1 = data$1; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.GobDecode = function(data$1) { return this.$val.GobDecode(data$1); };
-	Time.ptr.prototype.MarshalJSON = function $blocking_MarshalJSON() {
+	Time.ptr.prototype.MarshalJSON = function() {
 		var $ptr, _r$1, _r$2, t, y, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _r$2 = $f._r$2; t = $f.t; y = $f.y; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = $clone(this, Time);
@@ -10063,10 +10177,10 @@ $packages["time"] = (function() {
 		/* } */ case 3:
 		_r$2 = t.Format("\"2006-01-02T15:04:05.999999999Z07:00\""); /* */ $s = 4; case 4: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		return [new sliceType$3($stringToBytes(_r$2)), $ifaceNil];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_MarshalJSON }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.t = t; $f.y = y; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.MarshalJSON }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.t = t; $f.y = y; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.MarshalJSON = function() { return this.$val.MarshalJSON(); };
-	Time.ptr.prototype.UnmarshalJSON = function $blocking_UnmarshalJSON(data$1) {
+	Time.ptr.prototype.UnmarshalJSON = function(data$1) {
 		var $ptr, _r$1, _tuple$1, data$1, err, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _tuple$1 = $f._tuple$1; data$1 = $f.data$1; err = $f.err; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		err = $ifaceNil;
@@ -10074,10 +10188,10 @@ $packages["time"] = (function() {
 		_r$1 = Parse("\"2006-01-02T15:04:05Z07:00\"", $bytesToString(data$1)); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_tuple$1 = _r$1; $copy(t, _tuple$1[0], Time); err = _tuple$1[1];
 		return err;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_UnmarshalJSON }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._tuple$1 = _tuple$1; $f.data$1 = data$1; $f.err = err; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.UnmarshalJSON }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._tuple$1 = _tuple$1; $f.data$1 = data$1; $f.err = err; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.UnmarshalJSON = function(data$1) { return this.$val.UnmarshalJSON(data$1); };
-	Time.ptr.prototype.MarshalText = function $blocking_MarshalText() {
+	Time.ptr.prototype.MarshalText = function() {
 		var $ptr, _r$1, _r$2, t, y, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _r$2 = $f._r$2; t = $f.t; y = $f.y; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = $clone(this, Time);
@@ -10090,10 +10204,10 @@ $packages["time"] = (function() {
 		/* } */ case 3:
 		_r$2 = t.Format("2006-01-02T15:04:05.999999999Z07:00"); /* */ $s = 4; case 4: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		return [new sliceType$3($stringToBytes(_r$2)), $ifaceNil];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_MarshalText }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.t = t; $f.y = y; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.MarshalText }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.t = t; $f.y = y; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.MarshalText = function() { return this.$val.MarshalText(); };
-	Time.ptr.prototype.UnmarshalText = function $blocking_UnmarshalText(data$1) {
+	Time.ptr.prototype.UnmarshalText = function(data$1) {
 		var $ptr, _r$1, _tuple$1, data$1, err, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _tuple$1 = $f._tuple$1; data$1 = $f.data$1; err = $f.err; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		err = $ifaceNil;
@@ -10101,10 +10215,10 @@ $packages["time"] = (function() {
 		_r$1 = Parse("2006-01-02T15:04:05Z07:00", $bytesToString(data$1)); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_tuple$1 = _r$1; $copy(t, _tuple$1[0], Time); err = _tuple$1[1];
 		return err;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_UnmarshalText }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._tuple$1 = _tuple$1; $f.data$1 = data$1; $f.err = err; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Time.ptr.prototype.UnmarshalText }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._tuple$1 = _tuple$1; $f.data$1 = data$1; $f.err = err; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Time.prototype.UnmarshalText = function(data$1) { return this.$val.UnmarshalText(data$1); };
-	Unix = $pkg.Unix = function(sec, nsec) {
+	Unix = function(sec, nsec) {
 		var $ptr, n, nsec, sec, x, x$1, x$2, x$3;
 		if ((nsec.$high < 0 || (nsec.$high === 0 && nsec.$low < 0)) || (nsec.$high > 0 || (nsec.$high === 0 && nsec.$low >= 1000000000))) {
 			n = $div64(nsec, new $Int64(0, 1000000000), false);
@@ -10117,6 +10231,7 @@ $packages["time"] = (function() {
 		}
 		return new Time.ptr(new $Int64(sec.$high + 14, sec.$low + 2006054656), ((nsec.$low + ((nsec.$high >> 31) * 4294967296)) >> 0), $pkg.Local);
 	};
+	$pkg.Unix = Unix;
 	isLeap = function(year) {
 		var $ptr, _r$1, _r$2, _r$3, year;
 		return ((_r$1 = year % 4, _r$1 === _r$1 ? _r$1 : $throwRuntimeError("integer divide by zero")) === 0) && (!(((_r$2 = year % 100, _r$2 === _r$2 ? _r$2 : $throwRuntimeError("integer divide by zero")) === 0)) || ((_r$3 = year % 400, _r$3 === _r$3 ? _r$3 : $throwRuntimeError("integer divide by zero")) === 0));
@@ -10138,7 +10253,7 @@ $packages["time"] = (function() {
 		_tmp = hi; _tmp$1 = lo; nhi = _tmp; nlo = _tmp$1;
 		return [nhi, nlo];
 	};
-	Date = $pkg.Date = function $blocking_Date(year, month, day, hour, min, sec, nsec, loc) {
+	Date = function(year, month, day, hour, min, sec, nsec, loc) {
 		var $ptr, _r$1, _r$2, _r$3, _tuple$1, _tuple$2, _tuple$3, _tuple$4, _tuple$5, _tuple$6, _tuple$7, _tuple$8, abs, d, day, end, hour, loc, m, min, month, n, nsec, offset, sec, start, unix, utc, x, x$1, x$10, x$11, x$12, x$13, x$14, x$15, x$2, x$3, x$4, x$5, x$6, x$7, x$8, x$9, y, year, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _tuple$1 = $f._tuple$1; _tuple$2 = $f._tuple$2; _tuple$3 = $f._tuple$3; _tuple$4 = $f._tuple$4; _tuple$5 = $f._tuple$5; _tuple$6 = $f._tuple$6; _tuple$7 = $f._tuple$7; _tuple$8 = $f._tuple$8; abs = $f.abs; d = $f.d; day = $f.day; end = $f.end; hour = $f.hour; loc = $f.loc; m = $f.m; min = $f.min; month = $f.month; n = $f.n; nsec = $f.nsec; offset = $f.offset; sec = $f.sec; start = $f.start; unix = $f.unix; utc = $f.utc; x = $f.x; x$1 = $f.x$1; x$10 = $f.x$10; x$11 = $f.x$11; x$12 = $f.x$12; x$13 = $f.x$13; x$14 = $f.x$14; x$15 = $f.x$15; x$2 = $f.x$2; x$3 = $f.x$3; x$4 = $f.x$4; x$5 = $f.x$5; x$6 = $f.x$6; x$7 = $f.x$7; x$8 = $f.x$8; x$9 = $f.x$9; y = $f.y; year = $f.year; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		if (loc === ptrType$1.nil) {
@@ -10191,8 +10306,9 @@ $packages["time"] = (function() {
 			unix = (x$15 = new $Int64(0, offset), new $Int64(unix.$high - x$15.$high, unix.$low - x$15.$low));
 		/* } */ case 3:
 		return new Time.ptr(new $Int64(unix.$high + 14, unix.$low + 2006054656), (nsec >> 0), loc);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Date }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._tuple$1 = _tuple$1; $f._tuple$2 = _tuple$2; $f._tuple$3 = _tuple$3; $f._tuple$4 = _tuple$4; $f._tuple$5 = _tuple$5; $f._tuple$6 = _tuple$6; $f._tuple$7 = _tuple$7; $f._tuple$8 = _tuple$8; $f.abs = abs; $f.d = d; $f.day = day; $f.end = end; $f.hour = hour; $f.loc = loc; $f.m = m; $f.min = min; $f.month = month; $f.n = n; $f.nsec = nsec; $f.offset = offset; $f.sec = sec; $f.start = start; $f.unix = unix; $f.utc = utc; $f.x = x; $f.x$1 = x$1; $f.x$10 = x$10; $f.x$11 = x$11; $f.x$12 = x$12; $f.x$13 = x$13; $f.x$14 = x$14; $f.x$15 = x$15; $f.x$2 = x$2; $f.x$3 = x$3; $f.x$4 = x$4; $f.x$5 = x$5; $f.x$6 = x$6; $f.x$7 = x$7; $f.x$8 = x$8; $f.x$9 = x$9; $f.y = y; $f.year = year; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Date }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._tuple$1 = _tuple$1; $f._tuple$2 = _tuple$2; $f._tuple$3 = _tuple$3; $f._tuple$4 = _tuple$4; $f._tuple$5 = _tuple$5; $f._tuple$6 = _tuple$6; $f._tuple$7 = _tuple$7; $f._tuple$8 = _tuple$8; $f.abs = abs; $f.d = d; $f.day = day; $f.end = end; $f.hour = hour; $f.loc = loc; $f.m = m; $f.min = min; $f.month = month; $f.n = n; $f.nsec = nsec; $f.offset = offset; $f.sec = sec; $f.start = start; $f.unix = unix; $f.utc = utc; $f.x = x; $f.x$1 = x$1; $f.x$10 = x$10; $f.x$11 = x$11; $f.x$12 = x$12; $f.x$13 = x$13; $f.x$14 = x$14; $f.x$15 = x$15; $f.x$2 = x$2; $f.x$3 = x$3; $f.x$4 = x$4; $f.x$5 = x$5; $f.x$6 = x$6; $f.x$7 = x$7; $f.x$8 = x$8; $f.x$9 = x$9; $f.y = y; $f.year = year; $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.Date = Date;
 	Time.ptr.prototype.Truncate = function(d) {
 		var $ptr, _tuple$1, d, r, t;
 		t = $clone(this, Time);
@@ -10284,7 +10400,7 @@ $packages["time"] = (function() {
 		}
 		return [qmod2, r];
 	};
-	Location.ptr.prototype.get = function $blocking_get() {
+	Location.ptr.prototype.get = function() {
 		var $ptr, l, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; l = $f.l; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		l = this;
@@ -10297,25 +10413,26 @@ $packages["time"] = (function() {
 			$r = localOnce.Do(initLocal); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* } */ case 2:
 		return l;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_get }; } $f.$ptr = $ptr; $f.l = l; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Location.ptr.prototype.get }; } $f.$ptr = $ptr; $f.l = l; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Location.prototype.get = function() { return this.$val.get(); };
-	Location.ptr.prototype.String = function $blocking_String() {
+	Location.ptr.prototype.String = function() {
 		var $ptr, _r$1, l, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; l = $f.l; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		l = this;
 		_r$1 = l.get(); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		return _r$1.name;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_String }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f.l = l; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Location.ptr.prototype.String }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f.l = l; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Location.prototype.String = function() { return this.$val.String(); };
-	FixedZone = $pkg.FixedZone = function(name, offset) {
+	FixedZone = function(name, offset) {
 		var $ptr, l, name, offset, x;
 		l = new Location.ptr(name, new sliceType$1([new zone.ptr(name, offset, false)]), new sliceType$2([new zoneTrans.ptr(new $Int64(-2147483648, 0), 0, false, false)]), new $Int64(-2147483648, 0), new $Int64(2147483647, 4294967295), ptrType.nil);
 		l.cacheZone = (x = l.zone, (0 >= x.$length ? $throwRuntimeError("index out of range") : x.$array[x.$offset + 0]));
 		return l;
 	};
-	Location.ptr.prototype.lookup = function $blocking_lookup(sec) {
+	$pkg.FixedZone = FixedZone;
+	Location.ptr.prototype.lookup = function(sec) {
 		var $ptr, _q, _r$1, end, hi, isDST, l, lim, lo, m, name, offset, sec, start, tx, x, x$1, x$2, x$3, x$4, x$5, x$6, x$7, x$8, zone$1, zone$2, zone$3, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _q = $f._q; _r$1 = $f._r$1; end = $f.end; hi = $f.hi; isDST = $f.isDST; l = $f.l; lim = $f.lim; lo = $f.lo; m = $f.m; name = $f.name; offset = $f.offset; sec = $f.sec; start = $f.start; tx = $f.tx; x = $f.x; x$1 = $f.x$1; x$2 = $f.x$2; x$3 = $f.x$3; x$4 = $f.x$4; x$5 = $f.x$5; x$6 = $f.x$6; x$7 = $f.x$7; x$8 = $f.x$8; zone$1 = $f.zone$1; zone$2 = $f.zone$2; zone$3 = $f.zone$3; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		name = "";
@@ -10377,7 +10494,7 @@ $packages["time"] = (function() {
 		isDST = zone$3.isDST;
 		start = ((lo < 0 || lo >= tx.$length) ? $throwRuntimeError("index out of range") : tx.$array[tx.$offset + lo]).when;
 		return [name, offset, isDST, start, end];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_lookup }; } $f.$ptr = $ptr; $f._q = _q; $f._r$1 = _r$1; $f.end = end; $f.hi = hi; $f.isDST = isDST; $f.l = l; $f.lim = lim; $f.lo = lo; $f.m = m; $f.name = name; $f.offset = offset; $f.sec = sec; $f.start = start; $f.tx = tx; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.x$3 = x$3; $f.x$4 = x$4; $f.x$5 = x$5; $f.x$6 = x$6; $f.x$7 = x$7; $f.x$8 = x$8; $f.zone$1 = zone$1; $f.zone$2 = zone$2; $f.zone$3 = zone$3; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Location.ptr.prototype.lookup }; } $f.$ptr = $ptr; $f._q = _q; $f._r$1 = _r$1; $f.end = end; $f.hi = hi; $f.isDST = isDST; $f.l = l; $f.lim = lim; $f.lo = lo; $f.m = m; $f.name = name; $f.offset = offset; $f.sec = sec; $f.start = start; $f.tx = tx; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.x$3 = x$3; $f.x$4 = x$4; $f.x$5 = x$5; $f.x$6 = x$6; $f.x$7 = x$7; $f.x$8 = x$8; $f.zone$1 = zone$1; $f.zone$2 = zone$2; $f.zone$3 = zone$3; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Location.prototype.lookup = function(sec) { return this.$val.lookup(sec); };
 	Location.ptr.prototype.lookupFirstZone = function() {
@@ -10425,7 +10542,7 @@ $packages["time"] = (function() {
 		return false;
 	};
 	Location.prototype.firstZoneUsed = function() { return this.$val.firstZoneUsed(); };
-	Location.ptr.prototype.lookupName = function $blocking_lookupName(name, unix) {
+	Location.ptr.prototype.lookupName = function(name, unix) {
 		var $ptr, _i, _i$1, _r$1, _r$2, _ref, _ref$1, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tuple$1, i, i$1, isDST, isDST$1, l, nam, name, offset, offset$1, ok, unix, x, x$1, x$2, zone$1, zone$2, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _i$1 = $f._i$1; _r$1 = $f._r$1; _r$2 = $f._r$2; _ref = $f._ref; _ref$1 = $f._ref$1; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; _tmp$4 = $f._tmp$4; _tmp$5 = $f._tmp$5; _tuple$1 = $f._tuple$1; i = $f.i; i$1 = $f.i$1; isDST = $f.isDST; isDST$1 = $f.isDST$1; l = $f.l; nam = $f.nam; name = $f.name; offset = $f.offset; offset$1 = $f.offset$1; ok = $f.ok; unix = $f.unix; x = $f.x; x$1 = $f.x$1; x$2 = $f.x$2; zone$1 = $f.zone$1; zone$2 = $f.zone$2; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		offset = 0;
@@ -10465,7 +10582,7 @@ $packages["time"] = (function() {
 			_i$1++;
 		}
 		return [offset, isDST, ok];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_lookupName }; } $f.$ptr = $ptr; $f._i = _i; $f._i$1 = _i$1; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._ref = _ref; $f._ref$1 = _ref$1; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tmp$4 = _tmp$4; $f._tmp$5 = _tmp$5; $f._tuple$1 = _tuple$1; $f.i = i; $f.i$1 = i$1; $f.isDST = isDST; $f.isDST$1 = isDST$1; $f.l = l; $f.nam = nam; $f.name = name; $f.offset = offset; $f.offset$1 = offset$1; $f.ok = ok; $f.unix = unix; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.zone$1 = zone$1; $f.zone$2 = zone$2; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Location.ptr.prototype.lookupName }; } $f.$ptr = $ptr; $f._i = _i; $f._i$1 = _i$1; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._ref = _ref; $f._ref$1 = _ref$1; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tmp$4 = _tmp$4; $f._tmp$5 = _tmp$5; $f._tuple$1 = _tuple$1; $f.i = i; $f.i$1 = i$1; $f.isDST = isDST; $f.isDST$1 = isDST$1; $f.l = l; $f.nam = nam; $f.name = name; $f.offset = offset; $f.offset$1 = offset$1; $f.ok = ok; $f.unix = unix; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.zone$1 = zone$1; $f.zone$2 = zone$2; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Location.prototype.lookupName = function(name, unix) { return this.$val.lookupName(name, unix); };
 	ptrType$3.methods = [{prop: "Error", name: "Error", pkg: "", typ: $funcType([], [$String], false)}];
@@ -10480,7 +10597,7 @@ $packages["time"] = (function() {
 	Location.init([{prop: "name", name: "name", pkg: "time", typ: $String, tag: ""}, {prop: "zone", name: "zone", pkg: "time", typ: sliceType$1, tag: ""}, {prop: "tx", name: "tx", pkg: "time", typ: sliceType$2, tag: ""}, {prop: "cacheStart", name: "cacheStart", pkg: "time", typ: $Int64, tag: ""}, {prop: "cacheEnd", name: "cacheEnd", pkg: "time", typ: $Int64, tag: ""}, {prop: "cacheZone", name: "cacheZone", pkg: "time", typ: ptrType, tag: ""}]);
 	zone.init([{prop: "name", name: "name", pkg: "time", typ: $String, tag: ""}, {prop: "offset", name: "offset", pkg: "time", typ: $Int, tag: ""}, {prop: "isDST", name: "isDST", pkg: "time", typ: $Bool, tag: ""}]);
 	zoneTrans.init([{prop: "when", name: "when", pkg: "time", typ: $Int64, tag: ""}, {prop: "index", name: "index", pkg: "time", typ: $Uint8, tag: ""}, {prop: "isstd", name: "isstd", pkg: "time", typ: $Bool, tag: ""}, {prop: "isutc", name: "isutc", pkg: "time", typ: $Bool, tag: ""}]);
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = errors.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
@@ -10511,6 +10628,7 @@ $packages["time"] = (function() {
 		zoneDirs = new sliceType(["/usr/share/zoneinfo/", "/usr/share/lib/zoneinfo/", "/usr/lib/locale/TZ/", runtime.GOROOT() + "/lib/time/zoneinfo.zip"]);
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["os"] = (function() {
@@ -10689,7 +10807,7 @@ $packages["os"] = (function() {
 		return [names, err];
 	};
 	File.prototype.readdirnames = function(n) { return this.$val.readdirnames(n); };
-	File.ptr.prototype.Readdir = function $blocking_Readdir(n) {
+	File.ptr.prototype.Readdir = function(n) {
 		var $ptr, _r, _tmp, _tmp$1, _tuple, err, f, fi, n, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tuple = $f._tuple; err = $f.err; f = $f.f; fi = $f.fi; n = $f.n; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		fi = sliceType$2.nil;
@@ -10702,7 +10820,7 @@ $packages["os"] = (function() {
 		_r = f.readdir(n); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_tuple = _r; fi = _tuple[0]; err = _tuple[1];
 		return [fi, err];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Readdir }; } $f.$ptr = $ptr; $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tuple = _tuple; $f.err = err; $f.f = f; $f.fi = fi; $f.n = n; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: File.ptr.prototype.Readdir }; } $f.$ptr = $ptr; $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tuple = _tuple; $f.err = err; $f.f = f; $f.fi = fi; $f.n = n; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	File.prototype.Readdir = function(n) { return this.$val.Readdir(n); };
 	File.ptr.prototype.Readdirnames = function(n) {
@@ -10718,35 +10836,37 @@ $packages["os"] = (function() {
 		return [names, err];
 	};
 	File.prototype.Readdirnames = function(n) { return this.$val.Readdirnames(n); };
-	PathError.ptr.prototype.Error = function $blocking_Error() {
+	PathError.ptr.prototype.Error = function() {
 		var $ptr, _r, e, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		e = this;
 		_r = e.Err.Error(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return e.Op + " " + e.Path + ": " + _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Error }; } $f.$ptr = $ptr; $f._r = _r; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: PathError.ptr.prototype.Error }; } $f.$ptr = $ptr; $f._r = _r; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	PathError.prototype.Error = function() { return this.$val.Error(); };
-	SyscallError.ptr.prototype.Error = function $blocking_Error() {
+	SyscallError.ptr.prototype.Error = function() {
 		var $ptr, _r, e, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		e = this;
 		_r = e.Err.Error(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return e.Syscall + ": " + _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Error }; } $f.$ptr = $ptr; $f._r = _r; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: SyscallError.ptr.prototype.Error }; } $f.$ptr = $ptr; $f._r = _r; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	SyscallError.prototype.Error = function() { return this.$val.Error(); };
-	NewSyscallError = $pkg.NewSyscallError = function(syscall$1, err) {
+	NewSyscallError = function(syscall$1, err) {
 		var $ptr, err, syscall$1;
 		if ($interfaceIsEqual(err, $ifaceNil)) {
 			return $ifaceNil;
 		}
 		return new SyscallError.ptr(syscall$1, err);
 	};
-	IsNotExist = $pkg.IsNotExist = function(err) {
+	$pkg.NewSyscallError = NewSyscallError;
+	IsNotExist = function(err) {
 		var $ptr, err;
 		return isNotExist(err);
 	};
+	$pkg.IsNotExist = IsNotExist;
 	isNotExist = function(err) {
 		var $ptr, _ref, err, pe, pe$1, pe$2;
 		_ref = err;
@@ -10768,13 +10888,13 @@ $packages["os"] = (function() {
 		return f.file.name;
 	};
 	File.prototype.Name = function() { return this.$val.Name(); };
-	LinkError.ptr.prototype.Error = function $blocking_Error() {
+	LinkError.ptr.prototype.Error = function() {
 		var $ptr, _r, e, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		e = this;
 		_r = e.Err.Error(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return e.Op + " " + e.Old + " " + e.New + ": " + _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Error }; } $f.$ptr = $ptr; $f._r = _r; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: LinkError.ptr.prototype.Error }; } $f.$ptr = $ptr; $f._r = _r; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	LinkError.prototype.Error = function() { return this.$val.Error(); };
 	File.ptr.prototype.Read = function(b) {
@@ -11012,7 +11132,7 @@ $packages["os"] = (function() {
 		return (f.file.fd >>> 0);
 	};
 	File.prototype.Fd = function() { return this.$val.Fd(); };
-	NewFile = $pkg.NewFile = function(fd, name) {
+	NewFile = function(fd, name) {
 		var $ptr, f, fd, fdi, name;
 		fdi = (fd >> 0);
 		if (fdi < 0) {
@@ -11022,6 +11142,7 @@ $packages["os"] = (function() {
 		runtime.SetFinalizer(f.file, new funcType$1($methodExpr(ptrType$11.prototype.close)));
 		return f;
 	};
+	$pkg.NewFile = NewFile;
 	epipecheck = function(file$1, e) {
 		var $ptr, e, file$1;
 		if ($interfaceIsEqual(e, new syscall.Errno(32))) {
@@ -11076,7 +11197,7 @@ $packages["os"] = (function() {
 		return [fi, err];
 	};
 	File.prototype.Stat = function() { return this.$val.Stat(); };
-	Lstat = $pkg.Lstat = function(name) {
+	Lstat = function(name) {
 		var $ptr, _tmp, _tmp$1, _tmp$2, _tmp$3, err, fi, name, stat;
 		fi = $ifaceNil;
 		err = $ifaceNil;
@@ -11089,7 +11210,8 @@ $packages["os"] = (function() {
 		_tmp$2 = fileInfoFromStat(stat, name); _tmp$3 = $ifaceNil; fi = _tmp$2; err = _tmp$3;
 		return [fi, err];
 	};
-	File.ptr.prototype.readdir = function $blocking_readdir(n) {
+	$pkg.Lstat = Lstat;
+	File.ptr.prototype.readdir = function(n) {
 		var $ptr, _i, _r, _ref, _tmp, _tmp$1, _tmp$2, _tmp$3, _tuple, _tuple$1, dirname, err, f, fi, filename, fip, lerr, n, names, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _ref = $f._ref; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; dirname = $f.dirname; err = $f.err; f = $f.f; fi = $f.fi; filename = $f.filename; fip = $f.fip; lerr = $f.lerr; n = $f.n; names = $f.names; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		fi = sliceType$2.nil;
@@ -11121,7 +11243,7 @@ $packages["os"] = (function() {
 		/* } */ $s = 1; continue; case 2:
 		_tmp$2 = fi; _tmp$3 = err; fi = _tmp$2; err = _tmp$3;
 		return [fi, err];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_readdir }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f.dirname = dirname; $f.err = err; $f.f = f; $f.fi = fi; $f.filename = filename; $f.fip = fip; $f.lerr = lerr; $f.n = n; $f.names = names; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: File.ptr.prototype.readdir }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f.dirname = dirname; $f.err = err; $f.f = f; $f.fi = fi; $f.filename = filename; $f.fip = fip; $f.lerr = lerr; $f.n = n; $f.names = names; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	File.prototype.readdir = function(n) { return this.$val.readdir(n); };
 	File.ptr.prototype.read = function(b) {
@@ -11396,7 +11518,7 @@ $packages["os"] = (function() {
 	dirInfo.init([{prop: "buf", name: "buf", pkg: "os", typ: sliceType$1, tag: ""}, {prop: "nbuf", name: "nbuf", pkg: "os", typ: $Int, tag: ""}, {prop: "bufp", name: "bufp", pkg: "os", typ: $Int, tag: ""}]);
 	FileInfo.init([{prop: "IsDir", name: "IsDir", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "ModTime", name: "ModTime", pkg: "", typ: $funcType([], [time.Time], false)}, {prop: "Mode", name: "Mode", pkg: "", typ: $funcType([], [FileMode], false)}, {prop: "Name", name: "Name", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Size", name: "Size", pkg: "", typ: $funcType([], [$Int64], false)}, {prop: "Sys", name: "Sys", pkg: "", typ: $funcType([], [$emptyInterface], false)}]);
 	fileStat.init([{prop: "name", name: "name", pkg: "os", typ: $String, tag: ""}, {prop: "size", name: "size", pkg: "os", typ: $Int64, tag: ""}, {prop: "mode", name: "mode", pkg: "os", typ: FileMode, tag: ""}, {prop: "modTime", name: "modTime", pkg: "os", typ: time.Time, tag: ""}, {prop: "sys", name: "sys", pkg: "os", typ: $emptyInterface, tag: ""}]);
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = errors.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
@@ -11428,6 +11550,7 @@ $packages["os"] = (function() {
 		init$3();
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["reflect"] = (function() {
@@ -11774,7 +11897,7 @@ $packages["reflect"] = (function() {
 	funcType$5 = $funcType([$UnsafePointer, $UnsafePointer, $Uintptr], [$Bool], false);
 	arrayType$3 = $arrayType($Uintptr, 2);
 	ptrType$21 = $ptrType(ValueError);
-	init = function $blocking_init() {
+	init = function() {
 		var $ptr, used, x, x$1, x$10, x$11, x$12, x$2, x$3, x$4, x$5, x$6, x$7, x$8, x$9, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; used = $f.used; x = $f.x; x$1 = $f.x$1; x$10 = $f.x$10; x$11 = $f.x$11; x$12 = $f.x$12; x$2 = $f.x$2; x$3 = $f.x$3; x$4 = $f.x$4; x$5 = $f.x$5; x$6 = $f.x$6; x$7 = $f.x$7; x$8 = $f.x$8; x$9 = $f.x$9; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		used = (function(i) {
@@ -11795,7 +11918,7 @@ $packages["reflect"] = (function() {
 		$r = used((x$12 = new structField.ptr(ptrType$5.nil, ptrType$5.nil, ptrType$1.nil, ptrType$5.nil, 0), new x$12.constructor.elem(x$12))); /* */ $s = 13; case 13: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		initialized = true;
 		uint8Type = $assertType(TypeOf(new $Uint8(0)), ptrType$1);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_init }; } $f.$ptr = $ptr; $f.used = used; $f.x = x; $f.x$1 = x$1; $f.x$10 = x$10; $f.x$11 = x$11; $f.x$12 = x$12; $f.x$2 = x$2; $f.x$3 = x$3; $f.x$4 = x$4; $f.x$5 = x$5; $f.x$6 = x$6; $f.x$7 = x$7; $f.x$8 = x$8; $f.x$9 = x$9; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: init }; } $f.$ptr = $ptr; $f.used = used; $f.x = x; $f.x$1 = x$1; $f.x$10 = x$10; $f.x$11 = x$11; $f.x$12 = x$12; $f.x$2 = x$2; $f.x$3 = x$3; $f.x$4 = x$4; $f.x$5 = x$5; $f.x$6 = x$6; $f.x$7 = x$7; $f.x$8 = x$8; $f.x$9 = x$9; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	jsType = function(typ) {
 		var $ptr, typ;
@@ -11913,7 +12036,7 @@ $packages["reflect"] = (function() {
 		}
 		return ptr;
 	};
-	isWrapped = function $blocking_isWrapped(typ) {
+	isWrapped = function(typ) {
 		var $ptr, _r, _r$1, _r$2, _ref, typ, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _ref = $f._ref; typ = $f.typ; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = typ.Kind(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
@@ -11930,7 +12053,7 @@ $packages["reflect"] = (function() {
 			return _r$2 === 17;
 		/* } */ case 4:
 		return false;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_isWrapped }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._ref = _ref; $f.typ = typ; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: isWrapped }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._ref = _ref; $f.typ = typ; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	copyStruct = function(dst, src, typ) {
 		var $ptr, dst, fields, i, prop, src, typ;
@@ -11943,7 +12066,7 @@ $packages["reflect"] = (function() {
 			i = i + (1) >> 0;
 		}
 	};
-	makeValue = function $blocking_makeValue(t, v, fl) {
+	makeValue = function(t, v, fl) {
 		var $ptr, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _v, _v$1, fl, rt, t, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _v = $f._v; _v$1 = $f._v$1; fl = $f.fl; rt = $f.rt; t = $f.t; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = t.common(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
@@ -11963,9 +12086,9 @@ $packages["reflect"] = (function() {
 		/* } */ case 3:
 		_r$5 = t.Kind(); /* */ $s = 10; case 10: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
 		return new Value.ptr(rt, $newDataPointer(v, jsType(rt.ptrTo())), (((fl | (_r$5 >>> 0)) >>> 0) | 64) >>> 0);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_makeValue }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._v = _v; $f._v$1 = _v$1; $f.fl = fl; $f.rt = rt; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: makeValue }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._v = _v; $f._v$1 = _v$1; $f.fl = fl; $f.rt = rt; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	MakeSlice = $pkg.MakeSlice = function $blocking_MakeSlice(typ, len, cap) {
+	MakeSlice = function(typ, len, cap) {
 		var $ptr, _r, _r$1, cap, len, typ, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; cap = $f.cap; len = $f.len; typ = $f.typ; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		typ = [typ];
@@ -11993,9 +12116,10 @@ $packages["reflect"] = (function() {
 			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.$s = $s; $f.$r = $r; return $f;
 		}; })(typ)), 0); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		return _r$1;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_MakeSlice }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.cap = cap; $f.len = len; $f.typ = typ; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: MakeSlice }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.cap = cap; $f.len = len; $f.typ = typ; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	TypeOf = $pkg.TypeOf = function(i) {
+	$pkg.MakeSlice = MakeSlice;
+	TypeOf = function(i) {
 		var $ptr, i;
 		if (!initialized) {
 			return new rtype.ptr(0, 0, 0, 0, 0, 0, ptrType$4.nil, arrayType$1.zero(), ptrType$5.nil, ptrType$6.nil, ptrType$1.nil, 0);
@@ -12005,7 +12129,8 @@ $packages["reflect"] = (function() {
 		}
 		return reflectType(i.constructor);
 	};
-	ValueOf = $pkg.ValueOf = function $blocking_ValueOf(i) {
+	$pkg.TypeOf = TypeOf;
+	ValueOf = function(i) {
 		var $ptr, _r, i, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; i = $f.i; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		if ($interfaceIsEqual(i, $ifaceNil)) {
@@ -12013,25 +12138,28 @@ $packages["reflect"] = (function() {
 		}
 		_r = makeValue(reflectType(i.constructor), i.$val, 0); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_ValueOf }; } $f.$ptr = $ptr; $f._r = _r; $f.i = i; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: ValueOf }; } $f.$ptr = $ptr; $f._r = _r; $f.i = i; $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.ValueOf = ValueOf;
 	rtype.ptr.prototype.ptrTo = function() {
 		var $ptr, t;
 		t = this;
 		return reflectType($ptrType(jsType(t)));
 	};
 	rtype.prototype.ptrTo = function() { return this.$val.ptrTo(); };
-	SliceOf = $pkg.SliceOf = function(t) {
+	SliceOf = function(t) {
 		var $ptr, t;
 		return reflectType($sliceType(jsType(t)));
 	};
-	Zero = $pkg.Zero = function $blocking_Zero(typ) {
+	$pkg.SliceOf = SliceOf;
+	Zero = function(typ) {
 		var $ptr, _r, typ, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; typ = $f.typ; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = makeValue(typ, jsType(typ).zero(), 0); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Zero }; } $f.$ptr = $ptr; $f._r = _r; $f.typ = typ; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Zero }; } $f.$ptr = $ptr; $f._r = _r; $f.typ = typ; $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.Zero = Zero;
 	unsafe_New = function(typ) {
 		var $ptr, _ref, typ;
 		_ref = typ.Kind();
@@ -12043,7 +12171,7 @@ $packages["reflect"] = (function() {
 			return $newDataPointer(jsType(typ).zero(), jsType(typ.ptrTo()));
 		}
 	};
-	makeInt = function $blocking_makeInt(f, bits, t) {
+	makeInt = function(f, bits, t) {
 		var $ptr, _r, _ref, bits, f, ptr, t, typ, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _ref = $f._ref; bits = $f.bits; f = $f.f; ptr = $f.ptr; t = $f.t; typ = $f.typ; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = t.common(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
@@ -12068,7 +12196,7 @@ $packages["reflect"] = (function() {
 			ptr.$set(bits);
 		}
 		return new Value.ptr(typ, ptr, (((f | 64) >>> 0) | (typ.Kind() >>> 0)) >>> 0);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_makeInt }; } $f.$ptr = $ptr; $f._r = _r; $f._ref = _ref; $f.bits = bits; $f.f = f; $f.ptr = ptr; $f.t = t; $f.typ = typ; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: makeInt }; } $f.$ptr = $ptr; $f._r = _r; $f._ref = _ref; $f.bits = bits; $f.f = f; $f.ptr = ptr; $f.t = t; $f.typ = typ; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	memmove = function(adst, asrc, n) {
 		var $ptr, adst, asrc, n;
@@ -12092,7 +12220,7 @@ $packages["reflect"] = (function() {
 		}
 		return $newDataPointer(entry.v, jsType(PtrTo(t.Elem())));
 	};
-	mapassign = function $blocking_mapassign(t, m, key, val) {
+	mapassign = function(t, m, key, val) {
 		var $ptr, _r, entry, et, jsVal, k, key, kv, m, newVal, t, val, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; entry = $f.entry; et = $f.et; jsVal = $f.jsVal; k = $f.k; key = $f.key; kv = $f.kv; m = $f.m; newVal = $f.newVal; t = $f.t; val = $f.val; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		kv = key.$get();
@@ -12114,7 +12242,7 @@ $packages["reflect"] = (function() {
 		entry.k = kv;
 		entry.v = jsVal;
 		m[$externalize($internalize(k, $String), $String)] = entry;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_mapassign }; } $f.$ptr = $ptr; $f._r = _r; $f.entry = entry; $f.et = et; $f.jsVal = jsVal; $f.k = k; $f.key = key; $f.kv = kv; $f.m = m; $f.newVal = newVal; $f.t = t; $f.val = val; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: mapassign }; } $f.$ptr = $ptr; $f._r = _r; $f.entry = entry; $f.et = et; $f.jsVal = jsVal; $f.k = k; $f.key = key; $f.kv = kv; $f.m = m; $f.newVal = newVal; $f.t = t; $f.val = val; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	mapdelete = function(t, m, key) {
 		var $ptr, k, key, m, t;
@@ -12128,7 +12256,7 @@ $packages["reflect"] = (function() {
 		var $ptr, m, t;
 		return new mapIter.ptr(t, m, $keys(m), 0);
 	};
-	mapiterkey = function $blocking_mapiterkey(it) {
+	mapiterkey = function(it) {
 		var $ptr, _r, _r$1, _r$2, it, iter, k, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; it = $f.it; iter = $f.iter; k = $f.k; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		iter = it;
@@ -12137,7 +12265,7 @@ $packages["reflect"] = (function() {
 		_r$1 = PtrTo(_r); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_r$2 = jsType(_r$1); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		return $newDataPointer(iter.m[$externalize($internalize(k, $String), $String)].k, _r$2);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_mapiterkey }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.it = it; $f.iter = iter; $f.k = k; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: mapiterkey }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.it = it; $f.iter = iter; $f.k = k; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	mapiternext = function(it) {
 		var $ptr, it, iter;
@@ -12148,7 +12276,7 @@ $packages["reflect"] = (function() {
 		var $ptr, m;
 		return $parseInt($keys(m).length);
 	};
-	cvtDirect = function $blocking_cvtDirect(v, typ) {
+	cvtDirect = function(v, typ) {
 		var $ptr, _arg, _arg$1, _arg$2, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _ref, k, slice, srcVal, typ, v, val, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$2 = $f._arg$2; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _ref = $f._ref; k = $f.k; slice = $f.slice; srcVal = $f.srcVal; typ = $f.typ; v = $f.v; val = $f.val; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
@@ -12215,9 +12343,9 @@ $packages["reflect"] = (function() {
 		_r$6 = typ.common(); /* */ $s = 21; case 21: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
 		_r$7 = typ.Kind(); /* */ $s = 22; case 22: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
 		return new Value.ptr(_r$6, val, (((v.flag & 96) >>> 0) | (_r$7 >>> 0)) >>> 0);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_cvtDirect }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._ref = _ref; $f.k = k; $f.slice = slice; $f.srcVal = srcVal; $f.typ = typ; $f.v = v; $f.val = val; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: cvtDirect }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._ref = _ref; $f.k = k; $f.slice = slice; $f.srcVal = srcVal; $f.typ = typ; $f.v = v; $f.val = val; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	Copy = $pkg.Copy = function $blocking_Copy(dst, src) {
+	Copy = function(dst, src) {
 		var $ptr, dk, dst, dstVal, sk, src, srcVal, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; dk = $f.dk; dst = $f.dst; dstVal = $f.dstVal; sk = $f.sk; src = $f.src; srcVal = $f.srcVal; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		src = src;
@@ -12245,9 +12373,10 @@ $packages["reflect"] = (function() {
 			srcVal = new (jsType(SliceOf(src.typ.Elem())))(srcVal);
 		}
 		return $parseInt($copySlice(dstVal, srcVal)) >> 0;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Copy }; } $f.$ptr = $ptr; $f.dk = dk; $f.dst = dst; $f.dstVal = dstVal; $f.sk = sk; $f.src = src; $f.srcVal = srcVal; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Copy }; } $f.$ptr = $ptr; $f.dk = dk; $f.dst = dst; $f.dstVal = dstVal; $f.sk = sk; $f.src = src; $f.srcVal = srcVal; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	methodReceiver = function $blocking_methodReceiver(op, v, i) {
+	$pkg.Copy = Copy;
+	methodReceiver = function(op, v, i) {
 		var $ptr, _r, fn, i, iface, m, m$1, op, prop, rcvr, rcvrtype, t, tt, ut, v, x, x$1, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; fn = $f.fn; i = $f.i; iface = $f.iface; m = $f.m; m$1 = $f.m$1; op = $f.op; prop = $f.prop; rcvr = $f.rcvr; rcvrtype = $f.rcvrtype; t = $f.t; tt = $f.tt; ut = $f.ut; v = $f.v; x = $f.x; x$1 = $f.x$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		rcvrtype = ptrType$1.nil;
@@ -12291,9 +12420,9 @@ $packages["reflect"] = (function() {
 		/* } */ case 2:
 		fn = rcvr[$externalize(prop, $String)];
 		return [rcvrtype, t, fn];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_methodReceiver }; } $f.$ptr = $ptr; $f._r = _r; $f.fn = fn; $f.i = i; $f.iface = iface; $f.m = m; $f.m$1 = m$1; $f.op = op; $f.prop = prop; $f.rcvr = rcvr; $f.rcvrtype = rcvrtype; $f.t = t; $f.tt = tt; $f.ut = ut; $f.v = v; $f.x = x; $f.x$1 = x$1; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: methodReceiver }; } $f.$ptr = $ptr; $f._r = _r; $f.fn = fn; $f.i = i; $f.iface = iface; $f.m = m; $f.m$1 = m$1; $f.op = op; $f.prop = prop; $f.rcvr = rcvr; $f.rcvrtype = rcvrtype; $f.t = t; $f.tt = tt; $f.ut = ut; $f.v = v; $f.x = x; $f.x$1 = x$1; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	valueInterface = function $blocking_valueInterface(v, safe) {
+	valueInterface = function(v, safe) {
 		var $ptr, _r, _r$1, safe, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; safe = $f.safe; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
@@ -12316,7 +12445,7 @@ $packages["reflect"] = (function() {
 			return new (jsType(v.typ))(v.object());
 		/* } */ case 5:
 		return v.object();
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_valueInterface }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.safe = safe; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: valueInterface }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.safe = safe; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	ifaceE2I = function(t, src, dst) {
 		var $ptr, dst, src, t;
@@ -12326,7 +12455,7 @@ $packages["reflect"] = (function() {
 		var $ptr;
 		return "?FIXME?";
 	};
-	makeMethodValue = function $blocking_makeMethodValue(op, v) {
+	makeMethodValue = function(op, v) {
 		var $ptr, _r, _r$1, _r$2, _tuple, fn, fv, op, rcvr, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _tuple = $f._tuple; fn = $f.fn; fv = $f.fv; op = $f.op; rcvr = $f.rcvr; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		fn = [fn];
@@ -12350,7 +12479,7 @@ $packages["reflect"] = (function() {
 		}; })(fn, rcvr));
 		_r$2 = v.Type().common(); /* */ $s = 5; case 5: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		return new Value.ptr(_r$2, fv, (((v.flag & 32) >>> 0) | 19) >>> 0);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_makeMethodValue }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._tuple = _tuple; $f.fn = fn; $f.fv = fv; $f.op = op; $f.rcvr = rcvr; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: makeMethodValue }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._tuple = _tuple; $f.fn = fn; $f.fv = fv; $f.op = op; $f.rcvr = rcvr; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	rtype.ptr.prototype.pointers = function() {
 		var $ptr, _ref, t;
@@ -12363,7 +12492,7 @@ $packages["reflect"] = (function() {
 		}
 	};
 	rtype.prototype.pointers = function() { return this.$val.pointers(); };
-	rtype.ptr.prototype.Comparable = function $blocking_Comparable() {
+	rtype.ptr.prototype.Comparable = function() {
 		var $ptr, _r, _r$1, _r$2, _ref, i, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _ref = $f._ref; i = $f.i; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = this;
@@ -12394,7 +12523,7 @@ $packages["reflect"] = (function() {
 			/* } */ $s = 6; continue; case 7:
 		/* } */ case 4:
 		return true;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Comparable }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._ref = _ref; $f.i = i; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: rtype.ptr.prototype.Comparable }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._ref = _ref; $f.i = i; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	rtype.prototype.Comparable = function() { return this.$val.Comparable(); };
 	uncommonType.ptr.prototype.Method = function(i) {
@@ -12457,7 +12586,7 @@ $packages["reflect"] = (function() {
 		return v.ptr;
 	};
 	Value.prototype.object = function() { return this.$val.object(); };
-	Value.ptr.prototype.call = function $blocking_call(op, in$1) {
+	Value.ptr.prototype.call = function(op, in$1) {
 		var $ptr, _arg, _arg$1, _arg$2, _arg$3, _i, _i$1, _i$2, _r, _r$1, _r$10, _r$11, _r$12, _r$13, _r$14, _r$15, _r$16, _r$17, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _ref, _ref$1, _ref$2, _ref$3, _tmp, _tmp$1, _tuple, arg, argsArray, elem, fn, i, i$1, i$2, i$3, in$1, isSlice, m, n, nin, nout, op, origIn, rcvr, results, ret, slice, t, targ, v, x, x$1, x$2, xt, xt$1, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$2 = $f._arg$2; _arg$3 = $f._arg$3; _i = $f._i; _i$1 = $f._i$1; _i$2 = $f._i$2; _r = $f._r; _r$1 = $f._r$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$13 = $f._r$13; _r$14 = $f._r$14; _r$15 = $f._r$15; _r$16 = $f._r$16; _r$17 = $f._r$17; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _ref = $f._ref; _ref$1 = $f._ref$1; _ref$2 = $f._ref$2; _ref$3 = $f._ref$3; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tuple = $f._tuple; arg = $f.arg; argsArray = $f.argsArray; elem = $f.elem; fn = $f.fn; i = $f.i; i$1 = $f.i$1; i$2 = $f.i$2; i$3 = $f.i$3; in$1 = $f.in$1; isSlice = $f.isSlice; m = $f.m; n = $f.n; nin = $f.nin; nout = $f.nout; op = $f.op; origIn = $f.origIn; rcvr = $f.rcvr; results = $f.results; ret = $f.ret; slice = $f.slice; t = $f.t; targ = $f.targ; v = $f.v; x = $f.x; x$1 = $f.x$1; x$2 = $f.x$2; xt = $f.xt; xt$1 = $f.xt$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
@@ -12610,7 +12739,7 @@ $packages["reflect"] = (function() {
 			/* } */ $s = 40; continue; case 41:
 			return ret;
 		/* } */ case 38:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_call }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._arg$3 = _arg$3; $f._i = _i; $f._i$1 = _i$1; $f._i$2 = _i$2; $f._r = _r; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f._ref$1 = _ref$1; $f._ref$2 = _ref$2; $f._ref$3 = _ref$3; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tuple = _tuple; $f.arg = arg; $f.argsArray = argsArray; $f.elem = elem; $f.fn = fn; $f.i = i; $f.i$1 = i$1; $f.i$2 = i$2; $f.i$3 = i$3; $f.in$1 = in$1; $f.isSlice = isSlice; $f.m = m; $f.n = n; $f.nin = nin; $f.nout = nout; $f.op = op; $f.origIn = origIn; $f.rcvr = rcvr; $f.results = results; $f.ret = ret; $f.slice = slice; $f.t = t; $f.targ = targ; $f.v = v; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.xt = xt; $f.xt$1 = xt$1; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.call }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._arg$3 = _arg$3; $f._i = _i; $f._i$1 = _i$1; $f._i$2 = _i$2; $f._r = _r; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f._ref$1 = _ref$1; $f._ref$2 = _ref$2; $f._ref$3 = _ref$3; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tuple = _tuple; $f.arg = arg; $f.argsArray = argsArray; $f.elem = elem; $f.fn = fn; $f.i = i; $f.i$1 = i$1; $f.i$2 = i$2; $f.i$3 = i$3; $f.in$1 = in$1; $f.isSlice = isSlice; $f.m = m; $f.n = n; $f.nin = nin; $f.nout = nout; $f.op = op; $f.origIn = origIn; $f.rcvr = rcvr; $f.results = results; $f.ret = ret; $f.slice = slice; $f.t = t; $f.targ = targ; $f.v = v; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.xt = xt; $f.xt$1 = xt$1; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.call = function(op, in$1) { return this.$val.call(op, in$1); };
 	Value.ptr.prototype.Cap = function() {
@@ -12640,7 +12769,7 @@ $packages["reflect"] = (function() {
 		}
 		return val;
 	};
-	Value.ptr.prototype.Elem = function $blocking_Elem() {
+	Value.ptr.prototype.Elem = function() {
 		var $ptr, _r, _ref, fl, k, tt, typ, v, val, val$1, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _ref = $f._ref; fl = $f.fl; k = $f.k; tt = $f.tt; typ = $f.typ; v = $f.v; val = $f.val; val$1 = $f.val$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
@@ -12671,10 +12800,10 @@ $packages["reflect"] = (function() {
 		/* } else { */ case 3:
 			$panic(new ValueError.ptr("reflect.Value.Elem", k));
 		/* } */ case 4:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Elem }; } $f.$ptr = $ptr; $f._r = _r; $f._ref = _ref; $f.fl = fl; $f.k = k; $f.tt = tt; $f.typ = typ; $f.v = v; $f.val = val; $f.val$1 = val$1; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.Elem }; } $f.$ptr = $ptr; $f._r = _r; $f._ref = _ref; $f.fl = fl; $f.k = k; $f.tt = tt; $f.typ = typ; $f.v = v; $f.val = val; $f.val$1 = val$1; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.Elem = function() { return this.$val.Elem(); };
-	Value.ptr.prototype.Field = function $blocking_Field(i) {
+	Value.ptr.prototype.Field = function(i) {
 		var $ptr, _r, _r$1, _r$2, field, fl, i, jsTag, o, prop, s, tag, tt, typ, v, x, x$1, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; field = $f.field; fl = $f.fl; i = $f.i; jsTag = $f.jsTag; o = $f.o; prop = $f.prop; s = $f.s; tag = $f.tag; tt = $f.tt; typ = $f.typ; v = $f.v; x = $f.x; x$1 = $f.x$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		jsTag = [jsTag];
@@ -12742,7 +12871,7 @@ $packages["reflect"] = (function() {
 		/* } */ case 14:
 		_r$2 = makeValue(typ[0], wrapJsObject(typ[0], s[0][$externalize(prop[0], $String)]), fl); /* */ $s = 15; case 15: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		return _r$2;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Field }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.field = field; $f.fl = fl; $f.i = i; $f.jsTag = jsTag; $f.o = o; $f.prop = prop; $f.s = s; $f.tag = tag; $f.tt = tt; $f.typ = typ; $f.v = v; $f.x = x; $f.x$1 = x$1; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.Field }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.field = field; $f.fl = fl; $f.i = i; $f.jsTag = jsTag; $f.o = o; $f.prop = prop; $f.s = s; $f.tag = tag; $f.tt = tt; $f.typ = typ; $f.v = v; $f.x = x; $f.x$1 = x$1; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.Field = function(i) { return this.$val.Field(i); };
 	getJsTag = function(tag) {
@@ -12788,7 +12917,7 @@ $packages["reflect"] = (function() {
 		}
 		return "";
 	};
-	Value.ptr.prototype.Index = function $blocking_Index(i) {
+	Value.ptr.prototype.Index = function(i) {
 		var $ptr, _r, _r$1, _ref, a, a$1, c, fl, fl$1, fl$2, i, k, s, str, tt, tt$1, typ, typ$1, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _ref = $f._ref; a = $f.a; a$1 = $f.a$1; c = $f.c; fl = $f.fl; fl$1 = $f.fl$1; fl$2 = $f.fl$2; i = $f.i; k = $f.k; s = $f.s; str = $f.str; tt = $f.tt; tt$1 = $f.tt$1; typ = $f.typ; typ$1 = $f.typ$1; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		a = [a];
@@ -12864,7 +12993,7 @@ $packages["reflect"] = (function() {
 		/* } else { */ case 4:
 			$panic(new ValueError.ptr("reflect.Value.Index", k));
 		/* } */ case 5:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Index }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._ref = _ref; $f.a = a; $f.a$1 = a$1; $f.c = c; $f.fl = fl; $f.fl$1 = fl$1; $f.fl$2 = fl$2; $f.i = i; $f.k = k; $f.s = s; $f.str = str; $f.tt = tt; $f.tt$1 = tt$1; $f.typ = typ; $f.typ$1 = typ$1; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.Index }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._ref = _ref; $f.a = a; $f.a$1 = a$1; $f.c = c; $f.fl = fl; $f.fl$1 = fl$1; $f.fl$2 = fl$2; $f.i = i; $f.k = k; $f.s = s; $f.str = str; $f.tt = tt; $f.tt$1 = tt$1; $f.typ = typ; $f.typ$1 = typ$1; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.Index = function(i) { return this.$val.Index(i); };
 	Value.ptr.prototype.IsNil = function() {
@@ -12928,7 +13057,7 @@ $packages["reflect"] = (function() {
 		}
 	};
 	Value.prototype.Pointer = function() { return this.$val.Pointer(); };
-	Value.ptr.prototype.Set = function $blocking_Set(x) {
+	Value.ptr.prototype.Set = function(x) {
 		var $ptr, _r, _r$1, _ref, v, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _ref = $f._ref; v = $f.v; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
@@ -12961,7 +13090,7 @@ $packages["reflect"] = (function() {
 			return;
 		/* } */ case 3:
 		v.ptr = x.ptr;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Set }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._ref = _ref; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.Set }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._ref = _ref; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.Set = function(x) { return this.$val.Set(x); };
 	Value.ptr.prototype.SetCap = function(n) {
@@ -12996,7 +13125,7 @@ $packages["reflect"] = (function() {
 		v.ptr.$set(newSlice);
 	};
 	Value.prototype.SetLen = function(n) { return this.$val.SetLen(n); };
-	Value.ptr.prototype.Slice = function $blocking_Slice(i, j) {
+	Value.ptr.prototype.Slice = function(i, j) {
 		var $ptr, _r, _r$1, _ref, cap, i, j, kind, s, str, tt, typ, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _ref = $f._ref; cap = $f.cap; i = $f.i; j = $f.j; kind = $f.kind; s = $f.s; str = $f.str; tt = $f.tt; typ = $f.typ; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
@@ -13039,10 +13168,10 @@ $packages["reflect"] = (function() {
 		}
 		_r$1 = makeValue(typ, $subslice(s, i, j), (v.flag & 32) >>> 0); /* */ $s = 7; case 7: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		return _r$1;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Slice }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._ref = _ref; $f.cap = cap; $f.i = i; $f.j = j; $f.kind = kind; $f.s = s; $f.str = str; $f.tt = tt; $f.typ = typ; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.Slice }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._ref = _ref; $f.cap = cap; $f.i = i; $f.j = j; $f.kind = kind; $f.s = s; $f.str = str; $f.tt = tt; $f.typ = typ; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.Slice = function(i, j) { return this.$val.Slice(i, j); };
-	Value.ptr.prototype.Slice3 = function $blocking_Slice3(i, j, k) {
+	Value.ptr.prototype.Slice3 = function(i, j, k) {
 		var $ptr, _r, _ref, cap, i, j, k, kind, s, tt, typ, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _ref = $f._ref; cap = $f.cap; i = $f.i; j = $f.j; k = $f.k; kind = $f.kind; s = $f.s; tt = $f.tt; typ = $f.typ; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
@@ -13071,7 +13200,7 @@ $packages["reflect"] = (function() {
 		}
 		_r = makeValue(typ, $subslice(s, i, j, k), (v.flag & 32) >>> 0); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Slice3 }; } $f.$ptr = $ptr; $f._r = _r; $f._ref = _ref; $f.cap = cap; $f.i = i; $f.j = j; $f.k = k; $f.kind = kind; $f.s = s; $f.tt = tt; $f.typ = typ; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.Slice3 }; } $f.$ptr = $ptr; $f._r = _r; $f._ref = _ref; $f.cap = cap; $f.i = i; $f.j = j; $f.k = k; $f.kind = kind; $f.s = s; $f.tt = tt; $f.typ = typ; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.Slice3 = function(i, j, k) { return this.$val.Slice3(i, j, k); };
 	Value.ptr.prototype.Close = function() {
@@ -13082,7 +13211,7 @@ $packages["reflect"] = (function() {
 		$close(v.object());
 	};
 	Value.prototype.Close = function() { return this.$val.Close(); };
-	chanrecv = function $blocking_chanrecv(t, ch, nb, val) {
+	chanrecv = function(t, ch, nb, val) {
 		var $ptr, _r, _tmp, _tmp$1, _tmp$2, _tmp$3, ch, comms, nb, received, recvRes, selectRes, selected, t, val, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; ch = $f.ch; comms = $f.comms; nb = $f.nb; received = $f.received; recvRes = $f.recvRes; selectRes = $f.selectRes; selected = $f.selected; t = $f.t; val = $f.val; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		selected = false;
@@ -13101,9 +13230,9 @@ $packages["reflect"] = (function() {
 		val.$set(recvRes[0]);
 		_tmp$2 = true; _tmp$3 = !!(recvRes[1]); selected = _tmp$2; received = _tmp$3;
 		return [selected, received];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_chanrecv }; } $f.$ptr = $ptr; $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f.ch = ch; $f.comms = comms; $f.nb = nb; $f.received = received; $f.recvRes = recvRes; $f.selectRes = selectRes; $f.selected = selected; $f.t = t; $f.val = val; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: chanrecv }; } $f.$ptr = $ptr; $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f.ch = ch; $f.comms = comms; $f.nb = nb; $f.received = received; $f.recvRes = recvRes; $f.selectRes = selectRes; $f.selected = selected; $f.t = t; $f.val = val; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	chansend = function $blocking_chansend(t, ch, val, nb) {
+	chansend = function(t, ch, val, nb) {
 		var $ptr, _r, ch, comms, nb, selectRes, t, val, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; ch = $f.ch; comms = $f.comms; nb = $f.nb; selectRes = $f.selectRes; t = $f.t; val = $f.val; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		comms = new sliceType$9([new sliceType$1([new $jsObjectPtr(ch), new $jsObjectPtr(val.$get())])]);
@@ -13116,7 +13245,7 @@ $packages["reflect"] = (function() {
 			return false;
 		}
 		return true;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_chansend }; } $f.$ptr = $ptr; $f._r = _r; $f.ch = ch; $f.comms = comms; $f.nb = nb; $f.selectRes = selectRes; $f.t = t; $f.val = val; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: chansend }; } $f.$ptr = $ptr; $f._r = _r; $f.ch = ch; $f.comms = comms; $f.nb = nb; $f.selectRes = selectRes; $f.t = t; $f.val = val; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Kind.prototype.String = function() {
 		var $ptr, k;
@@ -13325,7 +13454,7 @@ $packages["reflect"] = (function() {
 		$panic(new $String("reflect: Elem of invalid type"));
 	};
 	rtype.prototype.Elem = function() { return this.$val.Elem(); };
-	rtype.ptr.prototype.Field = function $blocking_Field(i) {
+	rtype.ptr.prototype.Field = function(i) {
 		var $ptr, _r, i, t, tt, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; i = $f.i; t = $f.t; tt = $f.tt; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = this;
@@ -13335,10 +13464,10 @@ $packages["reflect"] = (function() {
 		tt = t.kindType;
 		_r = tt.Field(i); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Field }; } $f.$ptr = $ptr; $f._r = _r; $f.i = i; $f.t = t; $f.tt = tt; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: rtype.ptr.prototype.Field }; } $f.$ptr = $ptr; $f._r = _r; $f.i = i; $f.t = t; $f.tt = tt; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	rtype.prototype.Field = function(i) { return this.$val.Field(i); };
-	rtype.ptr.prototype.FieldByIndex = function $blocking_FieldByIndex(index) {
+	rtype.ptr.prototype.FieldByIndex = function(index) {
 		var $ptr, _r, index, t, tt, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; index = $f.index; t = $f.t; tt = $f.tt; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = this;
@@ -13348,10 +13477,10 @@ $packages["reflect"] = (function() {
 		tt = t.kindType;
 		_r = tt.FieldByIndex(index); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_FieldByIndex }; } $f.$ptr = $ptr; $f._r = _r; $f.index = index; $f.t = t; $f.tt = tt; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: rtype.ptr.prototype.FieldByIndex }; } $f.$ptr = $ptr; $f._r = _r; $f.index = index; $f.t = t; $f.tt = tt; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	rtype.prototype.FieldByIndex = function(index) { return this.$val.FieldByIndex(index); };
-	rtype.ptr.prototype.FieldByName = function $blocking_FieldByName(name) {
+	rtype.ptr.prototype.FieldByName = function(name) {
 		var $ptr, _r, name, t, tt, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; name = $f.name; t = $f.t; tt = $f.tt; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = this;
@@ -13361,10 +13490,10 @@ $packages["reflect"] = (function() {
 		tt = t.kindType;
 		_r = tt.FieldByName(name); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_FieldByName }; } $f.$ptr = $ptr; $f._r = _r; $f.name = name; $f.t = t; $f.tt = tt; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: rtype.ptr.prototype.FieldByName }; } $f.$ptr = $ptr; $f._r = _r; $f.name = name; $f.t = t; $f.tt = tt; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	rtype.prototype.FieldByName = function(name) { return this.$val.FieldByName(name); };
-	rtype.ptr.prototype.FieldByNameFunc = function $blocking_FieldByNameFunc(match) {
+	rtype.ptr.prototype.FieldByNameFunc = function(match) {
 		var $ptr, _r, match, t, tt, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; match = $f.match; t = $f.t; tt = $f.tt; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = this;
@@ -13374,7 +13503,7 @@ $packages["reflect"] = (function() {
 		tt = t.kindType;
 		_r = tt.FieldByNameFunc(match); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_FieldByNameFunc }; } $f.$ptr = $ptr; $f._r = _r; $f.match = match; $f.t = t; $f.tt = tt; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: rtype.ptr.prototype.FieldByNameFunc }; } $f.$ptr = $ptr; $f._r = _r; $f.match = match; $f.t = t; $f.tt = tt; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	rtype.prototype.FieldByNameFunc = function(match) { return this.$val.FieldByNameFunc(match); };
 	rtype.ptr.prototype.In = function(i) {
@@ -13553,7 +13682,7 @@ $packages["reflect"] = (function() {
 		return "";
 	};
 	$ptrType(StructTag).prototype.Get = function(key) { return new StructTag(this.$get()).Get(key); };
-	structType.ptr.prototype.Field = function $blocking_Field(i) {
+	structType.ptr.prototype.Field = function(i) {
 		var $ptr, _r, _r$1, _r$2, f, i, p, t, t$1, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; f = $f.f; i = $f.i; p = $f.p; t = $f.t; t$1 = $f.t$1; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		f = new StructField.ptr();
@@ -13590,10 +13719,10 @@ $packages["reflect"] = (function() {
 		f.Offset = p.offset;
 		f.Index = new sliceType$11([i]);
 		return f;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Field }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.f = f; $f.i = i; $f.p = p; $f.t = t; $f.t$1 = t$1; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: structType.ptr.prototype.Field }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.f = f; $f.i = i; $f.p = p; $f.t = t; $f.t$1 = t$1; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	structType.prototype.Field = function(i) { return this.$val.Field(i); };
-	structType.ptr.prototype.FieldByIndex = function $blocking_FieldByIndex(index) {
+	structType.ptr.prototype.FieldByIndex = function(index) {
 		var $ptr, _i, _r, _r$1, _r$2, _r$3, _r$4, _ref, _v, f, ft, i, index, t, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _ref = $f._ref; _v = $f._v; f = $f.f; ft = $f.ft; i = $f.i; index = $f.index; t = $f.t; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		f = new StructField.ptr();
@@ -13627,10 +13756,10 @@ $packages["reflect"] = (function() {
 			_i++;
 		/* } */ $s = 1; continue; case 2:
 		return f;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_FieldByIndex }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._ref = _ref; $f._v = _v; $f.f = f; $f.ft = ft; $f.i = i; $f.index = index; $f.t = t; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: structType.ptr.prototype.FieldByIndex }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._ref = _ref; $f._v = _v; $f.f = f; $f.ft = ft; $f.i = i; $f.index = index; $f.t = t; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	structType.prototype.FieldByIndex = function(index) { return this.$val.FieldByIndex(index); };
-	structType.ptr.prototype.FieldByNameFunc = function $blocking_FieldByNameFunc(match) {
+	structType.ptr.prototype.FieldByNameFunc = function(match) {
 		var $ptr, _entry, _entry$1, _entry$2, _entry$3, _i, _i$1, _key, _key$1, _key$2, _key$3, _key$4, _key$5, _map, _map$1, _r, _r$1, _r$2, _ref, _ref$1, _tmp, _tmp$1, _tmp$2, _tmp$3, count, current, f, fname, i, index, match, next, nextCount, ntyp, ok, result, scan, styp, t, t$1, visited, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _entry$1 = $f._entry$1; _entry$2 = $f._entry$2; _entry$3 = $f._entry$3; _i = $f._i; _i$1 = $f._i$1; _key = $f._key; _key$1 = $f._key$1; _key$2 = $f._key$2; _key$3 = $f._key$3; _key$4 = $f._key$4; _key$5 = $f._key$5; _map = $f._map; _map$1 = $f._map$1; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _ref = $f._ref; _ref$1 = $f._ref$1; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; count = $f.count; current = $f.current; f = $f.f; fname = $f.fname; i = $f.i; index = $f.index; match = $f.match; next = $f.next; nextCount = $f.nextCount; ntyp = $f.ntyp; ok = $f.ok; result = $f.result; scan = $f.scan; styp = $f.styp; t = $f.t; t$1 = $f.t$1; visited = $f.visited; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		result = new StructField.ptr();
@@ -13728,10 +13857,10 @@ $packages["reflect"] = (function() {
 			}
 		/* } */ $s = 1; continue; case 2:
 		return [result, ok];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_FieldByNameFunc }; } $f.$ptr = $ptr; $f._entry = _entry; $f._entry$1 = _entry$1; $f._entry$2 = _entry$2; $f._entry$3 = _entry$3; $f._i = _i; $f._i$1 = _i$1; $f._key = _key; $f._key$1 = _key$1; $f._key$2 = _key$2; $f._key$3 = _key$3; $f._key$4 = _key$4; $f._key$5 = _key$5; $f._map = _map; $f._map$1 = _map$1; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._ref = _ref; $f._ref$1 = _ref$1; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f.count = count; $f.current = current; $f.f = f; $f.fname = fname; $f.i = i; $f.index = index; $f.match = match; $f.next = next; $f.nextCount = nextCount; $f.ntyp = ntyp; $f.ok = ok; $f.result = result; $f.scan = scan; $f.styp = styp; $f.t = t; $f.t$1 = t$1; $f.visited = visited; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: structType.ptr.prototype.FieldByNameFunc }; } $f.$ptr = $ptr; $f._entry = _entry; $f._entry$1 = _entry$1; $f._entry$2 = _entry$2; $f._entry$3 = _entry$3; $f._i = _i; $f._i$1 = _i$1; $f._key = _key; $f._key$1 = _key$1; $f._key$2 = _key$2; $f._key$3 = _key$3; $f._key$4 = _key$4; $f._key$5 = _key$5; $f._map = _map; $f._map$1 = _map$1; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._ref = _ref; $f._ref$1 = _ref$1; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f.count = count; $f.current = current; $f.f = f; $f.fname = fname; $f.i = i; $f.index = index; $f.match = match; $f.next = next; $f.nextCount = nextCount; $f.ntyp = ntyp; $f.ok = ok; $f.result = result; $f.scan = scan; $f.styp = styp; $f.t = t; $f.t$1 = t$1; $f.visited = visited; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	structType.prototype.FieldByNameFunc = function(match) { return this.$val.FieldByNameFunc(match); };
-	structType.ptr.prototype.FieldByName = function $blocking_FieldByName(name) {
+	structType.ptr.prototype.FieldByName = function(name) {
 		var $ptr, _i, _r, _r$1, _ref, _tmp, _tmp$1, _tuple, f, hasAnon, i, name, present, t, tf, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _ref = $f._ref; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tuple = $f._tuple; f = $f.f; hasAnon = $f.hasAnon; i = $f.i; name = $f.name; present = $f.present; t = $f.t; tf = $f.tf; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		name = [name];
@@ -13774,14 +13903,15 @@ $packages["reflect"] = (function() {
 		}; })(name)); /* */ $s = 10; case 10: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_tuple = _r$1; $copy(f, _tuple[0], StructField); present = _tuple[1];
 		return [f, present];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_FieldByName }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._ref = _ref; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tuple = _tuple; $f.f = f; $f.hasAnon = hasAnon; $f.i = i; $f.name = name; $f.present = present; $f.t = t; $f.tf = tf; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: structType.ptr.prototype.FieldByName }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._ref = _ref; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tuple = _tuple; $f.f = f; $f.hasAnon = hasAnon; $f.i = i; $f.name = name; $f.present = present; $f.t = t; $f.tf = tf; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	structType.prototype.FieldByName = function(name) { return this.$val.FieldByName(name); };
-	PtrTo = $pkg.PtrTo = function(t) {
+	PtrTo = function(t) {
 		var $ptr, t;
 		return $assertType(t, ptrType$1).ptrTo();
 	};
-	rtype.ptr.prototype.Implements = function $blocking_Implements(u) {
+	$pkg.PtrTo = PtrTo;
+	rtype.ptr.prototype.Implements = function(u) {
 		var $ptr, _r, t, u, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; t = $f.t; u = $f.u; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = this;
@@ -13795,7 +13925,7 @@ $packages["reflect"] = (function() {
 			$panic(new $String("reflect: non-interface type passed to Type.Implements"));
 		/* } */ case 2:
 		return implements$1($assertType(u, ptrType$1), t);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Implements }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.u = u; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: rtype.ptr.prototype.Implements }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.u = u; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	rtype.prototype.Implements = function(u) { return this.$val.Implements(u); };
 	rtype.ptr.prototype.AssignableTo = function(u) {
@@ -13808,7 +13938,7 @@ $packages["reflect"] = (function() {
 		return directlyAssignable(uu, t) || implements$1(uu, t);
 	};
 	rtype.prototype.AssignableTo = function(u) { return this.$val.AssignableTo(u); };
-	rtype.ptr.prototype.ConvertibleTo = function $blocking_ConvertibleTo(u) {
+	rtype.ptr.prototype.ConvertibleTo = function(u) {
 		var $ptr, _r, t, u, uu, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; t = $f.t; u = $f.u; uu = $f.uu; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = this;
@@ -13818,7 +13948,7 @@ $packages["reflect"] = (function() {
 		uu = $assertType(u, ptrType$1);
 		_r = convertOp(uu, t); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return !(_r === $throwNilPointerError);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_ConvertibleTo }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.u = u; $f.uu = uu; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: rtype.ptr.prototype.ConvertibleTo }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.u = u; $f.uu = uu; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	rtype.prototype.ConvertibleTo = function(u) { return this.$val.ConvertibleTo(u); };
 	implements$1 = function(T, V) {
@@ -14059,7 +14189,7 @@ $packages["reflect"] = (function() {
 		return v.ptr.$get();
 	};
 	Value.prototype.Bool = function() { return this.$val.Bool(); };
-	Value.ptr.prototype.Bytes = function $blocking_Bytes() {
+	Value.ptr.prototype.Bytes = function() {
 		var $ptr, _r, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
@@ -14071,10 +14201,10 @@ $packages["reflect"] = (function() {
 			$panic(new $String("reflect.Value.Bytes of non-byte slice"));
 		/* } */ case 2:
 		return v.ptr.$get();
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Bytes }; } $f.$ptr = $ptr; $f._r = _r; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.Bytes }; } $f.$ptr = $ptr; $f._r = _r; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.Bytes = function() { return this.$val.Bytes(); };
-	Value.ptr.prototype.runes = function $blocking_runes() {
+	Value.ptr.prototype.runes = function() {
 		var $ptr, _r, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
@@ -14086,7 +14216,7 @@ $packages["reflect"] = (function() {
 			$panic(new $String("reflect.Value.Bytes of non-rune slice"));
 		/* } */ case 2:
 		return v.ptr.$get();
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_runes }; } $f.$ptr = $ptr; $f._r = _r; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.runes }; } $f.$ptr = $ptr; $f._r = _r; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.runes = function() { return this.$val.runes(); };
 	Value.ptr.prototype.CanAddr = function() {
@@ -14101,7 +14231,7 @@ $packages["reflect"] = (function() {
 		return ((v.flag & 160) >>> 0) === 128;
 	};
 	Value.prototype.CanSet = function() { return this.$val.CanSet(); };
-	Value.ptr.prototype.Call = function $blocking_Call(in$1) {
+	Value.ptr.prototype.Call = function(in$1) {
 		var $ptr, _r, in$1, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; in$1 = $f.in$1; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
@@ -14109,10 +14239,10 @@ $packages["reflect"] = (function() {
 		new flag(v.flag).mustBeExported();
 		_r = v.call("Call", in$1); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Call }; } $f.$ptr = $ptr; $f._r = _r; $f.in$1 = in$1; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.Call }; } $f.$ptr = $ptr; $f._r = _r; $f.in$1 = in$1; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.Call = function(in$1) { return this.$val.Call(in$1); };
-	Value.ptr.prototype.CallSlice = function $blocking_CallSlice(in$1) {
+	Value.ptr.prototype.CallSlice = function(in$1) {
 		var $ptr, _r, in$1, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; in$1 = $f.in$1; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
@@ -14120,7 +14250,7 @@ $packages["reflect"] = (function() {
 		new flag(v.flag).mustBeExported();
 		_r = v.call("CallSlice", in$1); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_CallSlice }; } $f.$ptr = $ptr; $f._r = _r; $f.in$1 = in$1; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.CallSlice }; } $f.$ptr = $ptr; $f._r = _r; $f.in$1 = in$1; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.CallSlice = function(in$1) { return this.$val.CallSlice(in$1); };
 	Value.ptr.prototype.Complex = function() {
@@ -14136,7 +14266,7 @@ $packages["reflect"] = (function() {
 		$panic(new ValueError.ptr("reflect.Value.Complex", new flag(v.flag).kind()));
 	};
 	Value.prototype.Complex = function() { return this.$val.Complex(); };
-	Value.ptr.prototype.FieldByIndex = function $blocking_FieldByIndex(index) {
+	Value.ptr.prototype.FieldByIndex = function(index) {
 		var $ptr, _i, _r, _r$1, _r$2, _r$3, _ref, _v, i, index, v, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _ref = $f._ref; _v = $f._v; i = $f.i; index = $f.index; v = $f.v; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
@@ -14174,10 +14304,10 @@ $packages["reflect"] = (function() {
 			_i++;
 		/* } */ $s = 4; continue; case 5:
 		return v;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_FieldByIndex }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._ref = _ref; $f._v = _v; $f.i = i; $f.index = index; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.FieldByIndex }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._ref = _ref; $f._v = _v; $f.i = i; $f.index = index; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.FieldByIndex = function(index) { return this.$val.FieldByIndex(index); };
-	Value.ptr.prototype.FieldByName = function $blocking_FieldByName(name) {
+	Value.ptr.prototype.FieldByName = function(name) {
 		var $ptr, _r, _r$1, _tuple, f, name, ok, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _tuple = $f._tuple; f = $f.f; name = $f.name; ok = $f.ok; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
@@ -14191,10 +14321,10 @@ $packages["reflect"] = (function() {
 			return _r$1;
 		/* } */ case 3:
 		return new Value.ptr(ptrType$1.nil, 0, 0);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_FieldByName }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._tuple = _tuple; $f.f = f; $f.name = name; $f.ok = ok; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.FieldByName }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._tuple = _tuple; $f.f = f; $f.name = name; $f.ok = ok; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.FieldByName = function(name) { return this.$val.FieldByName(name); };
-	Value.ptr.prototype.FieldByNameFunc = function $blocking_FieldByNameFunc(match) {
+	Value.ptr.prototype.FieldByNameFunc = function(match) {
 		var $ptr, _r, _r$1, _tuple, f, match, ok, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _tuple = $f._tuple; f = $f.f; match = $f.match; ok = $f.ok; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
@@ -14207,7 +14337,7 @@ $packages["reflect"] = (function() {
 			return _r$1;
 		/* } */ case 3:
 		return new Value.ptr(ptrType$1.nil, 0, 0);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_FieldByNameFunc }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._tuple = _tuple; $f.f = f; $f.match = match; $f.ok = ok; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.FieldByNameFunc }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._tuple = _tuple; $f.f = f; $f.match = match; $f.ok = ok; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.FieldByNameFunc = function(match) { return this.$val.FieldByNameFunc(match); };
 	Value.ptr.prototype.Float = function() {
@@ -14252,7 +14382,7 @@ $packages["reflect"] = (function() {
 		return ((v.flag & 32) >>> 0) === 0;
 	};
 	Value.prototype.CanInterface = function() { return this.$val.CanInterface(); };
-	Value.ptr.prototype.Interface = function $blocking_Interface() {
+	Value.ptr.prototype.Interface = function() {
 		var $ptr, _r, i, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; i = $f.i; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		i = $ifaceNil;
@@ -14260,7 +14390,7 @@ $packages["reflect"] = (function() {
 		_r = valueInterface(v, true); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		i = _r;
 		return i;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Interface }; } $f.$ptr = $ptr; $f._r = _r; $f.i = i; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.Interface }; } $f.$ptr = $ptr; $f._r = _r; $f.i = i; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.Interface = function() { return this.$val.Interface(); };
 	Value.ptr.prototype.InterfaceData = function() {
@@ -14282,7 +14412,7 @@ $packages["reflect"] = (function() {
 		return new flag(v.flag).kind();
 	};
 	Value.prototype.Kind = function() { return this.$val.Kind(); };
-	Value.ptr.prototype.MapIndex = function $blocking_MapIndex(key) {
+	Value.ptr.prototype.MapIndex = function(key) {
 		var $ptr, _r, c, e, fl, k, key, tt, typ, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; c = $f.c; e = $f.e; fl = $f.fl; k = $f.k; key = $f.key; tt = $f.tt; typ = $f.typ; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
@@ -14311,10 +14441,10 @@ $packages["reflect"] = (function() {
 		} else {
 			return new Value.ptr(typ, e.$get(), fl);
 		}
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_MapIndex }; } $f.$ptr = $ptr; $f._r = _r; $f.c = c; $f.e = e; $f.fl = fl; $f.k = k; $f.key = key; $f.tt = tt; $f.typ = typ; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.MapIndex }; } $f.$ptr = $ptr; $f._r = _r; $f.c = c; $f.e = e; $f.fl = fl; $f.k = k; $f.key = key; $f.tt = tt; $f.typ = typ; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.MapIndex = function(key) { return this.$val.MapIndex(key); };
-	Value.ptr.prototype.MapKeys = function $blocking_MapKeys() {
+	Value.ptr.prototype.MapKeys = function() {
 		var $ptr, _r, a, c, fl, i, it, key, keyType, m, mlen, tt, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; a = $f.a; c = $f.c; fl = $f.fl; i = $f.i; it = $f.it; key = $f.key; keyType = $f.keyType; m = $f.m; mlen = $f.mlen; tt = $f.tt; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
@@ -14349,7 +14479,7 @@ $packages["reflect"] = (function() {
 			i = i + (1) >> 0;
 		/* } */ $s = 1; continue; case 2:
 		return $subslice(a, 0, i);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_MapKeys }; } $f.$ptr = $ptr; $f._r = _r; $f.a = a; $f.c = c; $f.fl = fl; $f.i = i; $f.it = it; $f.key = key; $f.keyType = keyType; $f.m = m; $f.mlen = mlen; $f.tt = tt; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.MapKeys }; } $f.$ptr = $ptr; $f._r = _r; $f.a = a; $f.c = c; $f.fl = fl; $f.i = i; $f.it = it; $f.key = key; $f.keyType = keyType; $f.m = m; $f.mlen = mlen; $f.tt = tt; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.MapKeys = function() { return this.$val.MapKeys(); };
 	Value.ptr.prototype.Method = function(i) {
@@ -14465,7 +14595,7 @@ $packages["reflect"] = (function() {
 		$panic(new ValueError.ptr("reflect.Value.OverflowUint", new flag(v.flag).kind()));
 	};
 	Value.prototype.OverflowUint = function(x) { return this.$val.OverflowUint(x); };
-	Value.ptr.prototype.Recv = function $blocking_Recv() {
+	Value.ptr.prototype.Recv = function() {
 		var $ptr, _r, _tuple, ok, v, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _tuple = $f._tuple; ok = $f.ok; v = $f.v; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		x = new Value.ptr();
@@ -14476,10 +14606,10 @@ $packages["reflect"] = (function() {
 		_r = v.recv(false); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_tuple = _r; x = _tuple[0]; ok = _tuple[1];
 		return [x, ok];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Recv }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.ok = ok; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.Recv }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.ok = ok; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.Recv = function() { return this.$val.Recv(); };
-	Value.ptr.prototype.recv = function $blocking_recv(nb) {
+	Value.ptr.prototype.recv = function(nb) {
 		var $ptr, _r, _tuple, nb, ok, p, selected, t, tt, v, val, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _tuple = $f._tuple; nb = $f.nb; ok = $f.ok; p = $f.p; selected = $f.selected; t = $f.t; tt = $f.tt; v = $f.v; val = $f.val; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		val = new Value.ptr();
@@ -14505,10 +14635,10 @@ $packages["reflect"] = (function() {
 			val = new Value.ptr(ptrType$1.nil, 0, 0);
 		}
 		return [val, ok];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_recv }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.nb = nb; $f.ok = ok; $f.p = p; $f.selected = selected; $f.t = t; $f.tt = tt; $f.v = v; $f.val = val; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.recv }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.nb = nb; $f.ok = ok; $f.p = p; $f.selected = selected; $f.t = t; $f.tt = tt; $f.v = v; $f.val = val; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.recv = function(nb) { return this.$val.recv(nb); };
-	Value.ptr.prototype.Send = function $blocking_Send(x) {
+	Value.ptr.prototype.Send = function(x) {
 		var $ptr, _r, v, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; v = $f.v; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
@@ -14517,10 +14647,10 @@ $packages["reflect"] = (function() {
 		new flag(v.flag).mustBeExported();
 		_r = v.send(x, false); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Send }; } $f.$ptr = $ptr; $f._r = _r; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.Send }; } $f.$ptr = $ptr; $f._r = _r; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.Send = function(x) { return this.$val.Send(x); };
-	Value.ptr.prototype.send = function $blocking_send(x, nb) {
+	Value.ptr.prototype.send = function(x, nb) {
 		var $ptr, _r, _r$1, nb, p, selected, tt, v, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; nb = $f.nb; p = $f.p; selected = $f.selected; tt = $f.tt; v = $f.v; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		selected = false;
@@ -14542,7 +14672,7 @@ $packages["reflect"] = (function() {
 		_r$1 = chansend(v.typ, v.pointer(), p, nb); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		selected = _r$1;
 		return selected;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_send }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.nb = nb; $f.p = p; $f.selected = selected; $f.tt = tt; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.send }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.nb = nb; $f.p = p; $f.selected = selected; $f.tt = tt; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.send = function(x, nb) { return this.$val.send(x, nb); };
 	Value.ptr.prototype.SetBool = function(x) {
@@ -14553,7 +14683,7 @@ $packages["reflect"] = (function() {
 		v.ptr.$set(x);
 	};
 	Value.prototype.SetBool = function(x) { return this.$val.SetBool(x); };
-	Value.ptr.prototype.SetBytes = function $blocking_SetBytes(x) {
+	Value.ptr.prototype.SetBytes = function(x) {
 		var $ptr, _r, v, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; v = $f.v; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
@@ -14566,10 +14696,10 @@ $packages["reflect"] = (function() {
 			$panic(new $String("reflect.Value.SetBytes of non-byte slice"));
 		/* } */ case 2:
 		v.ptr.$set(x);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_SetBytes }; } $f.$ptr = $ptr; $f._r = _r; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.SetBytes }; } $f.$ptr = $ptr; $f._r = _r; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.SetBytes = function(x) { return this.$val.SetBytes(x); };
-	Value.ptr.prototype.setRunes = function $blocking_setRunes(x) {
+	Value.ptr.prototype.setRunes = function(x) {
 		var $ptr, _r, v, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; v = $f.v; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
@@ -14582,7 +14712,7 @@ $packages["reflect"] = (function() {
 			$panic(new $String("reflect.Value.setRunes of non-rune slice"));
 		/* } */ case 2:
 		v.ptr.$set(x);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_setRunes }; } $f.$ptr = $ptr; $f._r = _r; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.setRunes }; } $f.$ptr = $ptr; $f._r = _r; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.setRunes = function(x) { return this.$val.setRunes(x); };
 	Value.ptr.prototype.SetComplex = function(x) {
@@ -14636,7 +14766,7 @@ $packages["reflect"] = (function() {
 		}
 	};
 	Value.prototype.SetInt = function(x) { return this.$val.SetInt(x); };
-	Value.ptr.prototype.SetMapIndex = function $blocking_SetMapIndex(key, val) {
+	Value.ptr.prototype.SetMapIndex = function(key, val) {
 		var $ptr, _r, _r$1, e, k, key, tt, v, val, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; e = $f.e; k = $f.k; key = $f.key; tt = $f.tt; v = $f.v; val = $f.val; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
@@ -14668,7 +14798,7 @@ $packages["reflect"] = (function() {
 			e = (val.$ptr_ptr || (val.$ptr_ptr = new ptrType$18(function() { return this.$target.ptr; }, function($v) { this.$target.ptr = $v; }, val)));
 		}
 		$r = mapassign(v.typ, v.pointer(), k, e); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_SetMapIndex }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.e = e; $f.k = k; $f.key = key; $f.tt = tt; $f.v = v; $f.val = val; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.SetMapIndex }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.e = e; $f.k = k; $f.key = key; $f.tt = tt; $f.v = v; $f.val = val; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.SetMapIndex = function(key, val) { return this.$val.SetMapIndex(key, val); };
 	Value.ptr.prototype.SetUint = function(x) {
@@ -14710,7 +14840,7 @@ $packages["reflect"] = (function() {
 		v.ptr.$set(x);
 	};
 	Value.prototype.SetString = function(x) { return this.$val.SetString(x); };
-	Value.ptr.prototype.String = function $blocking_String() {
+	Value.ptr.prototype.String = function() {
 		var $ptr, _r, _ref, k, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _ref = $f._ref; k = $f.k; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
@@ -14723,10 +14853,10 @@ $packages["reflect"] = (function() {
 		}
 		_r = v.Type().String(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return "<" + _r + " Value>";
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_String }; } $f.$ptr = $ptr; $f._r = _r; $f._ref = _ref; $f.k = k; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.String }; } $f.$ptr = $ptr; $f._r = _r; $f._ref = _ref; $f.k = k; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.String = function() { return this.$val.String(); };
-	Value.ptr.prototype.TryRecv = function $blocking_TryRecv() {
+	Value.ptr.prototype.TryRecv = function() {
 		var $ptr, _r, _tuple, ok, v, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _tuple = $f._tuple; ok = $f.ok; v = $f.v; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		x = new Value.ptr();
@@ -14737,10 +14867,10 @@ $packages["reflect"] = (function() {
 		_r = v.recv(true); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_tuple = _r; x = _tuple[0]; ok = _tuple[1];
 		return [x, ok];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_TryRecv }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.ok = ok; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.TryRecv }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.ok = ok; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.TryRecv = function() { return this.$val.TryRecv(); };
-	Value.ptr.prototype.TrySend = function $blocking_TrySend(x) {
+	Value.ptr.prototype.TrySend = function(x) {
 		var $ptr, _r, v, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; v = $f.v; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
@@ -14749,7 +14879,7 @@ $packages["reflect"] = (function() {
 		new flag(v.flag).mustBeExported();
 		_r = v.send(x, true); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_TrySend }; } $f.$ptr = $ptr; $f._r = _r; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.TrySend }; } $f.$ptr = $ptr; $f._r = _r; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.TrySend = function(x) { return this.$val.TrySend(x); };
 	Value.ptr.prototype.Type = function() {
@@ -14813,7 +14943,7 @@ $packages["reflect"] = (function() {
 		return v.ptr;
 	};
 	Value.prototype.UnsafeAddr = function() { return this.$val.UnsafeAddr(); };
-	typesMustMatch = function $blocking_typesMustMatch(what, t1, t2) {
+	typesMustMatch = function(what, t1, t2) {
 		var $ptr, _r, _r$1, t1, t2, what, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; t1 = $f.t1; t2 = $f.t2; what = $f.what; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		/* */ if (!($interfaceIsEqual(t1, t2))) { $s = 1; continue; }
@@ -14823,9 +14953,9 @@ $packages["reflect"] = (function() {
 			_r$1 = t2.String(); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 			$panic(new $String(what + ": " + _r + " != " + _r$1));
 		/* } */ case 2:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_typesMustMatch }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.t1 = t1; $f.t2 = t2; $f.what = what; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: typesMustMatch }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.t1 = t1; $f.t2 = t2; $f.what = what; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	MakeMap = $pkg.MakeMap = function $blocking_MakeMap(typ) {
+	MakeMap = function(typ) {
 		var $ptr, _r, _r$1, m, typ, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; m = $f.m; typ = $f.typ; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = typ.Kind(); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
@@ -14837,9 +14967,10 @@ $packages["reflect"] = (function() {
 		m = makemap($assertType(typ, ptrType$1));
 		_r$1 = typ.common(); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		return new Value.ptr(_r$1, m, 21);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_MakeMap }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.m = m; $f.typ = typ; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: MakeMap }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.m = m; $f.typ = typ; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	New = $pkg.New = function $blocking_New(typ) {
+	$pkg.MakeMap = MakeMap;
+	New = function(typ) {
 		var $ptr, _r, _r$1, fl, ptr, typ, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; fl = $f.fl; ptr = $f.ptr; typ = $f.typ; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		if ($interfaceIsEqual(typ, $ifaceNil)) {
@@ -14850,9 +14981,10 @@ $packages["reflect"] = (function() {
 		_r = typ.common(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_r$1 = _r.ptrTo(); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		return new Value.ptr(_r$1, ptr, fl);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_New }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.fl = fl; $f.ptr = ptr; $f.typ = typ; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: New }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.fl = fl; $f.ptr = ptr; $f.typ = typ; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	Value.ptr.prototype.assignTo = function $blocking_assignTo(context, dst, target) {
+	$pkg.New = New;
+	Value.ptr.prototype.assignTo = function(context, dst, target) {
 		var $ptr, _r, _r$1, context, dst, fl, target, v, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; context = $f.context; dst = $f.dst; fl = $f.fl; target = $f.target; v = $f.v; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
@@ -14885,10 +15017,10 @@ $packages["reflect"] = (function() {
 			return new Value.ptr(dst, target, 84);
 		/* } */ case 6:
 		$panic(new $String(context + ": value of type " + v.typ.String() + " is not assignable to type " + dst.String()));
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_assignTo }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.context = context; $f.dst = dst; $f.fl = fl; $f.target = target; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.assignTo }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.context = context; $f.dst = dst; $f.fl = fl; $f.target = target; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.assignTo = function(context, dst, target) { return this.$val.assignTo(context, dst, target); };
-	Value.ptr.prototype.Convert = function $blocking_Convert(t) {
+	Value.ptr.prototype.Convert = function(t) {
 		var $ptr, _r, _r$1, _r$2, _r$3, _r$4, op, t, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; op = $f.op; t = $f.t; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this;
@@ -14909,10 +15041,10 @@ $packages["reflect"] = (function() {
 		/* } */ case 7:
 		_r$4 = op(v, t); /* */ $s = 9; case 9: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
 		return _r$4;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Convert }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f.op = op; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Value.ptr.prototype.Convert }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f.op = op; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Value.prototype.Convert = function(t) { return this.$val.Convert(t); };
-	convertOp = function $blocking_convertOp(dst, src) {
+	convertOp = function(dst, src) {
 		var $ptr, _arg, _arg$1, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _ref, _ref$1, _ref$2, _ref$3, _ref$4, _ref$5, _ref$6, _v, _v$1, _v$2, dst, src, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _ref = $f._ref; _ref$1 = $f._ref$1; _ref$2 = $f._ref$2; _ref$3 = $f._ref$3; _ref$4 = $f._ref$4; _ref$5 = $f._ref$5; _ref$6 = $f._ref$6; _v = $f._v; _v$1 = $f._v$1; _v$2 = $f._v$2; dst = $f.dst; src = $f.src; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_ref = src.Kind();
@@ -15021,9 +15153,9 @@ $packages["reflect"] = (function() {
 			return cvtT2I;
 		}
 		return $throwNilPointerError;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_convertOp }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._ref = _ref; $f._ref$1 = _ref$1; $f._ref$2 = _ref$2; $f._ref$3 = _ref$3; $f._ref$4 = _ref$4; $f._ref$5 = _ref$5; $f._ref$6 = _ref$6; $f._v = _v; $f._v$1 = _v$1; $f._v$2 = _v$2; $f.dst = dst; $f.src = src; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: convertOp }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._ref = _ref; $f._ref$1 = _ref$1; $f._ref$2 = _ref$2; $f._ref$3 = _ref$3; $f._ref$4 = _ref$4; $f._ref$5 = _ref$5; $f._ref$6 = _ref$6; $f._v = _v; $f._v$1 = _v$1; $f._v$2 = _v$2; $f.dst = dst; $f.src = src; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	makeFloat = function $blocking_makeFloat(f, v, t) {
+	makeFloat = function(f, v, t) {
 		var $ptr, _r, _ref, f, ptr, t, typ, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _ref = $f._ref; f = $f.f; ptr = $f.ptr; t = $f.t; typ = $f.typ; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = t.common(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
@@ -15036,9 +15168,9 @@ $packages["reflect"] = (function() {
 			ptr.$set(v);
 		}
 		return new Value.ptr(typ, ptr, (((f | 64) >>> 0) | (typ.Kind() >>> 0)) >>> 0);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_makeFloat }; } $f.$ptr = $ptr; $f._r = _r; $f._ref = _ref; $f.f = f; $f.ptr = ptr; $f.t = t; $f.typ = typ; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: makeFloat }; } $f.$ptr = $ptr; $f._r = _r; $f._ref = _ref; $f.f = f; $f.ptr = ptr; $f.t = t; $f.typ = typ; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	makeComplex = function $blocking_makeComplex(f, v, t) {
+	makeComplex = function(f, v, t) {
 		var $ptr, _r, _ref, f, ptr, t, typ, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _ref = $f._ref; f = $f.f; ptr = $f.ptr; t = $f.t; typ = $f.typ; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = t.common(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
@@ -15051,9 +15183,9 @@ $packages["reflect"] = (function() {
 			ptr.$set(v);
 		}
 		return new Value.ptr(typ, ptr, (((f | 64) >>> 0) | (typ.Kind() >>> 0)) >>> 0);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_makeComplex }; } $f.$ptr = $ptr; $f._r = _r; $f._ref = _ref; $f.f = f; $f.ptr = ptr; $f.t = t; $f.typ = typ; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: makeComplex }; } $f.$ptr = $ptr; $f._r = _r; $f._ref = _ref; $f.f = f; $f.ptr = ptr; $f.t = t; $f.typ = typ; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	makeString = function $blocking_makeString(f, v, t) {
+	makeString = function(f, v, t) {
 		var $ptr, _r, _r$1, f, ret, t, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; f = $f.f; ret = $f.ret; t = $f.t; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = New(t); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
@@ -15062,9 +15194,9 @@ $packages["reflect"] = (function() {
 		ret.SetString(v);
 		ret.flag = ((ret.flag & ~128) | f) >>> 0;
 		return ret;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_makeString }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.f = f; $f.ret = ret; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: makeString }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.f = f; $f.ret = ret; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	makeBytes = function $blocking_makeBytes(f, v, t) {
+	makeBytes = function(f, v, t) {
 		var $ptr, _r, _r$1, f, ret, t, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; f = $f.f; ret = $f.ret; t = $f.t; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = New(t); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
@@ -15073,9 +15205,9 @@ $packages["reflect"] = (function() {
 		$r = ret.SetBytes(v); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		ret.flag = ((ret.flag & ~128) | f) >>> 0;
 		return ret;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_makeBytes }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.f = f; $f.ret = ret; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: makeBytes }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.f = f; $f.ret = ret; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	makeRunes = function $blocking_makeRunes(f, v, t) {
+	makeRunes = function(f, v, t) {
 		var $ptr, _r, _r$1, f, ret, t, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; f = $f.f; ret = $f.ret; t = $f.t; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = New(t); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
@@ -15084,89 +15216,89 @@ $packages["reflect"] = (function() {
 		$r = ret.setRunes(v); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		ret.flag = ((ret.flag & ~128) | f) >>> 0;
 		return ret;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_makeRunes }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.f = f; $f.ret = ret; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: makeRunes }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.f = f; $f.ret = ret; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	cvtInt = function $blocking_cvtInt(v, t) {
+	cvtInt = function(v, t) {
 		var $ptr, _r, t, v, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; t = $f.t; v = $f.v; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
 		_r = makeInt((v.flag & 32) >>> 0, (x = v.Int(), new $Uint64(x.$high, x.$low)), t); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_cvtInt }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: cvtInt }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	cvtUint = function $blocking_cvtUint(v, t) {
+	cvtUint = function(v, t) {
 		var $ptr, _r, t, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; t = $f.t; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
 		_r = makeInt((v.flag & 32) >>> 0, v.Uint(), t); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_cvtUint }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: cvtUint }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	cvtFloatInt = function $blocking_cvtFloatInt(v, t) {
+	cvtFloatInt = function(v, t) {
 		var $ptr, _r, t, v, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; t = $f.t; v = $f.v; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
 		_r = makeInt((v.flag & 32) >>> 0, (x = new $Int64(0, v.Float()), new $Uint64(x.$high, x.$low)), t); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_cvtFloatInt }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: cvtFloatInt }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	cvtFloatUint = function $blocking_cvtFloatUint(v, t) {
+	cvtFloatUint = function(v, t) {
 		var $ptr, _r, t, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; t = $f.t; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
 		_r = makeInt((v.flag & 32) >>> 0, new $Uint64(0, v.Float()), t); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_cvtFloatUint }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: cvtFloatUint }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	cvtIntFloat = function $blocking_cvtIntFloat(v, t) {
+	cvtIntFloat = function(v, t) {
 		var $ptr, _r, t, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; t = $f.t; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
 		_r = makeFloat((v.flag & 32) >>> 0, $flatten64(v.Int()), t); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_cvtIntFloat }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: cvtIntFloat }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	cvtUintFloat = function $blocking_cvtUintFloat(v, t) {
+	cvtUintFloat = function(v, t) {
 		var $ptr, _r, t, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; t = $f.t; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
 		_r = makeFloat((v.flag & 32) >>> 0, $flatten64(v.Uint()), t); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_cvtUintFloat }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: cvtUintFloat }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	cvtFloat = function $blocking_cvtFloat(v, t) {
+	cvtFloat = function(v, t) {
 		var $ptr, _r, t, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; t = $f.t; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
 		_r = makeFloat((v.flag & 32) >>> 0, v.Float(), t); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_cvtFloat }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: cvtFloat }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	cvtComplex = function $blocking_cvtComplex(v, t) {
+	cvtComplex = function(v, t) {
 		var $ptr, _r, t, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; t = $f.t; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
 		_r = makeComplex((v.flag & 32) >>> 0, v.Complex(), t); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_cvtComplex }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: cvtComplex }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	cvtIntString = function $blocking_cvtIntString(v, t) {
+	cvtIntString = function(v, t) {
 		var $ptr, _r, t, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; t = $f.t; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
 		_r = makeString((v.flag & 32) >>> 0, $encodeRune(v.Int().$low), t); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_cvtIntString }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: cvtIntString }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	cvtUintString = function $blocking_cvtUintString(v, t) {
+	cvtUintString = function(v, t) {
 		var $ptr, _r, t, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; t = $f.t; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
 		_r = makeString((v.flag & 32) >>> 0, $encodeRune(v.Uint().$low), t); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_cvtUintString }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: cvtUintString }; } $f.$ptr = $ptr; $f._r = _r; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	cvtBytesString = function $blocking_cvtBytesString(v, t) {
+	cvtBytesString = function(v, t) {
 		var $ptr, _arg, _arg$1, _arg$2, _r, _r$1, t, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$2 = $f._arg$2; _r = $f._r; _r$1 = $f._r$1; t = $f.t; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
@@ -15176,9 +15308,9 @@ $packages["reflect"] = (function() {
 		_arg$2 = t;
 		_r$1 = makeString(_arg, _arg$1, _arg$2); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		return _r$1;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_cvtBytesString }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._r = _r; $f._r$1 = _r$1; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: cvtBytesString }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._r = _r; $f._r$1 = _r$1; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	cvtStringBytes = function $blocking_cvtStringBytes(v, t) {
+	cvtStringBytes = function(v, t) {
 		var $ptr, _arg, _arg$1, _arg$2, _r, _r$1, t, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$2 = $f._arg$2; _r = $f._r; _r$1 = $f._r$1; t = $f.t; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
@@ -15188,9 +15320,9 @@ $packages["reflect"] = (function() {
 		_arg$2 = t;
 		_r$1 = makeBytes(_arg, _arg$1, _arg$2); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		return _r$1;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_cvtStringBytes }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._r = _r; $f._r$1 = _r$1; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: cvtStringBytes }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._r = _r; $f._r$1 = _r$1; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	cvtRunesString = function $blocking_cvtRunesString(v, t) {
+	cvtRunesString = function(v, t) {
 		var $ptr, _arg, _arg$1, _arg$2, _r, _r$1, t, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$2 = $f._arg$2; _r = $f._r; _r$1 = $f._r$1; t = $f.t; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
@@ -15200,9 +15332,9 @@ $packages["reflect"] = (function() {
 		_arg$2 = t;
 		_r$1 = makeString(_arg, _arg$1, _arg$2); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		return _r$1;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_cvtRunesString }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._r = _r; $f._r$1 = _r$1; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: cvtRunesString }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._r = _r; $f._r$1 = _r$1; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	cvtStringRunes = function $blocking_cvtStringRunes(v, t) {
+	cvtStringRunes = function(v, t) {
 		var $ptr, _arg, _arg$1, _arg$2, _r, _r$1, t, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$2 = $f._arg$2; _r = $f._r; _r$1 = $f._r$1; t = $f.t; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
@@ -15212,9 +15344,9 @@ $packages["reflect"] = (function() {
 		_arg$2 = t;
 		_r$1 = makeRunes(_arg, _arg$1, _arg$2); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		return _r$1;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_cvtStringRunes }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._r = _r; $f._r$1 = _r$1; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: cvtStringRunes }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._r = _r; $f._r$1 = _r$1; $f.t = t; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	cvtT2I = function $blocking_cvtT2I(v, typ) {
+	cvtT2I = function(v, typ) {
 		var $ptr, _r, _r$1, _r$2, _r$3, _r$4, target, typ, v, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; target = $f.target; typ = $f.typ; v = $f.v; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
@@ -15234,9 +15366,9 @@ $packages["reflect"] = (function() {
 		/* } */ case 6:
 		_r$4 = typ.common(); /* */ $s = 8; case 8: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
 		return new Value.ptr(_r$4, target, (((((v.flag & 32) >>> 0) | 64) >>> 0) | 20) >>> 0);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_cvtT2I }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f.target = target; $f.typ = typ; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: cvtT2I }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f.target = target; $f.typ = typ; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	cvtI2I = function $blocking_cvtI2I(v, typ) {
+	cvtI2I = function(v, typ) {
 		var $ptr, _r, _r$1, _r$2, ret, typ, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; ret = $f.ret; typ = $f.typ; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
@@ -15251,7 +15383,7 @@ $packages["reflect"] = (function() {
 		_r$1 = v.Elem(); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_r$2 = cvtT2I(_r$1, typ); /* */ $s = 5; case 5: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		return _r$2;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_cvtI2I }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.ret = ret; $f.typ = typ; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: cvtI2I }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.ret = ret; $f.typ = typ; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Kind.methods = [{prop: "String", name: "String", pkg: "", typ: $funcType([], [$String], false)}];
 	ptrType$1.methods = [{prop: "ptrTo", name: "ptrTo", pkg: "reflect", typ: $funcType([], [ptrType$1], false)}, {prop: "pointers", name: "pointers", pkg: "reflect", typ: $funcType([], [$Bool], false)}, {prop: "Comparable", name: "Comparable", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "String", name: "String", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Size", name: "Size", pkg: "", typ: $funcType([], [$Uintptr], false)}, {prop: "Bits", name: "Bits", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Align", name: "Align", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "FieldAlign", name: "FieldAlign", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Kind", name: "Kind", pkg: "", typ: $funcType([], [Kind], false)}, {prop: "common", name: "common", pkg: "reflect", typ: $funcType([], [ptrType$1], false)}, {prop: "NumMethod", name: "NumMethod", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Method", name: "Method", pkg: "", typ: $funcType([$Int], [Method], false)}, {prop: "MethodByName", name: "MethodByName", pkg: "", typ: $funcType([$String], [Method, $Bool], false)}, {prop: "PkgPath", name: "PkgPath", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Name", name: "Name", pkg: "", typ: $funcType([], [$String], false)}, {prop: "ChanDir", name: "ChanDir", pkg: "", typ: $funcType([], [ChanDir], false)}, {prop: "IsVariadic", name: "IsVariadic", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Elem", name: "Elem", pkg: "", typ: $funcType([], [Type], false)}, {prop: "Field", name: "Field", pkg: "", typ: $funcType([$Int], [StructField], false)}, {prop: "FieldByIndex", name: "FieldByIndex", pkg: "", typ: $funcType([sliceType$11], [StructField], false)}, {prop: "FieldByName", name: "FieldByName", pkg: "", typ: $funcType([$String], [StructField, $Bool], false)}, {prop: "FieldByNameFunc", name: "FieldByNameFunc", pkg: "", typ: $funcType([funcType$3], [StructField, $Bool], false)}, {prop: "In", name: "In", pkg: "", typ: $funcType([$Int], [Type], false)}, {prop: "Key", name: "Key", pkg: "", typ: $funcType([], [Type], false)}, {prop: "Len", name: "Len", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "NumField", name: "NumField", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "NumIn", name: "NumIn", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "NumOut", name: "NumOut", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Out", name: "Out", pkg: "", typ: $funcType([$Int], [Type], false)}, {prop: "Implements", name: "Implements", pkg: "", typ: $funcType([Type], [$Bool], false)}, {prop: "AssignableTo", name: "AssignableTo", pkg: "", typ: $funcType([Type], [$Bool], false)}, {prop: "ConvertibleTo", name: "ConvertibleTo", pkg: "", typ: $funcType([Type], [$Bool], false)}];
@@ -15285,7 +15417,7 @@ $packages["reflect"] = (function() {
 	Value.init([{prop: "typ", name: "typ", pkg: "reflect", typ: ptrType$1, tag: ""}, {prop: "ptr", name: "ptr", pkg: "reflect", typ: $UnsafePointer, tag: ""}, {prop: "flag", name: "", pkg: "reflect", typ: flag, tag: ""}]);
 	ValueError.init([{prop: "Method", name: "Method", pkg: "", typ: $String, tag: ""}, {prop: "Kind", name: "Kind", pkg: "", typ: Kind, tag: ""}]);
 	nonEmptyInterface.init([{prop: "itab", name: "itab", pkg: "reflect", typ: ptrType$8, tag: ""}, {prop: "word", name: "word", pkg: "reflect", typ: $UnsafePointer, tag: ""}]);
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = js.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
@@ -15303,6 +15435,7 @@ $packages["reflect"] = (function() {
 		$r = init(); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["fmt"] = (function() {
@@ -15997,7 +16130,7 @@ $packages["fmt"] = (function() {
 		bp.$set($subslice(b, 0, (n + w >> 0)));
 		return $ifaceNil;
 	};
-	newPrinter = function $blocking_newPrinter() {
+	newPrinter = function() {
 		var $ptr, _r$2, p, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; p = $f.p; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r$2 = ppFree.Get(); /* */ $s = 1; case 1: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
@@ -16006,7 +16139,7 @@ $packages["fmt"] = (function() {
 		p.erroring = false;
 		p.fmt.init((p.$ptr_buf || (p.$ptr_buf = new ptrType$1(function() { return this.$target.buf; }, function($v) { this.$target.buf = $v; }, p))));
 		return p;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_newPrinter }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.p = p; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: newPrinter }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.p = p; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	pp.ptr.prototype.free = function() {
 		var $ptr, p;
@@ -16071,7 +16204,7 @@ $packages["fmt"] = (function() {
 		return [ret, err];
 	};
 	pp.prototype.Write = function(b) { return this.$val.Write(b); };
-	Sprintf = $pkg.Sprintf = function $blocking_Sprintf(format, a) {
+	Sprintf = function(format, a) {
 		var $ptr, _r$2, a, format, p, s, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; a = $f.a; format = $f.format; p = $f.p; s = $f.s; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r$2 = newPrinter(); /* */ $s = 1; case 1: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
@@ -16080,17 +16213,19 @@ $packages["fmt"] = (function() {
 		s = $bytesToString(p.buf);
 		p.free();
 		return s;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Sprintf }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.a = a; $f.format = format; $f.p = p; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Sprintf }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.a = a; $f.format = format; $f.p = p; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	Errorf = $pkg.Errorf = function $blocking_Errorf(format, a) {
+	$pkg.Sprintf = Sprintf;
+	Errorf = function(format, a) {
 		var $ptr, _r$2, _r$3, a, format, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; a = $f.a; format = $f.format; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r$2 = Sprintf(format, a); /* */ $s = 1; case 1: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		_r$3 = errors.New(_r$2); /* */ $s = 2; case 2: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
 		return _r$3;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Errorf }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.a = a; $f.format = format; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Errorf }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.a = a; $f.format = format; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	Sprint = $pkg.Sprint = function $blocking_Sprint(a) {
+	$pkg.Errorf = Errorf;
+	Sprint = function(a) {
 		var $ptr, _r$2, a, p, s, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; a = $f.a; p = $f.p; s = $f.s; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r$2 = newPrinter(); /* */ $s = 1; case 1: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
@@ -16099,9 +16234,10 @@ $packages["fmt"] = (function() {
 		s = $bytesToString(p.buf);
 		p.free();
 		return s;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Sprint }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.a = a; $f.p = p; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Sprint }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.a = a; $f.p = p; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	getField = function $blocking_getField(v, i) {
+	$pkg.Sprint = Sprint;
+	getField = function(v, i) {
 		var $ptr, _r$2, _r$3, i, v, val, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; i = $f.i; v = $f.v; val = $f.val; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
@@ -16114,7 +16250,7 @@ $packages["fmt"] = (function() {
 			val = _r$3;
 		/* } */ case 3:
 		return val;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_getField }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.i = i; $f.v = v; $f.val = val; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: getField }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.i = i; $f.v = v; $f.val = val; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	parsenum = function(s, start, end) {
 		var $ptr, _tmp, _tmp$1, _tmp$2, end, isnum, newi, num, s, start;
@@ -16134,7 +16270,7 @@ $packages["fmt"] = (function() {
 		}
 		return [num, isnum, newi];
 	};
-	pp.ptr.prototype.unknownType = function $blocking_unknownType(v) {
+	pp.ptr.prototype.unknownType = function(v) {
 		var $ptr, _r$2, _r$3, p, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; p = $f.p; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
@@ -16148,10 +16284,10 @@ $packages["fmt"] = (function() {
 		_r$3 = (p.$ptr_buf || (p.$ptr_buf = new ptrType$1(function() { return this.$target.buf; }, function($v) { this.$target.buf = $v; }, p))).WriteString(_r$2); /* */ $s = 2; case 2: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
 		_r$3;
 		(p.$ptr_buf || (p.$ptr_buf = new ptrType$1(function() { return this.$target.buf; }, function($v) { this.$target.buf = $v; }, p))).WriteByte(63);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_unknownType }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.p = p; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pp.ptr.prototype.unknownType }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.p = p; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	pp.prototype.unknownType = function(v) { return this.$val.unknownType(v); };
-	pp.ptr.prototype.badVerb = function $blocking_badVerb(verb) {
+	pp.ptr.prototype.badVerb = function(verb) {
 		var $ptr, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, p, verb, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; p = $f.p; verb = $f.verb; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
@@ -16184,10 +16320,10 @@ $packages["fmt"] = (function() {
 		/* } */ case 4:
 		p.add(41);
 		p.erroring = false;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_badVerb }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f.p = p; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pp.ptr.prototype.badVerb }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f.p = p; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	pp.prototype.badVerb = function(verb) { return this.$val.badVerb(verb); };
-	pp.ptr.prototype.fmtBool = function $blocking_fmtBool(v, verb) {
+	pp.ptr.prototype.fmtBool = function(v, verb) {
 		var $ptr, _ref, p, v, verb, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _ref = $f._ref; p = $f.p; v = $f.v; verb = $f.verb; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
@@ -16200,7 +16336,7 @@ $packages["fmt"] = (function() {
 		/* } else { */ case 2:
 			$r = p.badVerb(verb); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* } */ case 3:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_fmtBool }; } $f.$ptr = $ptr; $f._ref = _ref; $f.p = p; $f.v = v; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pp.ptr.prototype.fmtBool }; } $f.$ptr = $ptr; $f._ref = _ref; $f.p = p; $f.v = v; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	pp.prototype.fmtBool = function(v, verb) { return this.$val.fmtBool(v, verb); };
 	pp.ptr.prototype.fmtC = function(c) {
@@ -16214,7 +16350,7 @@ $packages["fmt"] = (function() {
 		p.fmt.pad($subslice(new sliceType(p.runeBuf), 0, w));
 	};
 	pp.prototype.fmtC = function(c) { return this.$val.fmtC(c); };
-	pp.ptr.prototype.fmtInt64 = function $blocking_fmtInt64(v, verb) {
+	pp.ptr.prototype.fmtInt64 = function(v, verb) {
 		var $ptr, _ref, p, v, verb, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _ref = $f._ref; p = $f.p; v = $f.v; verb = $f.verb; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
@@ -16262,7 +16398,7 @@ $packages["fmt"] = (function() {
 		/* } else { */ case 9:
 			$r = p.badVerb(verb); /* */ $s = 15; case 15: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* } */ case 10:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_fmtInt64 }; } $f.$ptr = $ptr; $f._ref = _ref; $f.p = p; $f.v = v; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pp.ptr.prototype.fmtInt64 }; } $f.$ptr = $ptr; $f._ref = _ref; $f.p = p; $f.v = v; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	pp.prototype.fmtInt64 = function(v, verb) { return this.$val.fmtInt64(v, verb); };
 	pp.ptr.prototype.fmt0x64 = function(v, leading0x) {
@@ -16295,7 +16431,7 @@ $packages["fmt"] = (function() {
 		p.fmt.fmtFlags.sharp = sharp;
 	};
 	pp.prototype.fmtUnicode = function(v) { return this.$val.fmtUnicode(v); };
-	pp.ptr.prototype.fmtUint64 = function $blocking_fmtUint64(v, verb) {
+	pp.ptr.prototype.fmtUint64 = function(v, verb) {
 		var $ptr, _ref, p, v, verb, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _ref = $f._ref; p = $f.p; v = $f.v; verb = $f.verb; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
@@ -16351,10 +16487,10 @@ $packages["fmt"] = (function() {
 		/* } else { */ case 10:
 			$r = p.badVerb(verb); /* */ $s = 16; case 16: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* } */ case 11:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_fmtUint64 }; } $f.$ptr = $ptr; $f._ref = _ref; $f.p = p; $f.v = v; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pp.ptr.prototype.fmtUint64 }; } $f.$ptr = $ptr; $f._ref = _ref; $f.p = p; $f.v = v; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	pp.prototype.fmtUint64 = function(v, verb) { return this.$val.fmtUint64(v, verb); };
-	pp.ptr.prototype.fmtFloat32 = function $blocking_fmtFloat32(v, verb) {
+	pp.ptr.prototype.fmtFloat32 = function(v, verb) {
 		var $ptr, _ref, p, v, verb, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _ref = $f._ref; p = $f.p; v = $f.v; verb = $f.verb; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
@@ -16387,10 +16523,10 @@ $packages["fmt"] = (function() {
 		/* } else { */ case 7:
 			$r = p.badVerb(verb); /* */ $s = 9; case 9: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* } */ case 8:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_fmtFloat32 }; } $f.$ptr = $ptr; $f._ref = _ref; $f.p = p; $f.v = v; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pp.ptr.prototype.fmtFloat32 }; } $f.$ptr = $ptr; $f._ref = _ref; $f.p = p; $f.v = v; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	pp.prototype.fmtFloat32 = function(v, verb) { return this.$val.fmtFloat32(v, verb); };
-	pp.ptr.prototype.fmtFloat64 = function $blocking_fmtFloat64(v, verb) {
+	pp.ptr.prototype.fmtFloat64 = function(v, verb) {
 		var $ptr, _ref, p, v, verb, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _ref = $f._ref; p = $f.p; v = $f.v; verb = $f.verb; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
@@ -16423,10 +16559,10 @@ $packages["fmt"] = (function() {
 		/* } else { */ case 7:
 			$r = p.badVerb(verb); /* */ $s = 9; case 9: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* } */ case 8:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_fmtFloat64 }; } $f.$ptr = $ptr; $f._ref = _ref; $f.p = p; $f.v = v; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pp.ptr.prototype.fmtFloat64 }; } $f.$ptr = $ptr; $f._ref = _ref; $f.p = p; $f.v = v; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	pp.prototype.fmtFloat64 = function(v, verb) { return this.$val.fmtFloat64(v, verb); };
-	pp.ptr.prototype.fmtComplex64 = function $blocking_fmtComplex64(v, verb) {
+	pp.ptr.prototype.fmtComplex64 = function(v, verb) {
 		var $ptr, _ref, p, v, verb, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _ref = $f._ref; p = $f.p; v = $f.v; verb = $f.verb; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
@@ -16443,10 +16579,10 @@ $packages["fmt"] = (function() {
 		/* } else { */ case 3:
 			$r = p.badVerb(verb); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* } */ case 4:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_fmtComplex64 }; } $f.$ptr = $ptr; $f._ref = _ref; $f.p = p; $f.v = v; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pp.ptr.prototype.fmtComplex64 }; } $f.$ptr = $ptr; $f._ref = _ref; $f.p = p; $f.v = v; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	pp.prototype.fmtComplex64 = function(v, verb) { return this.$val.fmtComplex64(v, verb); };
-	pp.ptr.prototype.fmtComplex128 = function $blocking_fmtComplex128(v, verb) {
+	pp.ptr.prototype.fmtComplex128 = function(v, verb) {
 		var $ptr, _ref, p, v, verb, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _ref = $f._ref; p = $f.p; v = $f.v; verb = $f.verb; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
@@ -16463,10 +16599,10 @@ $packages["fmt"] = (function() {
 		/* } else { */ case 3:
 			$r = p.badVerb(verb); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* } */ case 4:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_fmtComplex128 }; } $f.$ptr = $ptr; $f._ref = _ref; $f.p = p; $f.v = v; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pp.ptr.prototype.fmtComplex128 }; } $f.$ptr = $ptr; $f._ref = _ref; $f.p = p; $f.v = v; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	pp.prototype.fmtComplex128 = function(v, verb) { return this.$val.fmtComplex128(v, verb); };
-	pp.ptr.prototype.fmtString = function $blocking_fmtString(v, verb) {
+	pp.ptr.prototype.fmtString = function(v, verb) {
 		var $ptr, _ref, p, v, verb, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _ref = $f._ref; p = $f.p; v = $f.v; verb = $f.verb; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
@@ -16499,10 +16635,10 @@ $packages["fmt"] = (function() {
 		/* } else { */ case 6:
 			$r = p.badVerb(verb); /* */ $s = 8; case 8: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* } */ case 7:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_fmtString }; } $f.$ptr = $ptr; $f._ref = _ref; $f.p = p; $f.v = v; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pp.ptr.prototype.fmtString }; } $f.$ptr = $ptr; $f._ref = _ref; $f.p = p; $f.v = v; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	pp.prototype.fmtString = function(v, verb) { return this.$val.fmtString(v, verb); };
-	pp.ptr.prototype.fmtBytes = function $blocking_fmtBytes(v, verb, typ, depth) {
+	pp.ptr.prototype.fmtBytes = function(v, verb, typ, depth) {
 		var $ptr, _i, _r$2, _r$3, _r$4, _r$5, _r$6, _ref, _ref$1, c, depth, i, p, typ, v, verb, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _ref = $f._ref; _ref$1 = $f._ref$1; c = $f.c; depth = $f.depth; i = $f.i; p = $f.p; typ = $f.typ; v = $f.v; verb = $f.verb; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
@@ -16588,10 +16724,10 @@ $packages["fmt"] = (function() {
 		/* } else { */ case 25:
 			$r = p.badVerb(verb); /* */ $s = 27; case 27: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* } */ case 26:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_fmtBytes }; } $f.$ptr = $ptr; $f._i = _i; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._ref = _ref; $f._ref$1 = _ref$1; $f.c = c; $f.depth = depth; $f.i = i; $f.p = p; $f.typ = typ; $f.v = v; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pp.ptr.prototype.fmtBytes }; } $f.$ptr = $ptr; $f._i = _i; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._ref = _ref; $f._ref$1 = _ref$1; $f.c = c; $f.depth = depth; $f.i = i; $f.p = p; $f.typ = typ; $f.v = v; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	pp.prototype.fmtBytes = function(v, verb, typ, depth) { return this.$val.fmtBytes(v, verb, typ, depth); };
-	pp.ptr.prototype.fmtPointer = function $blocking_fmtPointer(value, verb) {
+	pp.ptr.prototype.fmtPointer = function(value, verb) {
 		var $ptr, _r$2, _r$3, _ref, _ref$1, p, u, use0x64, value, verb, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _ref = $f._ref; _ref$1 = $f._ref$1; p = $f.p; u = $f.u; use0x64 = $f.use0x64; value = $f.value; verb = $f.verb; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
@@ -16651,10 +16787,10 @@ $packages["fmt"] = (function() {
 				$r = p.fmtUint64(new $Uint64(0, u.constructor === Number ? u : 1), verb); /* */ $s = 19; case 19: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			/* } */ case 18:
 		/* } */ case 13:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_fmtPointer }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._ref = _ref; $f._ref$1 = _ref$1; $f.p = p; $f.u = u; $f.use0x64 = use0x64; $f.value = value; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pp.ptr.prototype.fmtPointer }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._ref = _ref; $f._ref$1 = _ref$1; $f.p = p; $f.u = u; $f.use0x64 = use0x64; $f.value = value; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	pp.prototype.fmtPointer = function(value, verb) { return this.$val.fmtPointer(value, verb); };
-	pp.ptr.prototype.catchPanic = function $blocking_catchPanic(arg, verb) {
+	pp.ptr.prototype.catchPanic = function(arg, verb) {
 		var $ptr, _r$2, _r$3, arg, err, p, v, verb, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; arg = $f.arg; err = $f.err; p = $f.p; v = $f.v; verb = $f.verb; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
@@ -16683,7 +16819,7 @@ $packages["fmt"] = (function() {
 			p.panicking = false;
 			(p.$ptr_buf || (p.$ptr_buf = new ptrType$1(function() { return this.$target.buf; }, function($v) { this.$target.buf = $v; }, p))).WriteByte(41);
 		/* } */ case 2:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_catchPanic }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.arg = arg; $f.err = err; $f.p = p; $f.v = v; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pp.ptr.prototype.catchPanic }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.arg = arg; $f.err = err; $f.p = p; $f.v = v; $f.verb = verb; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	pp.prototype.catchPanic = function(arg, verb) { return this.$val.catchPanic(arg, verb); };
 	pp.ptr.prototype.clearSpecialFlags = function() {
@@ -16717,7 +16853,7 @@ $packages["fmt"] = (function() {
 		}
 	};
 	pp.prototype.restoreSpecialFlags = function(plusV, sharpV) { return this.$val.restoreSpecialFlags(plusV, sharpV); };
-	pp.ptr.prototype.handleMethods = function $blocking_handleMethods(verb, depth) {
+	pp.ptr.prototype.handleMethods = function(verb, depth) {
 		var $ptr, _r$2, _r$3, _r$4, _r$5, _r$6, _ref, _ref$1, _tuple, _tuple$1, _tuple$2, depth, formatter, handled, ok, ok$1, p, stringer, v, v$1, verb, $s, $deferred, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _ref = $f._ref; _ref$1 = $f._ref$1; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; _tuple$2 = $f._tuple$2; depth = $f.depth; formatter = $f.formatter; handled = $f.handled; ok = $f.ok; ok$1 = $f.ok$1; p = $f.p; stringer = $f.stringer; v = $f.v; v$1 = $f.v$1; verb = $f.verb; $s = $f.$s; $deferred = $f.$deferred; $r = $f.$r; } var $err = null; try { s: while (true) { switch ($s) { case 0: $deferred = []; $deferred.index = $curGoroutine.deferStack.length; $curGoroutine.deferStack.push($deferred);
 		handled = false;
@@ -16781,10 +16917,10 @@ $packages["fmt"] = (function() {
 		/* } */ case 6:
 		handled = false;
 		return handled;
-		/* */ $s = -1; case -1: } return; } } catch(err) { $err = err; $s = -1; } finally { $callDeferred($deferred, $err); if (!$curGoroutine.asleep) { return  handled; } if($curGoroutine.asleep) { if ($f === undefined) { $f = { $blk: $blocking_handleMethods }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._ref = _ref; $f._ref$1 = _ref$1; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f._tuple$2 = _tuple$2; $f.depth = depth; $f.formatter = formatter; $f.handled = handled; $f.ok = ok; $f.ok$1 = ok$1; $f.p = p; $f.stringer = stringer; $f.v = v; $f.v$1 = v$1; $f.verb = verb; $f.$s = $s; $f.$deferred = $deferred; $f.$r = $r; return $f; } }
+		/* */ $s = -1; case -1: } return; } } catch(err) { $err = err; $s = -1; } finally { $callDeferred($deferred, $err); if (!$curGoroutine.asleep) { return  handled; } if($curGoroutine.asleep) { if ($f === undefined) { $f = { $blk: pp.ptr.prototype.handleMethods }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._ref = _ref; $f._ref$1 = _ref$1; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f._tuple$2 = _tuple$2; $f.depth = depth; $f.formatter = formatter; $f.handled = handled; $f.ok = ok; $f.ok$1 = ok$1; $f.p = p; $f.stringer = stringer; $f.v = v; $f.v$1 = v$1; $f.verb = verb; $f.$s = $s; $f.$deferred = $deferred; $f.$r = $r; return $f; } }
 	};
 	pp.prototype.handleMethods = function(verb, depth) { return this.$val.handleMethods(verb, depth); };
-	pp.ptr.prototype.printArg = function $blocking_printArg(arg, verb, depth) {
+	pp.ptr.prototype.printArg = function(arg, verb, depth) {
 		var $ptr, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _ref, _ref$1, arg, depth, f, f$1, f$10, f$11, f$12, f$13, f$14, f$15, f$16, f$17, f$18, f$2, f$3, f$4, f$5, f$6, f$7, f$8, f$9, handled, p, verb, wasString, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _ref = $f._ref; _ref$1 = $f._ref$1; arg = $f.arg; depth = $f.depth; f = $f.f; f$1 = $f.f$1; f$10 = $f.f$10; f$11 = $f.f$11; f$12 = $f.f$12; f$13 = $f.f$13; f$14 = $f.f$14; f$15 = $f.f$15; f$16 = $f.f$16; f$17 = $f.f$17; f$18 = $f.f$18; f$2 = $f.f$2; f$3 = $f.f$3; f$4 = $f.f$4; f$5 = $f.f$5; f$6 = $f.f$6; f$7 = $f.f$7; f$8 = $f.f$8; f$9 = $f.f$9; handled = $f.handled; p = $f.p; verb = $f.verb; wasString = $f.wasString; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		wasString = false;
@@ -16933,10 +17069,10 @@ $packages["fmt"] = (function() {
 		/* } */ case 33:
 		p.arg = $ifaceNil;
 		return wasString;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_printArg }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._ref = _ref; $f._ref$1 = _ref$1; $f.arg = arg; $f.depth = depth; $f.f = f; $f.f$1 = f$1; $f.f$10 = f$10; $f.f$11 = f$11; $f.f$12 = f$12; $f.f$13 = f$13; $f.f$14 = f$14; $f.f$15 = f$15; $f.f$16 = f$16; $f.f$17 = f$17; $f.f$18 = f$18; $f.f$2 = f$2; $f.f$3 = f$3; $f.f$4 = f$4; $f.f$5 = f$5; $f.f$6 = f$6; $f.f$7 = f$7; $f.f$8 = f$8; $f.f$9 = f$9; $f.handled = handled; $f.p = p; $f.verb = verb; $f.wasString = wasString; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pp.ptr.prototype.printArg }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._ref = _ref; $f._ref$1 = _ref$1; $f.arg = arg; $f.depth = depth; $f.f = f; $f.f$1 = f$1; $f.f$10 = f$10; $f.f$11 = f$11; $f.f$12 = f$12; $f.f$13 = f$13; $f.f$14 = f$14; $f.f$15 = f$15; $f.f$16 = f$16; $f.f$17 = f$17; $f.f$18 = f$18; $f.f$2 = f$2; $f.f$3 = f$3; $f.f$4 = f$4; $f.f$5 = f$5; $f.f$6 = f$6; $f.f$7 = f$7; $f.f$8 = f$8; $f.f$9 = f$9; $f.handled = handled; $f.p = p; $f.verb = verb; $f.wasString = wasString; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	pp.prototype.printArg = function(arg, verb, depth) { return this.$val.printArg(arg, verb, depth); };
-	pp.ptr.prototype.printValue = function $blocking_printValue(value, verb, depth) {
+	pp.ptr.prototype.printValue = function(value, verb, depth) {
 		var $ptr, _r$2, _r$3, _r$4, _r$5, _r$6, _ref, depth, handled, p, value, verb, wasString, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _ref = $f._ref; depth = $f.depth; handled = $f.handled; p = $f.p; value = $f.value; verb = $f.verb; wasString = $f.wasString; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		wasString = false;
@@ -16990,10 +17126,10 @@ $packages["fmt"] = (function() {
 		_r$6 = p.printReflectValue(value, verb, depth); /* */ $s = 19; case 19: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
 		wasString = _r$6;
 		return wasString;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_printValue }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._ref = _ref; $f.depth = depth; $f.handled = handled; $f.p = p; $f.value = value; $f.verb = verb; $f.wasString = wasString; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pp.ptr.prototype.printValue }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._ref = _ref; $f.depth = depth; $f.handled = handled; $f.p = p; $f.value = value; $f.verb = verb; $f.wasString = wasString; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	pp.prototype.printValue = function(value, verb, depth) { return this.$val.printValue(value, verb, depth); };
-	pp.ptr.prototype.printReflectValue = function $blocking_printReflectValue(value, verb, depth) {
+	pp.ptr.prototype.printReflectValue = function(value, verb, depth) {
 		var $ptr, _i, _i$1, _r$10, _r$11, _r$12, _r$13, _r$14, _r$15, _r$16, _r$17, _r$18, _r$19, _r$2, _r$20, _r$21, _r$22, _r$23, _r$24, _r$25, _r$26, _r$27, _r$28, _r$29, _r$3, _r$30, _r$31, _r$32, _r$33, _r$34, _r$35, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _ref, _ref$1, _ref$2, _ref$3, _v, a, bytes, depth, f, f$1, i, i$1, i$2, i$3, key, keys, oldValue, p, t, typ, v, v$1, value, value$1, verb, wasString, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _i$1 = $f._i$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$13 = $f._r$13; _r$14 = $f._r$14; _r$15 = $f._r$15; _r$16 = $f._r$16; _r$17 = $f._r$17; _r$18 = $f._r$18; _r$19 = $f._r$19; _r$2 = $f._r$2; _r$20 = $f._r$20; _r$21 = $f._r$21; _r$22 = $f._r$22; _r$23 = $f._r$23; _r$24 = $f._r$24; _r$25 = $f._r$25; _r$26 = $f._r$26; _r$27 = $f._r$27; _r$28 = $f._r$28; _r$29 = $f._r$29; _r$3 = $f._r$3; _r$30 = $f._r$30; _r$31 = $f._r$31; _r$32 = $f._r$32; _r$33 = $f._r$33; _r$34 = $f._r$34; _r$35 = $f._r$35; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _ref = $f._ref; _ref$1 = $f._ref$1; _ref$2 = $f._ref$2; _ref$3 = $f._ref$3; _v = $f._v; a = $f.a; bytes = $f.bytes; depth = $f.depth; f = $f.f; f$1 = $f.f$1; i = $f.i; i$1 = $f.i$1; i$2 = $f.i$2; i$3 = $f.i$3; key = $f.key; keys = $f.keys; oldValue = $f.oldValue; p = $f.p; t = $f.t; typ = $f.typ; v = $f.v; v$1 = $f.v$1; value = $f.value; value$1 = $f.value$1; verb = $f.verb; wasString = $f.wasString; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		wasString = false;
@@ -17277,7 +17413,7 @@ $packages["fmt"] = (function() {
 		p.value = oldValue;
 		wasString = wasString;
 		return wasString;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_printReflectValue }; } $f.$ptr = $ptr; $f._i = _i; $f._i$1 = _i$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$18 = _r$18; $f._r$19 = _r$19; $f._r$2 = _r$2; $f._r$20 = _r$20; $f._r$21 = _r$21; $f._r$22 = _r$22; $f._r$23 = _r$23; $f._r$24 = _r$24; $f._r$25 = _r$25; $f._r$26 = _r$26; $f._r$27 = _r$27; $f._r$28 = _r$28; $f._r$29 = _r$29; $f._r$3 = _r$3; $f._r$30 = _r$30; $f._r$31 = _r$31; $f._r$32 = _r$32; $f._r$33 = _r$33; $f._r$34 = _r$34; $f._r$35 = _r$35; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f._ref$1 = _ref$1; $f._ref$2 = _ref$2; $f._ref$3 = _ref$3; $f._v = _v; $f.a = a; $f.bytes = bytes; $f.depth = depth; $f.f = f; $f.f$1 = f$1; $f.i = i; $f.i$1 = i$1; $f.i$2 = i$2; $f.i$3 = i$3; $f.key = key; $f.keys = keys; $f.oldValue = oldValue; $f.p = p; $f.t = t; $f.typ = typ; $f.v = v; $f.v$1 = v$1; $f.value = value; $f.value$1 = value$1; $f.verb = verb; $f.wasString = wasString; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pp.ptr.prototype.printReflectValue }; } $f.$ptr = $ptr; $f._i = _i; $f._i$1 = _i$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$18 = _r$18; $f._r$19 = _r$19; $f._r$2 = _r$2; $f._r$20 = _r$20; $f._r$21 = _r$21; $f._r$22 = _r$22; $f._r$23 = _r$23; $f._r$24 = _r$24; $f._r$25 = _r$25; $f._r$26 = _r$26; $f._r$27 = _r$27; $f._r$28 = _r$28; $f._r$29 = _r$29; $f._r$3 = _r$3; $f._r$30 = _r$30; $f._r$31 = _r$31; $f._r$32 = _r$32; $f._r$33 = _r$33; $f._r$34 = _r$34; $f._r$35 = _r$35; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f._ref$1 = _ref$1; $f._ref$2 = _ref$2; $f._ref$3 = _ref$3; $f._v = _v; $f.a = a; $f.bytes = bytes; $f.depth = depth; $f.f = f; $f.f$1 = f$1; $f.i = i; $f.i$1 = i$1; $f.i$2 = i$2; $f.i$3 = i$3; $f.key = key; $f.keys = keys; $f.oldValue = oldValue; $f.p = p; $f.t = t; $f.typ = typ; $f.v = v; $f.v$1 = v$1; $f.value = value; $f.value$1 = value$1; $f.verb = verb; $f.wasString = wasString; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	pp.prototype.printReflectValue = function(value, verb, depth) { return this.$val.printReflectValue(value, verb, depth); };
 	intFromArg = function(a, argNum) {
@@ -17335,7 +17471,7 @@ $packages["fmt"] = (function() {
 		return [newArgNum, newi, found];
 	};
 	pp.prototype.argNumber = function(argNum, format, i, numArgs) { return this.$val.argNumber(argNum, format, i, numArgs); };
-	pp.ptr.prototype.doPrintf = function $blocking_doPrintf(format, a) {
+	pp.ptr.prototype.doPrintf = function(format, a) {
 		var $ptr, _r$2, _r$3, _r$4, _r$5, _ref, _tuple, _tuple$1, _tuple$2, _tuple$3, _tuple$4, _tuple$5, _tuple$6, _tuple$7, a, afterIndex, arg, arg$1, argNum, c, end, format, i, lasti, p, w, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _ref = $f._ref; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; _tuple$2 = $f._tuple$2; _tuple$3 = $f._tuple$3; _tuple$4 = $f._tuple$4; _tuple$5 = $f._tuple$5; _tuple$6 = $f._tuple$6; _tuple$7 = $f._tuple$7; a = $f.a; afterIndex = $f.afterIndex; arg = $f.arg; arg$1 = $f.arg$1; argNum = $f.argNum; c = $f.c; end = $f.end; format = $f.format; i = $f.i; lasti = $f.lasti; p = $f.p; w = $f.w; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
@@ -17485,10 +17621,10 @@ $packages["fmt"] = (function() {
 			/* } */ $s = 13; continue; case 14:
 			(p.$ptr_buf || (p.$ptr_buf = new ptrType$1(function() { return this.$target.buf; }, function($v) { this.$target.buf = $v; }, p))).WriteByte(41);
 		/* } */ case 12:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_doPrintf }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._ref = _ref; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f._tuple$2 = _tuple$2; $f._tuple$3 = _tuple$3; $f._tuple$4 = _tuple$4; $f._tuple$5 = _tuple$5; $f._tuple$6 = _tuple$6; $f._tuple$7 = _tuple$7; $f.a = a; $f.afterIndex = afterIndex; $f.arg = arg; $f.arg$1 = arg$1; $f.argNum = argNum; $f.c = c; $f.end = end; $f.format = format; $f.i = i; $f.lasti = lasti; $f.p = p; $f.w = w; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pp.ptr.prototype.doPrintf }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._ref = _ref; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f._tuple$2 = _tuple$2; $f._tuple$3 = _tuple$3; $f._tuple$4 = _tuple$4; $f._tuple$5 = _tuple$5; $f._tuple$6 = _tuple$6; $f._tuple$7 = _tuple$7; $f.a = a; $f.afterIndex = afterIndex; $f.arg = arg; $f.arg$1 = arg$1; $f.argNum = argNum; $f.c = c; $f.end = end; $f.format = format; $f.i = i; $f.lasti = lasti; $f.p = p; $f.w = w; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	pp.prototype.doPrintf = function(format, a) { return this.$val.doPrintf(format, a); };
-	pp.ptr.prototype.doPrint = function $blocking_doPrint(a, addspace, addnewline) {
+	pp.ptr.prototype.doPrint = function(a, addspace, addnewline) {
 		var $ptr, _r$2, _r$3, _v, a, addnewline, addspace, arg, argNum, isString, p, prevString, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _v = $f._v; a = $f.a; addnewline = $f.addnewline; addspace = $f.addspace; arg = $f.arg; argNum = $f.argNum; isString = $f.isString; p = $f.p; prevString = $f.prevString; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
@@ -17516,7 +17652,7 @@ $packages["fmt"] = (function() {
 		if (addnewline) {
 			(p.$ptr_buf || (p.$ptr_buf = new ptrType$1(function() { return this.$target.buf; }, function($v) { this.$target.buf = $v; }, p))).WriteByte(10);
 		}
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_doPrint }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._v = _v; $f.a = a; $f.addnewline = addnewline; $f.addspace = addspace; $f.arg = arg; $f.argNum = argNum; $f.isString = isString; $f.p = p; $f.prevString = prevString; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pp.ptr.prototype.doPrint }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._v = _v; $f.a = a; $f.addnewline = addnewline; $f.addspace = addspace; $f.arg = arg; $f.argNum = argNum; $f.isString = isString; $f.p = p; $f.prevString = prevString; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	pp.prototype.doPrint = function(a, addspace, addnewline) { return this.$val.doPrint(a, addspace, addnewline); };
 	ss.ptr.prototype.Read = function(buf) {
@@ -17528,7 +17664,7 @@ $packages["fmt"] = (function() {
 		return [n, err];
 	};
 	ss.prototype.Read = function(buf) { return this.$val.Read(buf); };
-	ss.ptr.prototype.ReadRune = function $blocking_ReadRune() {
+	ss.ptr.prototype.ReadRune = function() {
 		var $ptr, _r$2, _tuple, err, r, s, size, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _tuple = $f._tuple; err = $f.err; r = $f.r; s = $f.s; size = $f.size; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		r = 0;
@@ -17556,7 +17692,7 @@ $packages["fmt"] = (function() {
 			s.atEOF = true;
 		}
 		return [r, size, err];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_ReadRune }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._tuple = _tuple; $f.err = err; $f.r = r; $f.s = s; $f.size = size; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: ss.ptr.prototype.ReadRune }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._tuple = _tuple; $f.err = err; $f.r = r; $f.s = s; $f.size = size; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	ss.prototype.ReadRune = function() { return this.$val.ReadRune(); };
 	ss.ptr.prototype.Width = function() {
@@ -17572,7 +17708,7 @@ $packages["fmt"] = (function() {
 		return [wid, ok];
 	};
 	ss.prototype.Width = function() { return this.$val.Width(); };
-	ss.ptr.prototype.getRune = function $blocking_getRune() {
+	ss.ptr.prototype.getRune = function() {
 		var $ptr, _r$2, _tuple, err, r, s, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _tuple = $f._tuple; err = $f.err; r = $f.r; s = $f.s; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		r = 0;
@@ -17587,10 +17723,10 @@ $packages["fmt"] = (function() {
 			s.error(err);
 		}
 		return r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_getRune }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._tuple = _tuple; $f.err = err; $f.r = r; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: ss.ptr.prototype.getRune }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._tuple = _tuple; $f.err = err; $f.r = r; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	ss.prototype.getRune = function() { return this.$val.getRune(); };
-	ss.ptr.prototype.UnreadRune = function $blocking_UnreadRune() {
+	ss.ptr.prototype.UnreadRune = function() {
 		var $ptr, _r$2, _tuple, ok, s, u, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _tuple = $f._tuple; ok = $f.ok; s = $f.s; u = $f.u; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		s = this;
@@ -17607,7 +17743,7 @@ $packages["fmt"] = (function() {
 		s.prevRune = -1;
 		s.count = s.count - (1) >> 0;
 		return $ifaceNil;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_UnreadRune }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._tuple = _tuple; $f.ok = ok; $f.s = s; $f.u = u; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: ss.ptr.prototype.UnreadRune }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._tuple = _tuple; $f.ok = ok; $f.s = s; $f.u = u; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	ss.prototype.UnreadRune = function() { return this.$val.UnreadRune(); };
 	ss.ptr.prototype.error = function(err) {
@@ -17622,7 +17758,7 @@ $packages["fmt"] = (function() {
 		$panic((x = new scanError.ptr(errors.New(err)), new x.constructor.elem(x)));
 	};
 	ss.prototype.errorString = function(err) { return this.$val.errorString(err); };
-	ss.ptr.prototype.Token = function $blocking_Token(skipSpace, f) {
+	ss.ptr.prototype.Token = function(skipSpace, f) {
 		var $ptr, _r$2, err, f, s, skipSpace, tok, $s, $deferred, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; err = $f.err; f = $f.f; s = $f.s; skipSpace = $f.skipSpace; tok = $f.tok; $s = $f.$s; $deferred = $f.$deferred; $r = $f.$r; } var $err = null; try { s: while (true) { switch ($s) { case 0: $deferred = []; $deferred.index = $curGoroutine.deferStack.length; $curGoroutine.deferStack.push($deferred);
 		err = [err];
@@ -17648,7 +17784,7 @@ $packages["fmt"] = (function() {
 		_r$2 = s.token(skipSpace, f); /* */ $s = 1; case 1: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		tok = _r$2;
 		return [tok, err[0]];
-		/* */ $s = -1; case -1: } return; } } catch(err) { $err = err; $s = -1; } finally { $callDeferred($deferred, $err); if (!$curGoroutine.asleep) { return  [tok, err[0]]; } if($curGoroutine.asleep) { if ($f === undefined) { $f = { $blk: $blocking_Token }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.err = err; $f.f = f; $f.s = s; $f.skipSpace = skipSpace; $f.tok = tok; $f.$s = $s; $f.$deferred = $deferred; $f.$r = $r; return $f; } }
+		/* */ $s = -1; case -1: } return; } } catch(err) { $err = err; $s = -1; } finally { $callDeferred($deferred, $err); if (!$curGoroutine.asleep) { return  [tok, err[0]]; } if($curGoroutine.asleep) { if ($f === undefined) { $f = { $blk: ss.ptr.prototype.Token }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.err = err; $f.f = f; $f.s = s; $f.skipSpace = skipSpace; $f.tok = tok; $f.$s = $s; $f.$deferred = $deferred; $f.$r = $r; return $f; } }
 	};
 	ss.prototype.Token = function(skipSpace, f) { return this.$val.Token(skipSpace, f); };
 	isSpace = function(r) {
@@ -17676,12 +17812,12 @@ $packages["fmt"] = (function() {
 		var $ptr, r;
 		return !isSpace(r);
 	};
-	ss.ptr.prototype.SkipSpace = function $blocking_SkipSpace() {
+	ss.ptr.prototype.SkipSpace = function() {
 		var $ptr, s, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; s = $f.s; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		s = this;
 		$r = s.skipSpace(false); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_SkipSpace }; } $f.$ptr = $ptr; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: ss.ptr.prototype.SkipSpace }; } $f.$ptr = $ptr; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	ss.prototype.SkipSpace = function() { return this.$val.SkipSpace(); };
 	ss.ptr.prototype.free = function(old) {
@@ -17700,7 +17836,7 @@ $packages["fmt"] = (function() {
 		ssFree.Put(s);
 	};
 	ss.prototype.free = function(old) { return this.$val.free(old); };
-	ss.ptr.prototype.skipSpace = function $blocking_skipSpace(stopAtNewline) {
+	ss.ptr.prototype.skipSpace = function(stopAtNewline) {
 		var $ptr, _r$2, _r$3, _r$4, _v, r, s, stopAtNewline, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _v = $f._v; r = $f.r; s = $f.s; stopAtNewline = $f.stopAtNewline; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		s = this;
@@ -17738,10 +17874,10 @@ $packages["fmt"] = (function() {
 				/* break; */ $s = 2; continue;
 			/* } */ case 11:
 		/* } */ $s = 1; continue; case 2:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_skipSpace }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._v = _v; $f.r = r; $f.s = s; $f.stopAtNewline = stopAtNewline; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: ss.ptr.prototype.skipSpace }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._v = _v; $f.r = r; $f.s = s; $f.stopAtNewline = stopAtNewline; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	ss.prototype.skipSpace = function(stopAtNewline) { return this.$val.skipSpace(stopAtNewline); };
-	ss.ptr.prototype.token = function $blocking_token(skipSpace, f) {
+	ss.ptr.prototype.token = function(skipSpace, f) {
 		var $ptr, _r$2, _r$3, _r$4, f, r, s, skipSpace, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; f = $f.f; r = $f.r; s = $f.s; skipSpace = $f.skipSpace; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		s = this;
@@ -17767,7 +17903,7 @@ $packages["fmt"] = (function() {
 			(s.$ptr_buf || (s.$ptr_buf = new ptrType$1(function() { return this.$target.buf; }, function($v) { this.$target.buf = $v; }, s))).WriteRune(r);
 		/* } */ $s = 4; continue; case 5:
 		return (x = s.buf, $subslice(new sliceType(x.$array), x.$offset, x.$offset + x.$length));
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_token }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f.f = f; $f.r = r; $f.s = s; $f.skipSpace = skipSpace; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: ss.ptr.prototype.token }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f.f = f; $f.r = r; $f.s = s; $f.skipSpace = skipSpace; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	ss.prototype.token = function(skipSpace, f) { return this.$val.token(skipSpace, f); };
 	indexRune = function(s, r) {
@@ -17786,7 +17922,7 @@ $packages["fmt"] = (function() {
 		}
 		return -1;
 	};
-	ss.ptr.prototype.peek = function $blocking_peek(ok) {
+	ss.ptr.prototype.peek = function(ok) {
 		var $ptr, _r$2, _r$3, ok, r, s, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; ok = $f.ok; r = $f.r; s = $f.s; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		s = this;
@@ -17799,7 +17935,7 @@ $packages["fmt"] = (function() {
 			_r$3;
 		/* } */ case 3:
 		return indexRune(ok, r) >= 0;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_peek }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.ok = ok; $f.r = r; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: ss.ptr.prototype.peek }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.ok = ok; $f.r = r; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	ss.prototype.peek = function(ok) { return this.$val.peek(ok); };
 	ptrType$25.methods = [{prop: "clearflags", name: "clearflags", pkg: "fmt", typ: $funcType([], [], false)}, {prop: "init", name: "init", pkg: "fmt", typ: $funcType([ptrType$1], [], false)}, {prop: "computePadding", name: "computePadding", pkg: "fmt", typ: $funcType([$Int], [sliceType, $Int, $Int], false)}, {prop: "writePadding", name: "writePadding", pkg: "fmt", typ: $funcType([$Int, sliceType], [], false)}, {prop: "pad", name: "pad", pkg: "fmt", typ: $funcType([sliceType], [], false)}, {prop: "padString", name: "padString", pkg: "fmt", typ: $funcType([$String], [], false)}, {prop: "fmt_boolean", name: "fmt_boolean", pkg: "fmt", typ: $funcType([$Bool], [], false)}, {prop: "integer", name: "integer", pkg: "fmt", typ: $funcType([$Int64, $Uint64, $Bool, $String], [], false)}, {prop: "truncate", name: "truncate", pkg: "fmt", typ: $funcType([$String], [$String], false)}, {prop: "fmt_s", name: "fmt_s", pkg: "fmt", typ: $funcType([$String], [], false)}, {prop: "fmt_sbx", name: "fmt_sbx", pkg: "fmt", typ: $funcType([$String, sliceType, $String], [], false)}, {prop: "fmt_sx", name: "fmt_sx", pkg: "fmt", typ: $funcType([$String, $String], [], false)}, {prop: "fmt_bx", name: "fmt_bx", pkg: "fmt", typ: $funcType([sliceType, $String], [], false)}, {prop: "fmt_q", name: "fmt_q", pkg: "fmt", typ: $funcType([$String], [], false)}, {prop: "fmt_qc", name: "fmt_qc", pkg: "fmt", typ: $funcType([$Int64], [], false)}, {prop: "formatFloat", name: "formatFloat", pkg: "fmt", typ: $funcType([$Float64, $Uint8, $Int, $Int], [], false)}, {prop: "fmt_e64", name: "fmt_e64", pkg: "fmt", typ: $funcType([$Float64], [], false)}, {prop: "fmt_E64", name: "fmt_E64", pkg: "fmt", typ: $funcType([$Float64], [], false)}, {prop: "fmt_f64", name: "fmt_f64", pkg: "fmt", typ: $funcType([$Float64], [], false)}, {prop: "fmt_g64", name: "fmt_g64", pkg: "fmt", typ: $funcType([$Float64], [], false)}, {prop: "fmt_G64", name: "fmt_G64", pkg: "fmt", typ: $funcType([$Float64], [], false)}, {prop: "fmt_fb64", name: "fmt_fb64", pkg: "fmt", typ: $funcType([$Float64], [], false)}, {prop: "fmt_e32", name: "fmt_e32", pkg: "fmt", typ: $funcType([$Float32], [], false)}, {prop: "fmt_E32", name: "fmt_E32", pkg: "fmt", typ: $funcType([$Float32], [], false)}, {prop: "fmt_f32", name: "fmt_f32", pkg: "fmt", typ: $funcType([$Float32], [], false)}, {prop: "fmt_g32", name: "fmt_g32", pkg: "fmt", typ: $funcType([$Float32], [], false)}, {prop: "fmt_G32", name: "fmt_G32", pkg: "fmt", typ: $funcType([$Float32], [], false)}, {prop: "fmt_fb32", name: "fmt_fb32", pkg: "fmt", typ: $funcType([$Float32], [], false)}, {prop: "fmt_c64", name: "fmt_c64", pkg: "fmt", typ: $funcType([$Complex64, $Int32], [], false)}, {prop: "fmt_c128", name: "fmt_c128", pkg: "fmt", typ: $funcType([$Complex128, $Int32], [], false)}, {prop: "fmt_complex", name: "fmt_complex", pkg: "fmt", typ: $funcType([$Float64, $Float64, $Int, $Int32], [], false)}];
@@ -17818,7 +17954,7 @@ $packages["fmt"] = (function() {
 	scanError.init([{prop: "err", name: "err", pkg: "fmt", typ: $error, tag: ""}]);
 	ss.init([{prop: "rr", name: "rr", pkg: "fmt", typ: io.RuneReader, tag: ""}, {prop: "buf", name: "buf", pkg: "fmt", typ: buffer, tag: ""}, {prop: "peekRune", name: "peekRune", pkg: "fmt", typ: $Int32, tag: ""}, {prop: "prevRune", name: "prevRune", pkg: "fmt", typ: $Int32, tag: ""}, {prop: "count", name: "count", pkg: "fmt", typ: $Int, tag: ""}, {prop: "atEOF", name: "atEOF", pkg: "fmt", typ: $Bool, tag: ""}, {prop: "ssave", name: "", pkg: "fmt", typ: ssave, tag: ""}]);
 	ssave.init([{prop: "validSave", name: "validSave", pkg: "fmt", typ: $Bool, tag: ""}, {prop: "nlIsEnd", name: "nlIsEnd", pkg: "fmt", typ: $Bool, tag: ""}, {prop: "nlIsSpace", name: "nlIsSpace", pkg: "fmt", typ: $Bool, tag: ""}, {prop: "argLimit", name: "argLimit", pkg: "fmt", typ: $Int, tag: ""}, {prop: "limit", name: "limit", pkg: "fmt", typ: $Int, tag: ""}, {prop: "maxWid", name: "maxWid", pkg: "fmt", typ: $Int, tag: ""}]);
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = errors.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
@@ -17867,13 +18003,14 @@ $packages["fmt"] = (function() {
 		init();
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["sort"] = (function() {
 	var $pkg = {}, $init, StringSlice, sliceType$2, Search, SearchStrings, min, insertionSort, siftDown, heapSort, medianOfThree, swapRange, doPivot, quickSort, Sort, Strings;
 	StringSlice = $pkg.StringSlice = $newType(12, $kindSlice, "sort.StringSlice", "StringSlice", "sort", null);
 	sliceType$2 = $sliceType($String);
-	Search = $pkg.Search = function $blocking_Search(n, f) {
+	Search = function(n, f) {
 		var $ptr, _q, _r, _tmp, _tmp$1, f, h, i, j, n, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _q = $f._q; _r = $f._r; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; f = $f.f; h = $f.h; i = $f.i; j = $f.j; n = $f.n; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_tmp = 0; _tmp$1 = n; i = _tmp; j = _tmp$1;
@@ -17891,9 +18028,10 @@ $packages["sort"] = (function() {
 			/* } */ case 5:
 		/* } */ $s = 1; continue; case 2:
 		return i;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Search }; } $f.$ptr = $ptr; $f._q = _q; $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f.f = f; $f.h = h; $f.i = i; $f.j = j; $f.n = n; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Search }; } $f.$ptr = $ptr; $f._q = _q; $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f.f = f; $f.h = h; $f.i = i; $f.j = j; $f.n = n; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	SearchStrings = $pkg.SearchStrings = function $blocking_SearchStrings(a, x) {
+	$pkg.Search = Search;
+	SearchStrings = function(a, x) {
 		var $ptr, _r, a, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; a = $f.a; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		a = [a];
@@ -17903,15 +18041,16 @@ $packages["sort"] = (function() {
 			return ((i < 0 || i >= a[0].$length) ? $throwRuntimeError("index out of range") : a[0].$array[a[0].$offset + i]) >= x[0];
 		}; })(a, x)); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_SearchStrings }; } $f.$ptr = $ptr; $f._r = _r; $f.a = a; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: SearchStrings }; } $f.$ptr = $ptr; $f._r = _r; $f.a = a; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	StringSlice.prototype.Search = function $blocking_Search(x) {
+	$pkg.SearchStrings = SearchStrings;
+	StringSlice.prototype.Search = function(x) {
 		var $ptr, _r, p, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; p = $f.p; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
 		_r = SearchStrings($subslice(new sliceType$2(p.$array), p.$offset, p.$offset + p.$length), x); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Search }; } $f.$ptr = $ptr; $f._r = _r; $f.p = p; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: StringSlice.prototype.Search }; } $f.$ptr = $ptr; $f._r = _r; $f.p = p; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$ptrType(StringSlice).prototype.Search = function(x) { return this.$get().Search(x); };
 	min = function(a, b) {
@@ -17921,7 +18060,7 @@ $packages["sort"] = (function() {
 		}
 		return b;
 	};
-	insertionSort = function $blocking_insertionSort(data, a, b) {
+	insertionSort = function(data, a, b) {
 		var $ptr, _r, _v, a, b, data, i, j, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _v = $f._v; a = $f.a; b = $f.b; data = $f.data; i = $f.i; j = $f.j; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		i = a + 1 >> 0;
@@ -17938,9 +18077,9 @@ $packages["sort"] = (function() {
 			/* } */ $s = 3; continue; case 4:
 			i = i + (1) >> 0;
 		/* } */ $s = 1; continue; case 2:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_insertionSort }; } $f.$ptr = $ptr; $f._r = _r; $f._v = _v; $f.a = a; $f.b = b; $f.data = data; $f.i = i; $f.j = j; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: insertionSort }; } $f.$ptr = $ptr; $f._r = _r; $f._v = _v; $f.a = a; $f.b = b; $f.data = data; $f.i = i; $f.j = j; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	siftDown = function $blocking_siftDown(data, lo, hi, first) {
+	siftDown = function(data, lo, hi, first) {
 		var $ptr, _r, _r$1, _v, child, data, first, hi, lo, root, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _v = $f._v; child = $f.child; data = $f.data; first = $f.first; hi = $f.hi; lo = $f.lo; root = $f.root; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		root = lo;
@@ -17966,9 +18105,9 @@ $packages["sort"] = (function() {
 			$r = data.Swap(first + root >> 0, first + child >> 0); /* */ $s = 10; case 10: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			root = child;
 		/* } */ $s = 1; continue; case 2:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_siftDown }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._v = _v; $f.child = child; $f.data = data; $f.first = first; $f.hi = hi; $f.lo = lo; $f.root = root; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: siftDown }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._v = _v; $f.child = child; $f.data = data; $f.first = first; $f.hi = hi; $f.lo = lo; $f.root = root; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	heapSort = function $blocking_heapSort(data, a, b) {
+	heapSort = function(data, a, b) {
 		var $ptr, _q, a, b, data, first, hi, i, i$1, lo, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _q = $f._q; a = $f.a; b = $f.b; data = $f.data; first = $f.first; hi = $f.hi; i = $f.i; i$1 = $f.i$1; lo = $f.lo; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		first = a;
@@ -17987,9 +18126,9 @@ $packages["sort"] = (function() {
 			$r = siftDown(data, lo, i$1, first); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			i$1 = i$1 - (1) >> 0;
 		/* } */ $s = 4; continue; case 5:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_heapSort }; } $f.$ptr = $ptr; $f._q = _q; $f.a = a; $f.b = b; $f.data = data; $f.first = first; $f.hi = hi; $f.i = i; $f.i$1 = i$1; $f.lo = lo; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: heapSort }; } $f.$ptr = $ptr; $f._q = _q; $f.a = a; $f.b = b; $f.data = data; $f.first = first; $f.hi = hi; $f.i = i; $f.i$1 = i$1; $f.lo = lo; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	medianOfThree = function $blocking_medianOfThree(data, a, b, c) {
+	medianOfThree = function(data, a, b, c) {
 		var $ptr, _r, _r$1, _r$2, a, b, c, data, m0, m1, m2, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; a = $f.a; b = $f.b; c = $f.c; data = $f.data; m0 = $f.m0; m1 = $f.m1; m2 = $f.m2; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		m0 = b;
@@ -18013,9 +18152,9 @@ $packages["sort"] = (function() {
 		/* if (_r$2) { */ case 9:
 			$r = data.Swap(m1, m0); /* */ $s = 12; case 12: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* } */ case 10:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_medianOfThree }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.a = a; $f.b = b; $f.c = c; $f.data = data; $f.m0 = m0; $f.m1 = m1; $f.m2 = m2; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: medianOfThree }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.a = a; $f.b = b; $f.c = c; $f.data = data; $f.m0 = m0; $f.m1 = m1; $f.m2 = m2; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	swapRange = function $blocking_swapRange(data, a, b, n) {
+	swapRange = function(data, a, b, n) {
 		var $ptr, a, b, data, i, n, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; a = $f.a; b = $f.b; data = $f.data; i = $f.i; n = $f.n; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		i = 0;
@@ -18024,9 +18163,9 @@ $packages["sort"] = (function() {
 			$r = data.Swap(a + i >> 0, b + i >> 0); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			i = i + (1) >> 0;
 		/* } */ $s = 1; continue; case 2:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_swapRange }; } $f.$ptr = $ptr; $f.a = a; $f.b = b; $f.data = data; $f.i = i; $f.n = n; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: swapRange }; } $f.$ptr = $ptr; $f.a = a; $f.b = b; $f.data = data; $f.i = i; $f.n = n; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	doPivot = function $blocking_doPivot(data, lo, hi) {
+	doPivot = function(data, lo, hi) {
 		var $ptr, _q, _q$1, _r, _r$1, _r$2, _r$3, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, a, b, c, d, data, hi, lo, m, midhi, midlo, n, pivot, s, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _q = $f._q; _q$1 = $f._q$1; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; _tmp$4 = $f._tmp$4; _tmp$5 = $f._tmp$5; a = $f.a; b = $f.b; c = $f.c; d = $f.d; data = $f.data; hi = $f.hi; lo = $f.lo; m = $f.m; midhi = $f.midhi; midlo = $f.midlo; n = $f.n; pivot = $f.pivot; s = $f.s; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		midlo = 0;
@@ -18095,9 +18234,9 @@ $packages["sort"] = (function() {
 		$r = swapRange(data, c, hi - n >> 0, n); /* */ $s = 29; case 29: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		_tmp$4 = (lo + b >> 0) - a >> 0; _tmp$5 = hi - ((d - c >> 0)) >> 0; midlo = _tmp$4; midhi = _tmp$5;
 		return [midlo, midhi];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_doPivot }; } $f.$ptr = $ptr; $f._q = _q; $f._q$1 = _q$1; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tmp$4 = _tmp$4; $f._tmp$5 = _tmp$5; $f.a = a; $f.b = b; $f.c = c; $f.d = d; $f.data = data; $f.hi = hi; $f.lo = lo; $f.m = m; $f.midhi = midhi; $f.midlo = midlo; $f.n = n; $f.pivot = pivot; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: doPivot }; } $f.$ptr = $ptr; $f._q = _q; $f._q$1 = _q$1; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tmp$4 = _tmp$4; $f._tmp$5 = _tmp$5; $f.a = a; $f.b = b; $f.c = c; $f.d = d; $f.data = data; $f.hi = hi; $f.lo = lo; $f.m = m; $f.midhi = midhi; $f.midlo = midlo; $f.n = n; $f.pivot = pivot; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	quickSort = function $blocking_quickSort(data, a, b, maxDepth) {
+	quickSort = function(data, a, b, maxDepth) {
 		var $ptr, _r, _tuple, a, b, data, maxDepth, mhi, mlo, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _tuple = $f._tuple; a = $f.a; b = $f.b; data = $f.data; maxDepth = $f.maxDepth; mhi = $f.mhi; mlo = $f.mlo; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		/* while (true) { */ case 1:
@@ -18127,9 +18266,9 @@ $packages["sort"] = (function() {
 		/* if ((b - a >> 0) > 1) { */ case 12:
 			$r = insertionSort(data, a, b); /* */ $s = 14; case 14: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* } */ case 13:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_quickSort }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.a = a; $f.b = b; $f.data = data; $f.maxDepth = maxDepth; $f.mhi = mhi; $f.mlo = mlo; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: quickSort }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.a = a; $f.b = b; $f.data = data; $f.maxDepth = maxDepth; $f.mhi = mhi; $f.mlo = mlo; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	Sort = $pkg.Sort = function $blocking_Sort(data) {
+	Sort = function(data) {
 		var $ptr, _r, data, i, maxDepth, n, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; data = $f.data; i = $f.i; maxDepth = $f.maxDepth; n = $f.n; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = data.Len(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
@@ -18143,8 +18282,9 @@ $packages["sort"] = (function() {
 		}
 		maxDepth = maxDepth * (2) >> 0;
 		$r = quickSort(data, 0, n, maxDepth); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Sort }; } $f.$ptr = $ptr; $f._r = _r; $f.data = data; $f.i = i; $f.maxDepth = maxDepth; $f.n = n; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Sort }; } $f.$ptr = $ptr; $f._r = _r; $f.data = data; $f.i = i; $f.maxDepth = maxDepth; $f.n = n; $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.Sort = Sort;
 	StringSlice.prototype.Len = function() {
 		var $ptr, p;
 		p = this;
@@ -18163,47 +18303,52 @@ $packages["sort"] = (function() {
 		_tmp = ((j < 0 || j >= p.$length) ? $throwRuntimeError("index out of range") : p.$array[p.$offset + j]); _tmp$1 = ((i < 0 || i >= p.$length) ? $throwRuntimeError("index out of range") : p.$array[p.$offset + i]); ((i < 0 || i >= p.$length) ? $throwRuntimeError("index out of range") : p.$array[p.$offset + i] = _tmp); ((j < 0 || j >= p.$length) ? $throwRuntimeError("index out of range") : p.$array[p.$offset + j] = _tmp$1);
 	};
 	$ptrType(StringSlice).prototype.Swap = function(i, j) { return this.$get().Swap(i, j); };
-	StringSlice.prototype.Sort = function $blocking_Sort() {
+	StringSlice.prototype.Sort = function() {
 		var $ptr, p, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; p = $f.p; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
 		$r = Sort(p); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Sort }; } $f.$ptr = $ptr; $f.p = p; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: StringSlice.prototype.Sort }; } $f.$ptr = $ptr; $f.p = p; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$ptrType(StringSlice).prototype.Sort = function() { return this.$get().Sort(); };
-	Strings = $pkg.Strings = function $blocking_Strings(a) {
+	Strings = function(a) {
 		var $ptr, a, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; a = $f.a; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = Sort($subslice(new StringSlice(a.$array), a.$offset, a.$offset + a.$length)); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Strings }; } $f.$ptr = $ptr; $f.a = a; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Strings }; } $f.$ptr = $ptr; $f.a = a; $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.Strings = Strings;
 	StringSlice.methods = [{prop: "Search", name: "Search", pkg: "", typ: $funcType([$String], [$Int], false)}, {prop: "Len", name: "Len", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Less", name: "Less", pkg: "", typ: $funcType([$Int, $Int], [$Bool], false)}, {prop: "Swap", name: "Swap", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "Sort", name: "Sort", pkg: "", typ: $funcType([], [], false)}];
 	StringSlice.init($String);
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["unicode/utf16"] = (function() {
 	var $pkg = {}, $init, IsSurrogate, DecodeRune;
-	IsSurrogate = $pkg.IsSurrogate = function(r) {
+	IsSurrogate = function(r) {
 		var $ptr, r;
 		return 55296 <= r && r < 57344;
 	};
-	DecodeRune = $pkg.DecodeRune = function(r1, r2) {
+	$pkg.IsSurrogate = IsSurrogate;
+	DecodeRune = function(r1, r2) {
 		var $ptr, r1, r2;
 		if (55296 <= r1 && r1 < 56320 && 56320 <= r2 && r2 < 57344) {
 			return ((((r1 - 55296 >> 0)) << 10 >> 0) | ((r2 - 56320 >> 0))) + 65536 >> 0;
 		}
 		return 65533;
 	};
-	$init = $pkg.$init = function() {
+	$pkg.DecodeRune = DecodeRune;
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["encoding/json"] = (function() {
@@ -18479,16 +18624,16 @@ $packages["encoding/json"] = (function() {
 	funcType$1 = $funcType([ptrType$21, $Int], [$Int], false);
 	ptrType$22 = $ptrType(Decoder);
 	ptrType$23 = $ptrType(Encoder);
-	UnmarshalTypeError.ptr.prototype.Error = function $blocking_Error() {
+	UnmarshalTypeError.ptr.prototype.Error = function() {
 		var $ptr, _r$2, e, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		e = this;
 		_r$2 = e.Type.String(); /* */ $s = 1; case 1: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		return "json: cannot unmarshal " + e.Value + " into Go value of type " + _r$2;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Error }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: UnmarshalTypeError.ptr.prototype.Error }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	UnmarshalTypeError.prototype.Error = function() { return this.$val.Error(); };
-	InvalidUnmarshalError.ptr.prototype.Error = function $blocking_Error() {
+	InvalidUnmarshalError.ptr.prototype.Error = function() {
 		var $ptr, _r$2, _r$3, _r$4, e, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		e = this;
@@ -18504,10 +18649,10 @@ $packages["encoding/json"] = (function() {
 		/* } */ case 2:
 		_r$4 = e.Type.String(); /* */ $s = 5; case 5: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
 		return "json: Unmarshal(nil " + _r$4 + ")";
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Error }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: InvalidUnmarshalError.ptr.prototype.Error }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	InvalidUnmarshalError.prototype.Error = function() { return this.$val.Error(); };
-	decodeState.ptr.prototype.unmarshal = function $blocking_unmarshal(v) {
+	decodeState.ptr.prototype.unmarshal = function(v) {
 		var $ptr, _r$2, d, err, rv, v, $s, $deferred, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; d = $f.d; err = $f.err; rv = $f.rv; v = $f.v; $s = $f.$s; $deferred = $f.$deferred; $r = $f.$r; } var $err = null; try { s: while (true) { switch ($s) { case 0: $deferred = []; $deferred.index = $curGoroutine.deferStack.length; $curGoroutine.deferStack.push($deferred);
 		err = [err];
@@ -18534,7 +18679,7 @@ $packages["encoding/json"] = (function() {
 		$r = d.value(rv); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		err[0] = d.savedError;
 		return err[0];
-		/* */ $s = -1; case -1: } return; } } catch(err) { $err = err; $s = -1; } finally { $callDeferred($deferred, $err); if (!$curGoroutine.asleep) { return  err[0]; } if($curGoroutine.asleep) { if ($f === undefined) { $f = { $blk: $blocking_unmarshal }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.d = d; $f.err = err; $f.rv = rv; $f.v = v; $f.$s = $s; $f.$deferred = $deferred; $f.$r = $r; return $f; } }
+		/* */ $s = -1; case -1: } return; } } catch(err) { $err = err; $s = -1; } finally { $callDeferred($deferred, $err); if (!$curGoroutine.asleep) { return  err[0]; } if($curGoroutine.asleep) { if ($f === undefined) { $f = { $blk: decodeState.ptr.prototype.unmarshal }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.d = d; $f.err = err; $f.rv = rv; $f.v = v; $f.$s = $s; $f.$deferred = $deferred; $f.$r = $r; return $f; } }
 	};
 	decodeState.prototype.unmarshal = function(v) { return this.$val.unmarshal(v); };
 	Number.prototype.String = function() {
@@ -18578,7 +18723,7 @@ $packages["encoding/json"] = (function() {
 		}
 	};
 	decodeState.prototype.saveError = function(err) { return this.$val.saveError(err); };
-	decodeState.ptr.prototype.next = function $blocking_next() {
+	decodeState.ptr.prototype.next = function() {
 		var $ptr, _r$2, _r$3, _r$4, _tuple, c, d, err, item, rest, x, x$1, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _tuple = $f._tuple; c = $f.c; d = $f.d; err = $f.err; item = $f.item; rest = $f.rest; x = $f.x; x$1 = $f.x$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		d = this;
@@ -18600,10 +18745,10 @@ $packages["encoding/json"] = (function() {
 			_r$4;
 		/* } */ case 4:
 		return item;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_next }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._tuple = _tuple; $f.c = c; $f.d = d; $f.err = err; $f.item = item; $f.rest = rest; $f.x = x; $f.x$1 = x$1; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: decodeState.ptr.prototype.next }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._tuple = _tuple; $f.c = c; $f.d = d; $f.err = err; $f.item = item; $f.rest = rest; $f.x = x; $f.x$1 = x$1; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	decodeState.prototype.next = function() { return this.$val.next(); };
-	decodeState.ptr.prototype.scanWhile = function $blocking_scanWhile(op) {
+	decodeState.ptr.prototype.scanWhile = function(op) {
 		var $ptr, _r$2, _r$3, c, d, newOp, op, x, x$1, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; c = $f.c; d = $f.d; newOp = $f.newOp; op = $f.op; x = $f.x; x$1 = $f.x$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		d = this;
@@ -18627,10 +18772,10 @@ $packages["encoding/json"] = (function() {
 			}
 		/* } */ $s = 1; continue; case 2:
 		return newOp;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_scanWhile }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.c = c; $f.d = d; $f.newOp = newOp; $f.op = op; $f.x = x; $f.x$1 = x$1; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: decodeState.ptr.prototype.scanWhile }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.c = c; $f.d = d; $f.newOp = newOp; $f.op = op; $f.x = x; $f.x$1 = x$1; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	decodeState.prototype.scanWhile = function(op) { return this.$val.scanWhile(op); };
-	decodeState.ptr.prototype.value = function $blocking_value(v) {
+	decodeState.ptr.prototype.value = function(v) {
 		var $ptr, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _ref, _tuple, d, err, n, op, rest, v, x, x$1, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _ref = $f._ref; _tuple = $f._tuple; d = $f.d; err = $f.err; n = $f.n; op = $f.op; rest = $f.rest; v = $f.v; x = $f.x; x$1 = $f.x$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		d = this;
@@ -18686,10 +18831,10 @@ $packages["encoding/json"] = (function() {
 		/* } else { */ case 16:
 			d.error(errPhase);
 		/* } */ case 17:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_value }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f._tuple = _tuple; $f.d = d; $f.err = err; $f.n = n; $f.op = op; $f.rest = rest; $f.v = v; $f.x = x; $f.x$1 = x$1; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: decodeState.ptr.prototype.value }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f._tuple = _tuple; $f.d = d; $f.err = err; $f.n = n; $f.op = op; $f.rest = rest; $f.v = v; $f.x = x; $f.x$1 = x$1; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	decodeState.prototype.value = function(v) { return this.$val.value(v); };
-	decodeState.ptr.prototype.valueQuoted = function $blocking_valueQuoted() {
+	decodeState.ptr.prototype.valueQuoted = function() {
 		var $ptr, _r$2, _r$3, _ref, _ref$1, d, op, v, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _ref = $f._ref; _ref$1 = $f._ref$1; d = $f.d; op = $f.op; v = $f.v; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		d = this;
@@ -18720,10 +18865,10 @@ $packages["encoding/json"] = (function() {
 			d.error(errPhase);
 		/* } */ case 6:
 		return (x = new unquotedValue.ptr(), new x.constructor.elem(x));
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_valueQuoted }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._ref = _ref; $f._ref$1 = _ref$1; $f.d = d; $f.op = op; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: decodeState.ptr.prototype.valueQuoted }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._ref = _ref; $f._ref$1 = _ref$1; $f.d = d; $f.op = op; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	decodeState.prototype.valueQuoted = function() { return this.$val.valueQuoted(); };
-	decodeState.ptr.prototype.indirect = function $blocking_indirect(v, decodingNull) {
+	decodeState.ptr.prototype.indirect = function(v, decodingNull) {
 		var $ptr, _r$10, _r$11, _r$12, _r$13, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _tuple, _tuple$1, _v, _v$1, _v$2, d, decodingNull, e, ok, ok$1, u, u$1, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$13 = $f._r$13; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; _v = $f._v; _v$1 = $f._v$1; _v$2 = $f._v$2; d = $f.d; decodingNull = $f.decodingNull; e = $f.e; ok = $f.ok; ok$1 = $f.ok$1; u = $f.u; u$1 = $f.u$1; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		d = this;
@@ -18795,10 +18940,10 @@ $packages["encoding/json"] = (function() {
 			v = _r$13;
 		/* } */ $s = 5; continue; case 6:
 		return [$ifaceNil, $ifaceNil, v];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_indirect }; } $f.$ptr = $ptr; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f._v = _v; $f._v$1 = _v$1; $f._v$2 = _v$2; $f.d = d; $f.decodingNull = decodingNull; $f.e = e; $f.ok = ok; $f.ok$1 = ok$1; $f.u = u; $f.u$1 = u$1; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: decodeState.ptr.prototype.indirect }; } $f.$ptr = $ptr; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f._v = _v; $f._v$1 = _v$1; $f._v$2 = _v$2; $f.d = d; $f.decodingNull = decodingNull; $f.e = e; $f.ok = ok; $f.ok$1 = ok$1; $f.u = u; $f.u$1 = u$1; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	decodeState.prototype.indirect = function(v, decodingNull) { return this.$val.indirect(v, decodingNull); };
-	decodeState.ptr.prototype.array = function $blocking_array(v) {
+	decodeState.ptr.prototype.array = function(v) {
 		var $ptr, _q, _r$10, _r$11, _r$12, _r$13, _r$14, _r$15, _r$16, _r$17, _r$18, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _ref, _tuple, d, err, i, newcap, newv, op, pv, u, ut, v, z, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _q = $f._q; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$13 = $f._r$13; _r$14 = $f._r$14; _r$15 = $f._r$15; _r$16 = $f._r$16; _r$17 = $f._r$17; _r$18 = $f._r$18; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _ref = $f._ref; _tuple = $f._tuple; d = $f.d; err = $f.err; i = $f.i; newcap = $f.newcap; newv = $f.newv; op = $f.op; pv = $f.pv; u = $f.u; ut = $f.ut; v = $f.v; z = $f.z; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		d = this;
@@ -18933,10 +19078,10 @@ $packages["encoding/json"] = (function() {
 			_r$18 = reflect.MakeSlice(v.Type(), 0, 0); /* */ $s = 51; case 51: if($c) { $c = false; _r$18 = _r$18.$blk(); } if (_r$18 && _r$18.$blk !== undefined) { break s; }
 			$r = v.Set(_r$18); /* */ $s = 52; case 52: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* } */ case 50:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_array }; } $f.$ptr = $ptr; $f._q = _q; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$18 = _r$18; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f._tuple = _tuple; $f.d = d; $f.err = err; $f.i = i; $f.newcap = newcap; $f.newv = newv; $f.op = op; $f.pv = pv; $f.u = u; $f.ut = ut; $f.v = v; $f.z = z; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: decodeState.ptr.prototype.array }; } $f.$ptr = $ptr; $f._q = _q; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$18 = _r$18; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f._tuple = _tuple; $f.d = d; $f.err = err; $f.i = i; $f.newcap = newcap; $f.newv = newv; $f.op = op; $f.pv = pv; $f.u = u; $f.ut = ut; $f.v = v; $f.z = z; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	decodeState.prototype.array = function(v) { return this.$val.array(v); };
-	decodeState.ptr.prototype.object = function $blocking_object(v) {
+	decodeState.ptr.prototype.object = function(v) {
 		var $ptr, _i, _i$1, _r$10, _r$11, _r$12, _r$13, _r$14, _r$15, _r$16, _r$17, _r$18, _r$19, _r$2, _r$20, _r$21, _r$22, _r$23, _r$24, _r$25, _r$26, _r$27, _r$28, _r$29, _r$3, _r$30, _r$31, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _ref, _ref$1, _ref$2, _ref$3, _tuple, _tuple$1, _v, d, destring, elemType, err, f, ff, fields, i, i$1, item, key, kv, mapElem, ok, op, pv, qv, qv$1, qv$2, start, subv, t, u, ut, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _i$1 = $f._i$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$13 = $f._r$13; _r$14 = $f._r$14; _r$15 = $f._r$15; _r$16 = $f._r$16; _r$17 = $f._r$17; _r$18 = $f._r$18; _r$19 = $f._r$19; _r$2 = $f._r$2; _r$20 = $f._r$20; _r$21 = $f._r$21; _r$22 = $f._r$22; _r$23 = $f._r$23; _r$24 = $f._r$24; _r$25 = $f._r$25; _r$26 = $f._r$26; _r$27 = $f._r$27; _r$28 = $f._r$28; _r$29 = $f._r$29; _r$3 = $f._r$3; _r$30 = $f._r$30; _r$31 = $f._r$31; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _ref = $f._ref; _ref$1 = $f._ref$1; _ref$2 = $f._ref$2; _ref$3 = $f._ref$3; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; _v = $f._v; d = $f.d; destring = $f.destring; elemType = $f.elemType; err = $f.err; f = $f.f; ff = $f.ff; fields = $f.fields; i = $f.i; i$1 = $f.i$1; item = $f.item; key = $f.key; kv = $f.kv; mapElem = $f.mapElem; ok = $f.ok; op = $f.op; pv = $f.pv; qv = $f.qv; qv$1 = $f.qv$1; qv$2 = $f.qv$2; start = $f.start; subv = $f.subv; t = $f.t; u = $f.u; ut = $f.ut; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		d = this;
@@ -19149,10 +19294,10 @@ $packages["encoding/json"] = (function() {
 				d.error(errPhase);
 			}
 		/* } */ $s = 28; continue; case 29:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_object }; } $f.$ptr = $ptr; $f._i = _i; $f._i$1 = _i$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$18 = _r$18; $f._r$19 = _r$19; $f._r$2 = _r$2; $f._r$20 = _r$20; $f._r$21 = _r$21; $f._r$22 = _r$22; $f._r$23 = _r$23; $f._r$24 = _r$24; $f._r$25 = _r$25; $f._r$26 = _r$26; $f._r$27 = _r$27; $f._r$28 = _r$28; $f._r$29 = _r$29; $f._r$3 = _r$3; $f._r$30 = _r$30; $f._r$31 = _r$31; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f._ref$1 = _ref$1; $f._ref$2 = _ref$2; $f._ref$3 = _ref$3; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f._v = _v; $f.d = d; $f.destring = destring; $f.elemType = elemType; $f.err = err; $f.f = f; $f.ff = ff; $f.fields = fields; $f.i = i; $f.i$1 = i$1; $f.item = item; $f.key = key; $f.kv = kv; $f.mapElem = mapElem; $f.ok = ok; $f.op = op; $f.pv = pv; $f.qv = qv; $f.qv$1 = qv$1; $f.qv$2 = qv$2; $f.start = start; $f.subv = subv; $f.t = t; $f.u = u; $f.ut = ut; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: decodeState.ptr.prototype.object }; } $f.$ptr = $ptr; $f._i = _i; $f._i$1 = _i$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$18 = _r$18; $f._r$19 = _r$19; $f._r$2 = _r$2; $f._r$20 = _r$20; $f._r$21 = _r$21; $f._r$22 = _r$22; $f._r$23 = _r$23; $f._r$24 = _r$24; $f._r$25 = _r$25; $f._r$26 = _r$26; $f._r$27 = _r$27; $f._r$28 = _r$28; $f._r$29 = _r$29; $f._r$3 = _r$3; $f._r$30 = _r$30; $f._r$31 = _r$31; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f._ref$1 = _ref$1; $f._ref$2 = _ref$2; $f._ref$3 = _ref$3; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f._v = _v; $f.d = d; $f.destring = destring; $f.elemType = elemType; $f.err = err; $f.f = f; $f.ff = ff; $f.fields = fields; $f.i = i; $f.i$1 = i$1; $f.item = item; $f.key = key; $f.kv = kv; $f.mapElem = mapElem; $f.ok = ok; $f.op = op; $f.pv = pv; $f.qv = qv; $f.qv$1 = qv$1; $f.qv$2 = qv$2; $f.start = start; $f.subv = subv; $f.t = t; $f.u = u; $f.ut = ut; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	decodeState.prototype.object = function(v) { return this.$val.object(v); };
-	decodeState.ptr.prototype.literal = function $blocking_literal(v) {
+	decodeState.ptr.prototype.literal = function(v) {
 		var $ptr, _r$2, d, op, start, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; d = $f.d; op = $f.op; start = $f.start; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		d = this;
@@ -19163,7 +19308,7 @@ $packages["encoding/json"] = (function() {
 		d.off = d.off - (1) >> 0;
 		d.scan.undo(op);
 		$r = d.literalStore($subslice(d.data, start, d.off), v, false); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_literal }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.d = d; $f.op = op; $f.start = start; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: decodeState.ptr.prototype.literal }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.d = d; $f.op = op; $f.start = start; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	decodeState.prototype.literal = function(v) { return this.$val.literal(v); };
 	decodeState.ptr.prototype.convertNumber = function(s) {
@@ -19179,7 +19324,7 @@ $packages["encoding/json"] = (function() {
 		return [new $Float64(f), $ifaceNil];
 	};
 	decodeState.prototype.convertNumber = function(s) { return this.$val.convertNumber(s); };
-	decodeState.ptr.prototype.literalStore = function $blocking_literalStore(item, v, fromQuoted) {
+	decodeState.ptr.prototype.literalStore = function(item, v, fromQuoted) {
 		var $ptr, _arg, _arg$1, _r$10, _r$11, _r$12, _r$13, _r$14, _r$15, _r$16, _r$17, _r$18, _r$19, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _ref, _ref$1, _ref$2, _ref$3, _ref$4, _tuple, _tuple$1, _tuple$2, _tuple$3, _tuple$4, _tuple$5, _tuple$6, _tuple$7, b, c, d, err, err$1, err$2, err$3, err$4, err$5, err$6, fromQuoted, item, n, n$1, n$2, n$3, n$4, ok, ok$1, pv, s, s$1, s$2, u, ut, v, value, wantptr, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$13 = $f._r$13; _r$14 = $f._r$14; _r$15 = $f._r$15; _r$16 = $f._r$16; _r$17 = $f._r$17; _r$18 = $f._r$18; _r$19 = $f._r$19; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _ref = $f._ref; _ref$1 = $f._ref$1; _ref$2 = $f._ref$2; _ref$3 = $f._ref$3; _ref$4 = $f._ref$4; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; _tuple$2 = $f._tuple$2; _tuple$3 = $f._tuple$3; _tuple$4 = $f._tuple$4; _tuple$5 = $f._tuple$5; _tuple$6 = $f._tuple$6; _tuple$7 = $f._tuple$7; b = $f.b; c = $f.c; d = $f.d; err = $f.err; err$1 = $f.err$1; err$2 = $f.err$2; err$3 = $f.err$3; err$4 = $f.err$4; err$5 = $f.err$5; err$6 = $f.err$6; fromQuoted = $f.fromQuoted; item = $f.item; n = $f.n; n$1 = $f.n$1; n$2 = $f.n$2; n$3 = $f.n$3; n$4 = $f.n$4; ok = $f.ok; ok$1 = $f.ok$1; pv = $f.pv; s = $f.s; s$1 = $f.s$1; s$2 = $f.s$2; u = $f.u; ut = $f.ut; v = $f.v; value = $f.value; wantptr = $f.wantptr; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		d = this;
@@ -19420,10 +19565,10 @@ $packages["encoding/json"] = (function() {
 				/* } */ case 88:
 			/* } } */ case 81:
 		/* } */ case 30:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_literalStore }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$18 = _r$18; $f._r$19 = _r$19; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f._ref$1 = _ref$1; $f._ref$2 = _ref$2; $f._ref$3 = _ref$3; $f._ref$4 = _ref$4; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f._tuple$2 = _tuple$2; $f._tuple$3 = _tuple$3; $f._tuple$4 = _tuple$4; $f._tuple$5 = _tuple$5; $f._tuple$6 = _tuple$6; $f._tuple$7 = _tuple$7; $f.b = b; $f.c = c; $f.d = d; $f.err = err; $f.err$1 = err$1; $f.err$2 = err$2; $f.err$3 = err$3; $f.err$4 = err$4; $f.err$5 = err$5; $f.err$6 = err$6; $f.fromQuoted = fromQuoted; $f.item = item; $f.n = n; $f.n$1 = n$1; $f.n$2 = n$2; $f.n$3 = n$3; $f.n$4 = n$4; $f.ok = ok; $f.ok$1 = ok$1; $f.pv = pv; $f.s = s; $f.s$1 = s$1; $f.s$2 = s$2; $f.u = u; $f.ut = ut; $f.v = v; $f.value = value; $f.wantptr = wantptr; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: decodeState.ptr.prototype.literalStore }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$18 = _r$18; $f._r$19 = _r$19; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f._ref$1 = _ref$1; $f._ref$2 = _ref$2; $f._ref$3 = _ref$3; $f._ref$4 = _ref$4; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f._tuple$2 = _tuple$2; $f._tuple$3 = _tuple$3; $f._tuple$4 = _tuple$4; $f._tuple$5 = _tuple$5; $f._tuple$6 = _tuple$6; $f._tuple$7 = _tuple$7; $f.b = b; $f.c = c; $f.d = d; $f.err = err; $f.err$1 = err$1; $f.err$2 = err$2; $f.err$3 = err$3; $f.err$4 = err$4; $f.err$5 = err$5; $f.err$6 = err$6; $f.fromQuoted = fromQuoted; $f.item = item; $f.n = n; $f.n$1 = n$1; $f.n$2 = n$2; $f.n$3 = n$3; $f.n$4 = n$4; $f.ok = ok; $f.ok$1 = ok$1; $f.pv = pv; $f.s = s; $f.s$1 = s$1; $f.s$2 = s$2; $f.u = u; $f.ut = ut; $f.v = v; $f.value = value; $f.wantptr = wantptr; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	decodeState.prototype.literalStore = function(item, v, fromQuoted) { return this.$val.literalStore(item, v, fromQuoted); };
-	decodeState.ptr.prototype.valueInterface = function $blocking_valueInterface() {
+	decodeState.ptr.prototype.valueInterface = function() {
 		var $ptr, _r$2, _r$3, _r$4, _r$5, _ref, d, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _ref = $f._ref; d = $f.d; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		d = this;
@@ -19449,10 +19594,10 @@ $packages["encoding/json"] = (function() {
 			d.error(errPhase);
 			$panic(new $String("unreachable"));
 		/* } */ case 6:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_valueInterface }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._ref = _ref; $f.d = d; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: decodeState.ptr.prototype.valueInterface }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._ref = _ref; $f.d = d; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	decodeState.prototype.valueInterface = function() { return this.$val.valueInterface(); };
-	decodeState.ptr.prototype.arrayInterface = function $blocking_arrayInterface() {
+	decodeState.ptr.prototype.arrayInterface = function() {
 		var $ptr, _r$2, _r$3, _r$4, d, op, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; d = $f.d; op = $f.op; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		d = this;
@@ -19477,10 +19622,10 @@ $packages["encoding/json"] = (function() {
 			}
 		/* } */ $s = 1; continue; case 2:
 		return v;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_arrayInterface }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f.d = d; $f.op = op; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: decodeState.ptr.prototype.arrayInterface }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f.d = d; $f.op = op; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	decodeState.prototype.arrayInterface = function() { return this.$val.arrayInterface(); };
-	decodeState.ptr.prototype.objectInterface = function $blocking_objectInterface() {
+	decodeState.ptr.prototype.objectInterface = function() {
 		var $ptr, _key, _r$2, _r$3, _r$4, _r$5, _r$6, _tuple, d, item, key, m, ok, op, start, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _key = $f._key; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _tuple = $f._tuple; d = $f.d; item = $f.item; key = $f.key; m = $f.m; ok = $f.ok; op = $f.op; start = $f.start; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		d = this;
@@ -19523,10 +19668,10 @@ $packages["encoding/json"] = (function() {
 			}
 		/* } */ $s = 1; continue; case 2:
 		return m;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_objectInterface }; } $f.$ptr = $ptr; $f._key = _key; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._tuple = _tuple; $f.d = d; $f.item = item; $f.key = key; $f.m = m; $f.ok = ok; $f.op = op; $f.start = start; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: decodeState.ptr.prototype.objectInterface }; } $f.$ptr = $ptr; $f._key = _key; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._tuple = _tuple; $f.d = d; $f.item = item; $f.key = key; $f.m = m; $f.ok = ok; $f.op = op; $f.start = start; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	decodeState.prototype.objectInterface = function() { return this.$val.objectInterface(); };
-	decodeState.ptr.prototype.literalInterface = function $blocking_literalInterface() {
+	decodeState.ptr.prototype.literalInterface = function() {
 		var $ptr, _r$2, _ref, _tuple, _tuple$1, c, d, err, item, n, ok, op, s, start, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _ref = $f._ref; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; c = $f.c; d = $f.d; err = $f.err; item = $f.item; n = $f.n; ok = $f.ok; op = $f.op; s = $f.s; start = $f.start; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		d = this;
@@ -19558,7 +19703,7 @@ $packages["encoding/json"] = (function() {
 			}
 			return n;
 		}
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_literalInterface }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._ref = _ref; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f.c = c; $f.d = d; $f.err = err; $f.item = item; $f.n = n; $f.ok = ok; $f.op = op; $f.s = s; $f.start = start; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: decodeState.ptr.prototype.literalInterface }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._ref = _ref; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f.c = c; $f.d = d; $f.err = err; $f.item = item; $f.n = n; $f.ok = ok; $f.op = op; $f.s = s; $f.start = start; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	decodeState.prototype.literalInterface = function() { return this.$val.literalInterface(); };
 	getu4 = function(s) {
@@ -19685,7 +19830,7 @@ $packages["encoding/json"] = (function() {
 		_tmp$2 = $subslice(b, 0, w); _tmp$3 = true; t = _tmp$2; ok = _tmp$3;
 		return [t, ok];
 	};
-	Marshal = $pkg.Marshal = function $blocking_Marshal(v) {
+	Marshal = function(v) {
 		var $ptr, _r$2, e, err, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; e = $f.e; err = $f.err; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		e = new encodeState.ptr(new bytes.Buffer.ptr(), arrayType.zero());
@@ -19695,15 +19840,16 @@ $packages["encoding/json"] = (function() {
 			return [sliceType$1.nil, err];
 		}
 		return [e.Buffer.Bytes(), $ifaceNil];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Marshal }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.e = e; $f.err = err; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Marshal }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.e = e; $f.err = err; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	UnsupportedTypeError.ptr.prototype.Error = function $blocking_Error() {
+	$pkg.Marshal = Marshal;
+	UnsupportedTypeError.ptr.prototype.Error = function() {
 		var $ptr, _r$2, e, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		e = this;
 		_r$2 = e.Type.String(); /* */ $s = 1; case 1: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		return "json: unsupported type: " + _r$2;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Error }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: UnsupportedTypeError.ptr.prototype.Error }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	UnsupportedTypeError.prototype.Error = function() { return this.$val.Error(); };
 	UnsupportedValueError.ptr.prototype.Error = function() {
@@ -19712,17 +19858,17 @@ $packages["encoding/json"] = (function() {
 		return "json: unsupported value: " + e.Str;
 	};
 	UnsupportedValueError.prototype.Error = function() { return this.$val.Error(); };
-	MarshalerError.ptr.prototype.Error = function $blocking_Error() {
+	MarshalerError.ptr.prototype.Error = function() {
 		var $ptr, _r$2, _r$3, e, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		e = this;
 		_r$2 = e.Type.String(); /* */ $s = 1; case 1: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		_r$3 = e.Err.Error(); /* */ $s = 2; case 2: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
 		return "json: error calling MarshalJSON for type " + _r$2 + ": " + _r$3;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Error }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: MarshalerError.ptr.prototype.Error }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	MarshalerError.prototype.Error = function() { return this.$val.Error(); };
-	newEncodeState = function $blocking_newEncodeState() {
+	newEncodeState = function() {
 		var $ptr, _r$2, e, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; e = $f.e; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r$2 = encodeStatePool.Get(); /* */ $s = 1; case 1: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
@@ -19735,9 +19881,9 @@ $packages["encoding/json"] = (function() {
 			return e;
 		/* } */ case 3:
 		return new encodeState.ptr();
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_newEncodeState }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.e = e; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: newEncodeState }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.e = e; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	encodeState.ptr.prototype.marshal = function $blocking_marshal(v) {
+	encodeState.ptr.prototype.marshal = function(v) {
 		var $ptr, _r$2, e, err, v, $s, $deferred, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; e = $f.e; err = $f.err; v = $f.v; $s = $f.$s; $deferred = $f.$deferred; $r = $f.$r; } var $err = null; try { s: while (true) { switch ($s) { case 0: $deferred = []; $deferred.index = $curGoroutine.deferStack.length; $curGoroutine.deferStack.push($deferred);
 		err = [err];
@@ -19762,7 +19908,7 @@ $packages["encoding/json"] = (function() {
 		$r = e.reflectValue(_r$2); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		err[0] = $ifaceNil;
 		return err[0];
-		/* */ $s = -1; case -1: } return; } } catch(err) { $err = err; $s = -1; } finally { $callDeferred($deferred, $err); if (!$curGoroutine.asleep) { return  err[0]; } if($curGoroutine.asleep) { if ($f === undefined) { $f = { $blk: $blocking_marshal }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.e = e; $f.err = err; $f.v = v; $f.$s = $s; $f.$deferred = $deferred; $f.$r = $r; return $f; } }
+		/* */ $s = -1; case -1: } return; } } catch(err) { $err = err; $s = -1; } finally { $callDeferred($deferred, $err); if (!$curGoroutine.asleep) { return  err[0]; } if($curGoroutine.asleep) { if ($f === undefined) { $f = { $blk: encodeState.ptr.prototype.marshal }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.e = e; $f.err = err; $f.v = v; $f.$s = $s; $f.$deferred = $deferred; $f.$r = $r; return $f; } }
 	};
 	encodeState.prototype.marshal = function(v) { return this.$val.marshal(v); };
 	encodeState.ptr.prototype.error = function(err) {
@@ -19790,17 +19936,17 @@ $packages["encoding/json"] = (function() {
 		}
 		return false;
 	};
-	encodeState.ptr.prototype.reflectValue = function $blocking_reflectValue(v) {
+	encodeState.ptr.prototype.reflectValue = function(v) {
 		var $ptr, _r$2, e, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; e = $f.e; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		e = this;
 		v = v;
 		_r$2 = valueEncoder(v); /* */ $s = 1; case 1: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		$r = _r$2(e, v, false); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_reflectValue }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.e = e; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: encodeState.ptr.prototype.reflectValue }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.e = e; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	encodeState.prototype.reflectValue = function(v) { return this.$val.reflectValue(v); };
-	valueEncoder = function $blocking_valueEncoder(v) {
+	valueEncoder = function(v) {
 		var $ptr, _r$2, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
@@ -19809,12 +19955,13 @@ $packages["encoding/json"] = (function() {
 		}
 		_r$2 = typeEncoder(v.Type()); /* */ $s = 1; case 1: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		return _r$2;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_valueEncoder }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: valueEncoder }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	typeEncoder = function $blocking_typeEncoder(t) {
+	typeEncoder = function(t) {
 		var $ptr, _entry, _key, _key$1, _r$2, f, t, wg, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _key = $f._key; _key$1 = $f._key$1; _r$2 = $f._r$2; f = $f.f; t = $f.t; wg = $f.wg; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		f = [f];
+		wg = [wg];
 		encoderCache.RWMutex.RLock();
 		f[0] = (_entry = encoderCache.m[t.$key()], _entry !== undefined ? _entry.v : $throwNilPointerError);
 		encoderCache.RWMutex.RUnlock();
@@ -19825,26 +19972,26 @@ $packages["encoding/json"] = (function() {
 		if (encoderCache.m === false) {
 			encoderCache.m = new $Map();
 		}
-		wg = $clone(new nosync.WaitGroup.ptr(), nosync.WaitGroup);
-		wg.Add(1);
-		_key = t; (encoderCache.m || $throwRuntimeError("assignment to entry in nil map"))[_key.$key()] = { k: _key, v: (function(f) { return function $b(e, v, quoted) {
+		wg[0] = $clone(new nosync.WaitGroup.ptr(), nosync.WaitGroup);
+		wg[0].Add(1);
+		_key = t; (encoderCache.m || $throwRuntimeError("assignment to entry in nil map"))[_key.$key()] = { k: _key, v: (function(f, wg) { return function $b(e, v, quoted) {
 			var $ptr, e, quoted, v, $s, $r;
 			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; e = $f.e; quoted = $f.quoted; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-			wg.Wait();
+			wg[0].Wait();
 			$r = f[0](e, v, quoted); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f.e = e; $f.quoted = quoted; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
-		}; })(f) };
+		}; })(f, wg) };
 		encoderCache.RWMutex.Unlock();
 		_r$2 = newTypeEncoder(t, true); /* */ $s = 1; case 1: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		f[0] = _r$2;
-		wg.Done();
+		wg[0].Done();
 		encoderCache.RWMutex.Lock();
 		_key$1 = t; (encoderCache.m || $throwRuntimeError("assignment to entry in nil map"))[_key$1.$key()] = { k: _key$1, v: f[0] };
 		encoderCache.RWMutex.Unlock();
 		return f[0];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_typeEncoder }; } $f.$ptr = $ptr; $f._entry = _entry; $f._key = _key; $f._key$1 = _key$1; $f._r$2 = _r$2; $f.f = f; $f.t = t; $f.wg = wg; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: typeEncoder }; } $f.$ptr = $ptr; $f._entry = _entry; $f._key = _key; $f._key$1 = _key$1; $f._r$2 = _r$2; $f.f = f; $f.t = t; $f.wg = wg; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	newTypeEncoder = function $blocking_newTypeEncoder(t, allowAddr) {
+	newTypeEncoder = function(t, allowAddr) {
 		var $ptr, _arg, _arg$1, _arg$2, _arg$3, _r$10, _r$11, _r$12, _r$13, _r$14, _r$15, _r$16, _r$17, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _ref, allowAddr, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$2 = $f._arg$2; _arg$3 = $f._arg$3; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$13 = $f._r$13; _r$14 = $f._r$14; _r$15 = $f._r$15; _r$16 = $f._r$16; _r$17 = $f._r$17; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _ref = $f._ref; allowAddr = $f.allowAddr; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r$2 = t.Implements(marshalerType); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
@@ -19948,14 +20095,14 @@ $packages["encoding/json"] = (function() {
 		/* } else { */ case 36:
 			return unsupportedTypeEncoder;
 		/* } */ case 37:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_newTypeEncoder }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._arg$3 = _arg$3; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f.allowAddr = allowAddr; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: newTypeEncoder }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._arg$3 = _arg$3; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f.allowAddr = allowAddr; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	invalidValueEncoder = function(e, v, quoted) {
 		var $ptr, e, quoted, v;
 		v = v;
 		e.Buffer.WriteString("null");
 	};
-	marshalerEncoder = function $blocking_marshalerEncoder(e, v, quoted) {
+	marshalerEncoder = function(e, v, quoted) {
 		var $ptr, _r$2, _r$3, _r$4, _tuple, b, e, err, m, quoted, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _tuple = $f._tuple; b = $f.b; e = $f.e; err = $f.err; m = $f.m; quoted = $f.quoted; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
@@ -19976,9 +20123,9 @@ $packages["encoding/json"] = (function() {
 		if (!($interfaceIsEqual(err, $ifaceNil))) {
 			e.error(new MarshalerError.ptr(v.Type(), err));
 		}
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_marshalerEncoder }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._tuple = _tuple; $f.b = b; $f.e = e; $f.err = err; $f.m = m; $f.quoted = quoted; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: marshalerEncoder }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._tuple = _tuple; $f.b = b; $f.e = e; $f.err = err; $f.m = m; $f.quoted = quoted; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	addrMarshalerEncoder = function $blocking_addrMarshalerEncoder(e, v, quoted) {
+	addrMarshalerEncoder = function(e, v, quoted) {
 		var $ptr, _r$2, _r$3, _r$4, _tuple, b, e, err, m, quoted, v, va, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _tuple = $f._tuple; b = $f.b; e = $f.e; err = $f.err; m = $f.m; quoted = $f.quoted; v = $f.v; va = $f.va; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
@@ -20000,9 +20147,9 @@ $packages["encoding/json"] = (function() {
 		if (!($interfaceIsEqual(err, $ifaceNil))) {
 			e.error(new MarshalerError.ptr(v.Type(), err));
 		}
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_addrMarshalerEncoder }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._tuple = _tuple; $f.b = b; $f.e = e; $f.err = err; $f.m = m; $f.quoted = quoted; $f.v = v; $f.va = va; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: addrMarshalerEncoder }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._tuple = _tuple; $f.b = b; $f.e = e; $f.err = err; $f.m = m; $f.quoted = quoted; $f.v = v; $f.va = va; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	textMarshalerEncoder = function $blocking_textMarshalerEncoder(e, v, quoted) {
+	textMarshalerEncoder = function(e, v, quoted) {
 		var $ptr, _r$2, _r$3, _tuple, _tuple$1, b, e, err, m, quoted, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; b = $f.b; e = $f.e; err = $f.err; m = $f.m; quoted = $f.quoted; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
@@ -20020,9 +20167,9 @@ $packages["encoding/json"] = (function() {
 		if (!($interfaceIsEqual(err, $ifaceNil))) {
 			e.error(new MarshalerError.ptr(v.Type(), err));
 		}
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_textMarshalerEncoder }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f.b = b; $f.e = e; $f.err = err; $f.m = m; $f.quoted = quoted; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: textMarshalerEncoder }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f.b = b; $f.e = e; $f.err = err; $f.m = m; $f.quoted = quoted; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	addrTextMarshalerEncoder = function $blocking_addrTextMarshalerEncoder(e, v, quoted) {
+	addrTextMarshalerEncoder = function(e, v, quoted) {
 		var $ptr, _r$2, _r$3, _tuple, _tuple$1, b, e, err, m, quoted, v, va, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; b = $f.b; e = $f.e; err = $f.err; m = $f.m; quoted = $f.quoted; v = $f.v; va = $f.va; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
@@ -20041,7 +20188,7 @@ $packages["encoding/json"] = (function() {
 		if (!($interfaceIsEqual(err, $ifaceNil))) {
 			e.error(new MarshalerError.ptr(v.Type(), err));
 		}
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_addrTextMarshalerEncoder }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f.b = b; $f.e = e; $f.err = err; $f.m = m; $f.quoted = quoted; $f.v = v; $f.va = va; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: addrTextMarshalerEncoder }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f.b = b; $f.e = e; $f.err = err; $f.m = m; $f.quoted = quoted; $f.v = v; $f.va = va; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	boolEncoder = function(e, v, quoted) {
 		var $ptr, e, quoted, v;
@@ -20100,7 +20247,7 @@ $packages["encoding/json"] = (function() {
 		}
 	};
 	$ptrType(floatEncoder).prototype.encode = function(e, v, quoted) { return new floatEncoder(this.$get()).encode(e, v, quoted); };
-	stringEncoder = function $blocking_stringEncoder(e, v, quoted) {
+	stringEncoder = function(e, v, quoted) {
 		var $ptr, _r$2, _r$3, _r$4, _r$5, _r$6, _tuple, e, err, numStr, quoted, sb, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _tuple = $f._tuple; e = $f.e; err = $f.err; numStr = $f.numStr; quoted = $f.quoted; sb = $f.sb; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
@@ -20131,9 +20278,9 @@ $packages["encoding/json"] = (function() {
 			_r$6 = e.string(_r$5); /* */ $s = 10; case 10: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
 			_r$6;
 		/* } */ case 6:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_stringEncoder }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._tuple = _tuple; $f.e = e; $f.err = err; $f.numStr = numStr; $f.quoted = quoted; $f.sb = sb; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: stringEncoder }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._tuple = _tuple; $f.e = e; $f.err = err; $f.numStr = numStr; $f.quoted = quoted; $f.sb = sb; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	interfaceEncoder = function $blocking_interfaceEncoder(e, v, quoted) {
+	interfaceEncoder = function(e, v, quoted) {
 		var $ptr, _r$2, e, quoted, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; e = $f.e; quoted = $f.quoted; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
@@ -20143,14 +20290,14 @@ $packages["encoding/json"] = (function() {
 		}
 		_r$2 = v.Elem(); /* */ $s = 1; case 1: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		$r = e.reflectValue(_r$2); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_interfaceEncoder }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.e = e; $f.quoted = quoted; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: interfaceEncoder }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.e = e; $f.quoted = quoted; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	unsupportedTypeEncoder = function(e, v, quoted) {
 		var $ptr, e, quoted, v;
 		v = v;
 		e.error(new UnsupportedTypeError.ptr(v.Type()));
 	};
-	structEncoder.ptr.prototype.encode = function $blocking_encode(e, v, quoted) {
+	structEncoder.ptr.prototype.encode = function(e, v, quoted) {
 		var $ptr, _i, _r$2, _ref, e, f, first, fv, i, quoted, se, v, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r$2 = $f._r$2; _ref = $f._ref; e = $f.e; f = $f.f; first = $f.first; fv = $f.fv; i = $f.i; quoted = $f.quoted; se = $f.se; v = $f.v; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		se = this;
@@ -20182,10 +20329,10 @@ $packages["encoding/json"] = (function() {
 			_i++;
 		/* } */ $s = 1; continue; case 2:
 		e.Buffer.WriteByte(125);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_encode }; } $f.$ptr = $ptr; $f._i = _i; $f._r$2 = _r$2; $f._ref = _ref; $f.e = e; $f.f = f; $f.first = first; $f.fv = fv; $f.i = i; $f.quoted = quoted; $f.se = se; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: structEncoder.ptr.prototype.encode }; } $f.$ptr = $ptr; $f._i = _i; $f._r$2 = _r$2; $f._ref = _ref; $f.e = e; $f.f = f; $f.first = first; $f.fv = fv; $f.i = i; $f.quoted = quoted; $f.se = se; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	structEncoder.prototype.encode = function(e, v, quoted) { return this.$val.encode(e, v, quoted); };
-	newStructEncoder = function $blocking_newStructEncoder(t) {
+	newStructEncoder = function(t) {
 		var $ptr, _i, _r$2, _r$3, _r$4, _ref, f, fields, i, se, t, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _ref = $f._ref; f = $f.f; fields = $f.fields; i = $f.i; se = $f.se; t = $f.t; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r$2 = cachedTypeFields(t); /* */ $s = 1; case 1: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
@@ -20203,9 +20350,9 @@ $packages["encoding/json"] = (function() {
 			_i++;
 		/* } */ $s = 2; continue; case 3:
 		return $methodVal(se, "encode");
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_newStructEncoder }; } $f.$ptr = $ptr; $f._i = _i; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._ref = _ref; $f.f = f; $f.fields = fields; $f.i = i; $f.se = se; $f.t = t; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: newStructEncoder }; } $f.$ptr = $ptr; $f._i = _i; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._ref = _ref; $f.f = f; $f.fields = fields; $f.i = i; $f.se = se; $f.t = t; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	mapEncoder.ptr.prototype.encode = function $blocking_encode(e, v, param) {
+	mapEncoder.ptr.prototype.encode = function(e, v, param) {
 		var $ptr, _arg, _arg$1, _i, _r$2, _r$3, _r$4, _r$5, _ref, e, i, k, me, param, sv, v, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _i = $f._i; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _ref = $f._ref; e = $f.e; i = $f.i; k = $f.k; me = $f.me; param = $f.param; sv = $f.sv; v = $f.v; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		me = this;
@@ -20238,10 +20385,10 @@ $packages["encoding/json"] = (function() {
 			_i++;
 		/* } */ $s = 3; continue; case 4:
 		e.Buffer.WriteByte(125);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_encode }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._i = _i; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._ref = _ref; $f.e = e; $f.i = i; $f.k = k; $f.me = me; $f.param = param; $f.sv = sv; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: mapEncoder.ptr.prototype.encode }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._i = _i; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._ref = _ref; $f.e = e; $f.i = i; $f.k = k; $f.me = me; $f.param = param; $f.sv = sv; $f.v = v; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	mapEncoder.prototype.encode = function(e, v, param) { return this.$val.encode(e, v, param); };
-	newMapEncoder = function $blocking_newMapEncoder(t) {
+	newMapEncoder = function(t) {
 		var $ptr, _r$2, _r$3, _r$4, _r$5, me, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; me = $f.me; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r$2 = t.Key(); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
@@ -20255,9 +20402,9 @@ $packages["encoding/json"] = (function() {
 		_r$5 = typeEncoder(_r$4); /* */ $s = 6; case 6: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
 		me = new mapEncoder.ptr(_r$5);
 		return $methodVal(me, "encode");
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_newMapEncoder }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f.me = me; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: newMapEncoder }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f.me = me; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	encodeByteSlice = function $blocking_encodeByteSlice(e, v, param) {
+	encodeByteSlice = function(e, v, param) {
 		var $ptr, _r$2, _r$3, _r$4, dst, e, enc, param, s, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; dst = $f.dst; e = $f.e; enc = $f.enc; param = $f.param; s = $f.s; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
@@ -20283,9 +20430,9 @@ $packages["encoding/json"] = (function() {
 			_r$4;
 		/* } */ case 4:
 		e.Buffer.WriteByte(34);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_encodeByteSlice }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f.dst = dst; $f.e = e; $f.enc = enc; $f.param = param; $f.s = s; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: encodeByteSlice }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f.dst = dst; $f.e = e; $f.enc = enc; $f.param = param; $f.s = s; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	sliceEncoder.ptr.prototype.encode = function $blocking_encode(e, v, param) {
+	sliceEncoder.ptr.prototype.encode = function(e, v, param) {
 		var $ptr, e, param, se, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; e = $f.e; param = $f.param; se = $f.se; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		se = this;
@@ -20295,10 +20442,10 @@ $packages["encoding/json"] = (function() {
 			return;
 		}
 		$r = se.arrayEnc(e, v, false); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_encode }; } $f.$ptr = $ptr; $f.e = e; $f.param = param; $f.se = se; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: sliceEncoder.ptr.prototype.encode }; } $f.$ptr = $ptr; $f.e = e; $f.param = param; $f.se = se; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	sliceEncoder.prototype.encode = function(e, v, param) { return this.$val.encode(e, v, param); };
-	newSliceEncoder = function $blocking_newSliceEncoder(t) {
+	newSliceEncoder = function(t) {
 		var $ptr, _r$2, _r$3, _r$4, enc, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; enc = $f.enc; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r$2 = t.Elem(); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
@@ -20311,9 +20458,9 @@ $packages["encoding/json"] = (function() {
 		_r$4 = newArrayEncoder(t); /* */ $s = 5; case 5: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
 		enc = new sliceEncoder.ptr(_r$4);
 		return $methodVal(enc, "encode");
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_newSliceEncoder }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f.enc = enc; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: newSliceEncoder }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f.enc = enc; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	arrayEncoder.ptr.prototype.encode = function $blocking_encode(e, v, param) {
+	arrayEncoder.ptr.prototype.encode = function(e, v, param) {
 		var $ptr, _arg, _arg$1, _r$2, ae, e, i, n, param, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _r$2 = $f._r$2; ae = $f.ae; e = $f.e; i = $f.i; n = $f.n; param = $f.param; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		ae = this;
@@ -20333,19 +20480,19 @@ $packages["encoding/json"] = (function() {
 			i = i + (1) >> 0;
 		/* } */ $s = 1; continue; case 2:
 		e.Buffer.WriteByte(93);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_encode }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._r$2 = _r$2; $f.ae = ae; $f.e = e; $f.i = i; $f.n = n; $f.param = param; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: arrayEncoder.ptr.prototype.encode }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._r$2 = _r$2; $f.ae = ae; $f.e = e; $f.i = i; $f.n = n; $f.param = param; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	arrayEncoder.prototype.encode = function(e, v, param) { return this.$val.encode(e, v, param); };
-	newArrayEncoder = function $blocking_newArrayEncoder(t) {
+	newArrayEncoder = function(t) {
 		var $ptr, _r$2, _r$3, enc, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; enc = $f.enc; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r$2 = t.Elem(); /* */ $s = 1; case 1: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		_r$3 = typeEncoder(_r$2); /* */ $s = 2; case 2: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
 		enc = new arrayEncoder.ptr(_r$3);
 		return $methodVal(enc, "encode");
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_newArrayEncoder }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.enc = enc; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: newArrayEncoder }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.enc = enc; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	ptrEncoder.ptr.prototype.encode = function $blocking_encode(e, v, quoted) {
+	ptrEncoder.ptr.prototype.encode = function(e, v, quoted) {
 		var $ptr, _arg, _arg$1, _arg$2, _r$2, e, pe, quoted, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$2 = $f._arg$2; _r$2 = $f._r$2; e = $f.e; pe = $f.pe; quoted = $f.quoted; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		pe = this;
@@ -20359,19 +20506,19 @@ $packages["encoding/json"] = (function() {
 		_arg$1 = _r$2;
 		_arg$2 = quoted;
 		$r = pe.elemEnc(_arg, _arg$1, _arg$2); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_encode }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._r$2 = _r$2; $f.e = e; $f.pe = pe; $f.quoted = quoted; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: ptrEncoder.ptr.prototype.encode }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._r$2 = _r$2; $f.e = e; $f.pe = pe; $f.quoted = quoted; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	ptrEncoder.prototype.encode = function(e, v, quoted) { return this.$val.encode(e, v, quoted); };
-	newPtrEncoder = function $blocking_newPtrEncoder(t) {
+	newPtrEncoder = function(t) {
 		var $ptr, _r$2, _r$3, enc, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; enc = $f.enc; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r$2 = t.Elem(); /* */ $s = 1; case 1: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		_r$3 = typeEncoder(_r$2); /* */ $s = 2; case 2: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
 		enc = new ptrEncoder.ptr(_r$3);
 		return $methodVal(enc, "encode");
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_newPtrEncoder }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.enc = enc; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: newPtrEncoder }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.enc = enc; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	condAddrEncoder.ptr.prototype.encode = function $blocking_encode(e, v, quoted) {
+	condAddrEncoder.ptr.prototype.encode = function(e, v, quoted) {
 		var $ptr, ce, e, quoted, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; ce = $f.ce; e = $f.e; quoted = $f.quoted; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		ce = this;
@@ -20384,7 +20531,7 @@ $packages["encoding/json"] = (function() {
 		/* } else { */ case 2:
 			$r = ce.elseEnc(e, v, quoted); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* } */ case 3:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_encode }; } $f.$ptr = $ptr; $f.ce = ce; $f.e = e; $f.quoted = quoted; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: condAddrEncoder.ptr.prototype.encode }; } $f.$ptr = $ptr; $f.ce = ce; $f.e = e; $f.quoted = quoted; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	condAddrEncoder.prototype.encode = function(e, v, quoted) { return this.$val.encode(e, v, quoted); };
 	newCondAddrEncoder = function(canAddrEnc, elseEnc) {
@@ -20413,7 +20560,7 @@ $packages["encoding/json"] = (function() {
 		}
 		return true;
 	};
-	fieldByIndex = function $blocking_fieldByIndex(v, index) {
+	fieldByIndex = function(v, index) {
 		var $ptr, _i, _r$2, _r$3, _ref, i, index, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r$2 = $f._r$2; _r$3 = $f._r$3; _ref = $f._ref; i = $f.i; index = $f.index; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = v;
@@ -20436,9 +20583,9 @@ $packages["encoding/json"] = (function() {
 			_i++;
 		/* } */ $s = 1; continue; case 2:
 		return v;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_fieldByIndex }; } $f.$ptr = $ptr; $f._i = _i; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._ref = _ref; $f.i = i; $f.index = index; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: fieldByIndex }; } $f.$ptr = $ptr; $f._i = _i; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._ref = _ref; $f.i = i; $f.index = index; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	typeByIndex = function $blocking_typeByIndex(t, index) {
+	typeByIndex = function(t, index) {
 		var $ptr, _i, _r$2, _r$3, _r$4, _ref, i, index, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _ref = $f._ref; i = $f.i; index = $f.index; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_ref = index;
@@ -20458,7 +20605,7 @@ $packages["encoding/json"] = (function() {
 			_i++;
 		/* } */ $s = 1; continue; case 2:
 		return t;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_typeByIndex }; } $f.$ptr = $ptr; $f._i = _i; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._ref = _ref; $f.i = i; $f.index = index; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: typeByIndex }; } $f.$ptr = $ptr; $f._i = _i; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._ref = _ref; $f.i = i; $f.index = index; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	stringValues.prototype.Len = function() {
 		var $ptr, sv;
@@ -20472,23 +20619,23 @@ $packages["encoding/json"] = (function() {
 		_tmp = ((j < 0 || j >= sv.$length) ? $throwRuntimeError("index out of range") : sv.$array[sv.$offset + j]); _tmp$1 = ((i < 0 || i >= sv.$length) ? $throwRuntimeError("index out of range") : sv.$array[sv.$offset + i]); ((i < 0 || i >= sv.$length) ? $throwRuntimeError("index out of range") : sv.$array[sv.$offset + i] = _tmp); ((j < 0 || j >= sv.$length) ? $throwRuntimeError("index out of range") : sv.$array[sv.$offset + j] = _tmp$1);
 	};
 	$ptrType(stringValues).prototype.Swap = function(i, j) { return this.$get().Swap(i, j); };
-	stringValues.prototype.Less = function $blocking_Less(i, j) {
+	stringValues.prototype.Less = function(i, j) {
 		var $ptr, _r$2, _r$3, i, j, sv, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; i = $f.i; j = $f.j; sv = $f.sv; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		sv = this;
 		_r$2 = sv.get(i); /* */ $s = 1; case 1: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		_r$3 = sv.get(j); /* */ $s = 2; case 2: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
 		return _r$2 < _r$3;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Less }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.i = i; $f.j = j; $f.sv = sv; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: stringValues.prototype.Less }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.i = i; $f.j = j; $f.sv = sv; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$ptrType(stringValues).prototype.Less = function(i, j) { return this.$get().Less(i, j); };
-	stringValues.prototype.get = function $blocking_get(i) {
+	stringValues.prototype.get = function(i) {
 		var $ptr, _r$2, i, sv, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; i = $f.i; sv = $f.sv; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		sv = this;
 		_r$2 = ((i < 0 || i >= sv.$length) ? $throwRuntimeError("index out of range") : sv.$array[sv.$offset + i]).String(); /* */ $s = 1; case 1: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		return _r$2;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_get }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.i = i; $f.sv = sv; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: stringValues.prototype.get }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.i = i; $f.sv = sv; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$ptrType(stringValues).prototype.get = function(i) { return this.$get().get(i); };
 	encodeState.ptr.prototype.string = function(s) {
@@ -20695,7 +20842,7 @@ $packages["encoding/json"] = (function() {
 		return ((i < 0 || i >= x.$length) ? $throwRuntimeError("index out of range") : x.$array[x.$offset + i]).index.$length < ((j < 0 || j >= x.$length) ? $throwRuntimeError("index out of range") : x.$array[x.$offset + j]).index.$length;
 	};
 	$ptrType(byIndex).prototype.Less = function(i, j) { return this.$get().Less(i, j); };
-	typeFields = function $blocking_typeFields(t) {
+	typeFields = function(t) {
 		var $ptr, _entry, _entry$1, _entry$2, _entry$3, _i, _key, _key$1, _key$2, _key$3, _key$4, _key$5, _map, _map$1, _map$2, _map$3, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _ref, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tuple, _tuple$1, _v, _v$1, advance, count, current, dominant, f, fi, fields, fj, ft, i, i$1, index, name, name$1, next, nextCount, ok, opts, out, sf, t, tag, tagged, visited, x, x$1, x$2, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _entry$1 = $f._entry$1; _entry$2 = $f._entry$2; _entry$3 = $f._entry$3; _i = $f._i; _key = $f._key; _key$1 = $f._key$1; _key$2 = $f._key$2; _key$3 = $f._key$3; _key$4 = $f._key$4; _key$5 = $f._key$5; _map = $f._map; _map$1 = $f._map$1; _map$2 = $f._map$2; _map$3 = $f._map$3; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _ref = $f._ref; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; _tmp$4 = $f._tmp$4; _tmp$5 = $f._tmp$5; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; _v = $f._v; _v$1 = $f._v$1; advance = $f.advance; count = $f.count; current = $f.current; dominant = $f.dominant; f = $f.f; fi = $f.fi; fields = $f.fields; fj = $f.fj; ft = $f.ft; i = $f.i; i$1 = $f.i$1; index = $f.index; name = $f.name; name$1 = $f.name$1; next = $f.next; nextCount = $f.nextCount; ok = $f.ok; opts = $f.opts; out = $f.out; sf = $f.sf; t = $f.t; tag = $f.tag; tagged = $f.tagged; visited = $f.visited; x = $f.x; x$1 = $f.x$1; x$2 = $f.x$2; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		current = new sliceType([]);
@@ -20817,7 +20964,7 @@ $packages["encoding/json"] = (function() {
 		fields = out;
 		$r = sort.Sort($subslice(new byIndex(fields.$array), fields.$offset, fields.$offset + fields.$length)); /* */ $s = 32; case 32: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		return fields;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_typeFields }; } $f.$ptr = $ptr; $f._entry = _entry; $f._entry$1 = _entry$1; $f._entry$2 = _entry$2; $f._entry$3 = _entry$3; $f._i = _i; $f._key = _key; $f._key$1 = _key$1; $f._key$2 = _key$2; $f._key$3 = _key$3; $f._key$4 = _key$4; $f._key$5 = _key$5; $f._map = _map; $f._map$1 = _map$1; $f._map$2 = _map$2; $f._map$3 = _map$3; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tmp$4 = _tmp$4; $f._tmp$5 = _tmp$5; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f._v = _v; $f._v$1 = _v$1; $f.advance = advance; $f.count = count; $f.current = current; $f.dominant = dominant; $f.f = f; $f.fi = fi; $f.fields = fields; $f.fj = fj; $f.ft = ft; $f.i = i; $f.i$1 = i$1; $f.index = index; $f.name = name; $f.name$1 = name$1; $f.next = next; $f.nextCount = nextCount; $f.ok = ok; $f.opts = opts; $f.out = out; $f.sf = sf; $f.t = t; $f.tag = tag; $f.tagged = tagged; $f.visited = visited; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: typeFields }; } $f.$ptr = $ptr; $f._entry = _entry; $f._entry$1 = _entry$1; $f._entry$2 = _entry$2; $f._entry$3 = _entry$3; $f._i = _i; $f._key = _key; $f._key$1 = _key$1; $f._key$2 = _key$2; $f._key$3 = _key$3; $f._key$4 = _key$4; $f._key$5 = _key$5; $f._map = _map; $f._map$1 = _map$1; $f._map$2 = _map$2; $f._map$3 = _map$3; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tmp$4 = _tmp$4; $f._tmp$5 = _tmp$5; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f._v = _v; $f._v$1 = _v$1; $f.advance = advance; $f.count = count; $f.current = current; $f.dominant = dominant; $f.f = f; $f.fi = fi; $f.fields = fields; $f.fj = fj; $f.ft = ft; $f.i = i; $f.i$1 = i$1; $f.index = index; $f.name = name; $f.name$1 = name$1; $f.next = next; $f.nextCount = nextCount; $f.ok = ok; $f.opts = opts; $f.out = out; $f.sf = sf; $f.t = t; $f.tag = tag; $f.tagged = tagged; $f.visited = visited; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	dominantField = function(fields) {
 		var $ptr, _i, _ref, f, fields, i, length, tagged;
@@ -20849,7 +20996,7 @@ $packages["encoding/json"] = (function() {
 		}
 		return [(0 >= fields.$length ? $throwRuntimeError("index out of range") : fields.$array[fields.$offset + 0]), true];
 	};
-	cachedTypeFields = function $blocking_cachedTypeFields(t) {
+	cachedTypeFields = function(t) {
 		var $ptr, _entry, _key, _key$1, _map, _r$2, f, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _key = $f._key; _key$1 = $f._key$1; _map = $f._map; _r$2 = $f._r$2; f = $f.f; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		fieldCache.RWMutex.RLock();
@@ -20870,7 +21017,7 @@ $packages["encoding/json"] = (function() {
 		_key$1 = t; (fieldCache.m || $throwRuntimeError("assignment to entry in nil map"))[_key$1.$key()] = { k: _key$1, v: f };
 		fieldCache.RWMutex.Unlock();
 		return f;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_cachedTypeFields }; } $f.$ptr = $ptr; $f._entry = _entry; $f._key = _key; $f._key$1 = _key$1; $f._map = _map; $f._r$2 = _r$2; $f.f = f; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: cachedTypeFields }; } $f.$ptr = $ptr; $f._entry = _entry; $f._key = _key; $f._key$1 = _key$1; $f._map = _map; $f._r$2 = _r$2; $f.f = f; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	foldFunc = function(s) {
 		var $ptr, _i, _ref, b, nonLetter, s, special, upper;
@@ -20992,12 +21139,13 @@ $packages["encoding/json"] = (function() {
 		}
 		return true;
 	};
-	compact = function $blocking_compact(dst, src, escape) {
+	compact = function(dst, src, escape) {
 		var $ptr, _i, _r$2, _r$3, _ref, c, dst, escape, i, origLen, scan, src, start, v, x, x$1, x$2, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r$2 = $f._r$2; _r$3 = $f._r$3; _ref = $f._ref; c = $f.c; dst = $f.dst; escape = $f.escape; i = $f.i; origLen = $f.origLen; scan = $f.scan; src = $f.src; start = $f.start; v = $f.v; x = $f.x; x$1 = $f.x$1; x$2 = $f.x$2; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		scan = [scan];
 		origLen = dst.Len();
-		scan = $clone(new scanner.ptr(), scanner);
-		scan.reset();
+		scan[0] = $clone(new scanner.ptr(), scanner);
+		scan[0].reset();
 		start = 0;
 		_ref = src;
 		_i = 0;
@@ -21022,7 +21170,7 @@ $packages["encoding/json"] = (function() {
 				dst.WriteByte(hex.charCodeAt((((x$2 = i + 2 >> 0, ((x$2 < 0 || x$2 >= src.$length) ? $throwRuntimeError("index out of range") : src.$array[src.$offset + x$2])) & 15) >>> 0)));
 				start = i + 3 >> 0;
 			}
-			_r$2 = scan.step(scan, (c >> 0)); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+			_r$2 = scan[0].step(scan[0], (c >> 0)); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 			v = _r$2;
 			if (v >= 9) {
 				if (v === 11) {
@@ -21035,20 +21183,20 @@ $packages["encoding/json"] = (function() {
 			}
 			_i++;
 		/* } */ $s = 1; continue; case 2:
-		_r$3 = scan.eof(); /* */ $s = 6; case 6: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+		_r$3 = scan[0].eof(); /* */ $s = 6; case 6: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
 		/* */ if (_r$3 === 11) { $s = 4; continue; }
 		/* */ $s = 5; continue;
 		/* if (_r$3 === 11) { */ case 4:
 			dst.Truncate(origLen);
-			return scan.err;
+			return scan[0].err;
 		/* } */ case 5:
 		if (start < src.$length) {
 			dst.Write($subslice(src, start));
 		}
 		return $ifaceNil;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_compact }; } $f.$ptr = $ptr; $f._i = _i; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._ref = _ref; $f.c = c; $f.dst = dst; $f.escape = escape; $f.i = i; $f.origLen = origLen; $f.scan = scan; $f.src = src; $f.start = start; $f.v = v; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: compact }; } $f.$ptr = $ptr; $f._i = _i; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._ref = _ref; $f.c = c; $f.dst = dst; $f.escape = escape; $f.i = i; $f.origLen = origLen; $f.scan = scan; $f.src = src; $f.start = start; $f.v = v; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	nextValue = function $blocking_nextValue(data, scan) {
+	nextValue = function(data, scan) {
 		var $ptr, _i, _r$2, _r$3, _ref, _ref$1, _tmp, _tmp$1, _tmp$10, _tmp$11, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tmp$6, _tmp$7, _tmp$8, _tmp$9, c, data, err, i, rest, scan, v, value, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r$2 = $f._r$2; _r$3 = $f._r$3; _ref = $f._ref; _ref$1 = $f._ref$1; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$10 = $f._tmp$10; _tmp$11 = $f._tmp$11; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; _tmp$4 = $f._tmp$4; _tmp$5 = $f._tmp$5; _tmp$6 = $f._tmp$6; _tmp$7 = $f._tmp$7; _tmp$8 = $f._tmp$8; _tmp$9 = $f._tmp$9; c = $f.c; data = $f.data; err = $f.err; i = $f.i; rest = $f.rest; scan = $f.scan; v = $f.v; value = $f.value; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		value = sliceType$1.nil;
@@ -21084,7 +21232,7 @@ $packages["encoding/json"] = (function() {
 		/* } */ case 5:
 		_tmp$9 = data; _tmp$10 = sliceType$1.nil; _tmp$11 = $ifaceNil; value = _tmp$9; rest = _tmp$10; err = _tmp$11;
 		return [value, rest, err];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_nextValue }; } $f.$ptr = $ptr; $f._i = _i; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._ref = _ref; $f._ref$1 = _ref$1; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$10 = _tmp$10; $f._tmp$11 = _tmp$11; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tmp$4 = _tmp$4; $f._tmp$5 = _tmp$5; $f._tmp$6 = _tmp$6; $f._tmp$7 = _tmp$7; $f._tmp$8 = _tmp$8; $f._tmp$9 = _tmp$9; $f.c = c; $f.data = data; $f.err = err; $f.i = i; $f.rest = rest; $f.scan = scan; $f.v = v; $f.value = value; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: nextValue }; } $f.$ptr = $ptr; $f._i = _i; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._ref = _ref; $f._ref$1 = _ref$1; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$10 = _tmp$10; $f._tmp$11 = _tmp$11; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tmp$4 = _tmp$4; $f._tmp$5 = _tmp$5; $f._tmp$6 = _tmp$6; $f._tmp$7 = _tmp$7; $f._tmp$8 = _tmp$8; $f._tmp$9 = _tmp$9; $f.c = c; $f.data = data; $f.err = err; $f.i = i; $f.rest = rest; $f.scan = scan; $f.v = v; $f.value = value; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	SyntaxError.ptr.prototype.Error = function() {
 		var $ptr, e;
@@ -21102,7 +21250,7 @@ $packages["encoding/json"] = (function() {
 		s.endTop = false;
 	};
 	scanner.prototype.reset = function() { return this.$val.reset(); };
-	scanner.ptr.prototype.eof = function $blocking_eof() {
+	scanner.ptr.prototype.eof = function() {
 		var $ptr, _r$2, s, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; s = $f.s; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		s = this;
@@ -21121,7 +21269,7 @@ $packages["encoding/json"] = (function() {
 			s.err = new SyntaxError.ptr("unexpected end of JSON input", s.bytes);
 		}
 		return 11;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_eof }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: scanner.ptr.prototype.eof }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	scanner.prototype.eof = function() { return this.$val.eof(); };
 	scanner.ptr.prototype.pushParseState = function(p) {
@@ -21533,17 +21681,18 @@ $packages["encoding/json"] = (function() {
 		s.step = s.redoState;
 		return s.redoCode;
 	};
-	NewDecoder = $pkg.NewDecoder = function(r) {
+	NewDecoder = function(r) {
 		var $ptr, r;
 		return new Decoder.ptr(r, sliceType$1.nil, new decodeState.ptr(), new scanner.ptr(), $ifaceNil);
 	};
+	$pkg.NewDecoder = NewDecoder;
 	Decoder.ptr.prototype.UseNumber = function() {
 		var $ptr, dec;
 		dec = this;
 		dec.d.useNumber = true;
 	};
 	Decoder.prototype.UseNumber = function() { return this.$val.UseNumber(); };
-	Decoder.ptr.prototype.Decode = function $blocking_Decode(v) {
+	Decoder.ptr.prototype.Decode = function(v) {
 		var $ptr, _r$2, _r$3, _tuple, dec, err, n, rest, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _tuple = $f._tuple; dec = $f.dec; err = $f.err; n = $f.n; rest = $f.rest; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		dec = this;
@@ -21561,7 +21710,7 @@ $packages["encoding/json"] = (function() {
 		rest = $copySlice(dec.buf, $subslice(dec.buf, n));
 		dec.buf = $subslice(dec.buf, 0, rest);
 		return err;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Decode }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._tuple = _tuple; $f.dec = dec; $f.err = err; $f.n = n; $f.rest = rest; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Decoder.ptr.prototype.Decode }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._tuple = _tuple; $f.dec = dec; $f.err = err; $f.n = n; $f.rest = rest; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Decoder.prototype.Decode = function(v) { return this.$val.Decode(v); };
 	Decoder.ptr.prototype.Buffered = function() {
@@ -21570,7 +21719,7 @@ $packages["encoding/json"] = (function() {
 		return bytes.NewReader(dec.buf);
 	};
 	Decoder.prototype.Buffered = function() { return this.$val.Buffered(); };
-	Decoder.ptr.prototype.readValue = function $blocking_readValue() {
+	Decoder.ptr.prototype.readValue = function() {
 		var $ptr, _i, _r$2, _r$3, _r$4, _r$5, _ref, _tuple, _v, c, dec, err, i, n, newBuf, scanp, v, x, x$1, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _ref = $f._ref; _tuple = $f._tuple; _v = $f._v; c = $f.c; dec = $f.dec; err = $f.err; i = $f.i; n = $f.n; newBuf = $f.newBuf; scanp = $f.scanp; v = $f.v; x = $f.x; x$1 = $f.x$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		dec = this;
@@ -21637,7 +21786,7 @@ $packages["encoding/json"] = (function() {
 			dec.buf = $subslice(dec.buf, 0, (dec.buf.$length + n >> 0));
 		/* } */ $s = 1; continue; case 2:
 		return [scanp, $ifaceNil];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_readValue }; } $f.$ptr = $ptr; $f._i = _i; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._ref = _ref; $f._tuple = _tuple; $f._v = _v; $f.c = c; $f.dec = dec; $f.err = err; $f.i = i; $f.n = n; $f.newBuf = newBuf; $f.scanp = scanp; $f.v = v; $f.x = x; $f.x$1 = x$1; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Decoder.ptr.prototype.readValue }; } $f.$ptr = $ptr; $f._i = _i; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._ref = _ref; $f._tuple = _tuple; $f._v = _v; $f.c = c; $f.dec = dec; $f.err = err; $f.i = i; $f.n = n; $f.newBuf = newBuf; $f.scanp = scanp; $f.v = v; $f.x = x; $f.x$1 = x$1; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Decoder.prototype.readValue = function() { return this.$val.readValue(); };
 	nonSpace = function(b) {
@@ -21654,11 +21803,12 @@ $packages["encoding/json"] = (function() {
 		}
 		return false;
 	};
-	NewEncoder = $pkg.NewEncoder = function(w) {
+	NewEncoder = function(w) {
 		var $ptr, w;
 		return new Encoder.ptr(w, $ifaceNil);
 	};
-	Encoder.ptr.prototype.Encode = function $blocking_Encode(v) {
+	$pkg.NewEncoder = NewEncoder;
+	Encoder.ptr.prototype.Encode = function(v) {
 		var $ptr, _r$2, _r$3, _r$4, _tuple, e, enc, err, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _tuple = $f._tuple; e = $f.e; enc = $f.enc; err = $f.err; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		enc = this;
@@ -21682,7 +21832,7 @@ $packages["encoding/json"] = (function() {
 		/* } */ case 5:
 		encodeStatePool.Put(e);
 		return err;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Encode }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._tuple = _tuple; $f.e = e; $f.enc = enc; $f.err = err; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Encoder.ptr.prototype.Encode }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._tuple = _tuple; $f.e = e; $f.enc = enc; $f.err = err; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Encoder.prototype.Encode = function(v) { return this.$val.Encode(v); };
 	parseTag = function(tag) {
@@ -21763,7 +21913,7 @@ $packages["encoding/json"] = (function() {
 	scanner.init([{prop: "step", name: "step", pkg: "encoding/json", typ: funcType$1, tag: ""}, {prop: "endTop", name: "endTop", pkg: "encoding/json", typ: $Bool, tag: ""}, {prop: "parseState", name: "parseState", pkg: "encoding/json", typ: sliceType$4, tag: ""}, {prop: "err", name: "err", pkg: "encoding/json", typ: $error, tag: ""}, {prop: "redo", name: "redo", pkg: "encoding/json", typ: $Bool, tag: ""}, {prop: "redoCode", name: "redoCode", pkg: "encoding/json", typ: $Int, tag: ""}, {prop: "redoState", name: "redoState", pkg: "encoding/json", typ: funcType$1, tag: ""}, {prop: "bytes", name: "bytes", pkg: "encoding/json", typ: $Int64, tag: ""}]);
 	Decoder.init([{prop: "r", name: "r", pkg: "encoding/json", typ: io.Reader, tag: ""}, {prop: "buf", name: "buf", pkg: "encoding/json", typ: sliceType$1, tag: ""}, {prop: "d", name: "d", pkg: "encoding/json", typ: decodeState, tag: ""}, {prop: "scan", name: "scan", pkg: "encoding/json", typ: scanner, tag: ""}, {prop: "err", name: "err", pkg: "encoding/json", typ: $error, tag: ""}]);
 	Encoder.init([{prop: "w", name: "w", pkg: "encoding/json", typ: io.Writer, tag: ""}, {prop: "err", name: "err", pkg: "encoding/json", typ: $error, tag: ""}]);
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = bytes.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
@@ -21798,6 +21948,7 @@ $packages["encoding/json"] = (function() {
 		float64Encoder = $methodVal(new floatEncoder(64), "encode");
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["github.com/gopherjs/jquery"] = (function() {
@@ -21916,14 +22067,16 @@ $packages["github.com/gopherjs/jquery"] = (function() {
 		event.Object.stopPropagation();
 	};
 	Event.prototype.StopPropagation = function() { return this.$val.StopPropagation(); };
-	NewJQuery = $pkg.NewJQuery = function(args) {
+	NewJQuery = function(args) {
 		var $ptr, args;
 		return new JQuery.ptr(new ($global.Function.prototype.bind.apply($global.jQuery, [undefined].concat($externalize(args, sliceType)))), "", "", 0, "");
 	};
-	ParseHTML = $pkg.ParseHTML = function(text) {
+	$pkg.NewJQuery = NewJQuery;
+	ParseHTML = function(text) {
 		var $ptr, text;
 		return $assertType($internalize($global.jQuery.parseHTML($externalize(text, $String)), $emptyInterface), sliceType);
 	};
+	$pkg.ParseHTML = ParseHTML;
 	JQuery.ptr.prototype.Each = function(fn) {
 		var $ptr, fn, j;
 		j = $clone(this, JQuery);
@@ -22692,10 +22845,11 @@ $packages["github.com/gopherjs/jquery"] = (function() {
 		return j.o.serializeArray();
 	};
 	JQuery.prototype.SerializeArray = function() { return this.$val.SerializeArray(); };
-	Ajax = $pkg.Ajax = function(options) {
+	Ajax = function(options) {
 		var $ptr, options;
 		return new Deferred.ptr($global.jQuery.ajax($externalize(options, mapType)));
 	};
+	$pkg.Ajax = Ajax;
 	Deferred.ptr.prototype.Promise = function() {
 		var $ptr, d;
 		d = $clone(this, Deferred);
@@ -22763,12 +22917,13 @@ $packages["github.com/gopherjs/jquery"] = (function() {
 	Event.init([{prop: "Object", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "KeyCode", name: "KeyCode", pkg: "", typ: $Int, tag: "js:\"keyCode\""}, {prop: "Target", name: "Target", pkg: "", typ: ptrType, tag: "js:\"target\""}, {prop: "CurrentTarget", name: "CurrentTarget", pkg: "", typ: ptrType, tag: "js:\"currentTarget\""}, {prop: "DelegateTarget", name: "DelegateTarget", pkg: "", typ: ptrType, tag: "js:\"delegateTarget\""}, {prop: "RelatedTarget", name: "RelatedTarget", pkg: "", typ: ptrType, tag: "js:\"relatedTarget\""}, {prop: "Data", name: "Data", pkg: "", typ: ptrType, tag: "js:\"data\""}, {prop: "Result", name: "Result", pkg: "", typ: ptrType, tag: "js:\"result\""}, {prop: "Which", name: "Which", pkg: "", typ: $Int, tag: "js:\"which\""}, {prop: "Namespace", name: "Namespace", pkg: "", typ: $String, tag: "js:\"namespace\""}, {prop: "MetaKey", name: "MetaKey", pkg: "", typ: $Bool, tag: "js:\"metaKey\""}, {prop: "PageX", name: "PageX", pkg: "", typ: $Int, tag: "js:\"pageX\""}, {prop: "PageY", name: "PageY", pkg: "", typ: $Int, tag: "js:\"pageY\""}, {prop: "Type", name: "Type", pkg: "", typ: $String, tag: "js:\"type\""}]);
 	JQueryCoordinates.init([{prop: "Left", name: "Left", pkg: "", typ: $Int, tag: ""}, {prop: "Top", name: "Top", pkg: "", typ: $Int, tag: ""}]);
 	Deferred.init([{prop: "Object", name: "", pkg: "", typ: ptrType, tag: ""}]);
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = js.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["github.com/seven5/seven5/client"] = (function() {
@@ -23111,7 +23266,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 	mapType$4 = $mapType($String, $Int);
 	mapType$5 = $mapType(EventName, EventFunc);
 	ptrType$28 = $ptrType(StringSimple);
-	Main = $pkg.Main = function(app) {
+	Main = function(app) {
 		var $ptr, app;
 		jquery.NewJQuery(new sliceType$1([new $jsObjectPtr($global.document)])).Ready((function $b() {
 			var $ptr, $s, $r;
@@ -23120,22 +23275,23 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f.$s = $s; $f.$r = $r; return $f;
 		}));
 	};
+	$pkg.Main = Main;
 	BoolEqualer.ptr.prototype.Equal = function(e) {
 		var $ptr, e, self;
 		self = $clone(this, BoolEqualer);
 		return self.B === $assertType(e, BoolEqualer).B;
 	};
 	BoolEqualer.prototype.Equal = function(e) { return this.$val.Equal(e); };
-	BoolEqualer.ptr.prototype.String = function $blocking_String() {
+	BoolEqualer.ptr.prototype.String = function() {
 		var $ptr, _r, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = $clone(this, BoolEqualer);
 		_r = fmt.Sprintf("%v", new sliceType$1([new $Bool(self.B)])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_String }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: BoolEqualer.ptr.prototype.String }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	BoolEqualer.prototype.String = function() { return this.$val.String(); };
-	anyBuilder.ptr.prototype.build = function $blocking_build(n) {
+	anyBuilder.ptr.prototype.build = function(n) {
 		var $ptr, _r, dest, n, self, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; dest = $f.dest; n = $f.n; self = $f.self; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
@@ -23145,7 +23301,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			self.builderBase.cons = (x = new eqConstraint.ptr(self.a), new x.constructor.elem(x));
 		}
 		$r = dest.Attach(self.builderBase.cons); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_build }; } $f.$ptr = $ptr; $f._r = _r; $f.dest = dest; $f.n = n; $f.self = self; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: anyBuilder.ptr.prototype.build }; } $f.$ptr = $ptr; $f._r = _r; $f.dest = dest; $f.n = n; $f.self = self; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	anyBuilder.prototype.build = function(n) { return this.$val.build(n); };
 	htmlAttrBuilder = function(h, attr, cons) {
@@ -23155,23 +23311,24 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			return NewHtmlAttrAttr(n, h);
 		})), attr);
 	};
-	NewSimpleConstraint = $pkg.NewSimpleConstraint = function(fn, attr) {
+	NewSimpleConstraint = function(fn, attr) {
 		var $ptr, attr, fn, x;
 		return (x = new simpleConstraint.ptr(attr, fn), new x.constructor.elem(x));
 	};
+	$pkg.NewSimpleConstraint = NewSimpleConstraint;
 	simpleConstraint.ptr.prototype.Inputs = function() {
 		var $ptr, self;
 		self = $clone(this, simpleConstraint);
 		return self.attr;
 	};
 	simpleConstraint.prototype.Inputs = function() { return this.$val.Inputs(); };
-	simpleConstraint.ptr.prototype.Fn = function $blocking_Fn(v) {
+	simpleConstraint.ptr.prototype.Fn = function(v) {
 		var $ptr, _r, self, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; self = $f.self; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = $clone(this, simpleConstraint);
 		_r = self.fn(v); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Fn }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: simpleConstraint.ptr.prototype.Fn }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	simpleConstraint.prototype.Fn = function(v) { return this.$val.Fn(v); };
 	cssClassImpl.ptr.prototype.ClassName = function() {
@@ -23180,11 +23337,12 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		return self.name;
 	};
 	cssClassImpl.prototype.ClassName = function() { return this.$val.ClassName(); };
-	NewCssClass = $pkg.NewCssClass = function(name) {
+	NewCssClass = function(name) {
 		var $ptr, name, x;
 		return (x = new cssClassImpl.ptr(name), new x.constructor.elem(x));
 	};
-	NewHtmlId = $pkg.NewHtmlId = function $blocking_NewHtmlId(tag$1, id) {
+	$pkg.NewCssClass = NewCssClass;
+	NewHtmlId = function(tag$1, id) {
 		var $ptr, _r, _r$1, id, jq, tag$1, x, x$1, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; id = $f.id; jq = $f.jq; tag$1 = $f.tag$1; x = $f.x; x$1 = $f.x$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		if ($pkg.TestMode) {
@@ -23204,8 +23362,9 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			$panic(new $String(_r$1));
 		/* } */ case 5:
 		return (x$1 = new htmlIdImpl.ptr(tag$1, id, wrap(jq), new $Map()), new x$1.constructor.elem(x$1));
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_NewHtmlId }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.id = id; $f.jq = jq; $f.tag$1 = tag$1; $f.x = x; $f.x$1 = x$1; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: NewHtmlId }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.id = id; $f.jq = jq; $f.tag$1 = tag$1; $f.x = x; $f.x$1 = x$1; $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.NewHtmlId = NewHtmlId;
 	htmlIdImpl.ptr.prototype.Dom = function() {
 		var $ptr, self;
 		self = $clone(this, htmlIdImpl);
@@ -23242,7 +23401,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		_key = name; (self.cache || $throwRuntimeError("assignment to entry in nil map"))[_key] = { k: _key, v: attr };
 	};
 	htmlIdImpl.prototype.setCachedAttribute = function(name, attr) { return this.$val.setCachedAttribute(name, attr); };
-	htmlIdImpl.ptr.prototype.getOrCreateAttribute = function $blocking_getOrCreateAttribute(name, fn) {
+	htmlIdImpl.ptr.prototype.getOrCreateAttribute = function(name, fn) {
 		var $ptr, _r, attr, fn, name, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; attr = $f.attr; fn = $f.fn; name = $f.name; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = $clone(this, htmlIdImpl);
@@ -23254,64 +23413,68 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		attr = _r;
 		self.setCachedAttribute(name, attr);
 		return attr;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_getOrCreateAttribute }; } $f.$ptr = $ptr; $f._r = _r; $f.attr = attr; $f.fn = fn; $f.name = name; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: htmlIdImpl.ptr.prototype.getOrCreateAttribute }; } $f.$ptr = $ptr; $f._r = _r; $f.attr = attr; $f.fn = fn; $f.name = name; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	htmlIdImpl.prototype.getOrCreateAttribute = function(name, fn) { return this.$val.getOrCreateAttribute(name, fn); };
-	htmlIdImpl.ptr.prototype.StyleAttribute = function $blocking_StyleAttribute(name) {
+	htmlIdImpl.ptr.prototype.StyleAttribute = function(name) {
 		var $ptr, _r, name, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; name = $f.name; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		name = [name];
-		self = $clone(this, htmlIdImpl);
-		_r = self.getOrCreateAttribute("style:" + name[0], (function(name) { return function $b() {
+		self = [self];
+		self[0] = $clone(this, htmlIdImpl);
+		_r = self[0].getOrCreateAttribute("style:" + name[0], (function(name, self) { return function $b() {
 			var $ptr, _r, $s, $r;
 			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-			_r = NewStyleAttr(name[0], self.t); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+			_r = NewStyleAttr(name[0], self[0].t); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 			return _r;
 			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._r = _r; $f.$s = $s; $f.$r = $r; return $f;
-		}; })(name)); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		}; })(name, self)); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_StyleAttribute }; } $f.$ptr = $ptr; $f._r = _r; $f.name = name; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: htmlIdImpl.ptr.prototype.StyleAttribute }; } $f.$ptr = $ptr; $f._r = _r; $f.name = name; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	htmlIdImpl.prototype.StyleAttribute = function(name) { return this.$val.StyleAttribute(name); };
-	htmlIdImpl.ptr.prototype.DisplayAttribute = function $blocking_DisplayAttribute() {
+	htmlIdImpl.ptr.prototype.DisplayAttribute = function() {
 		var $ptr, _r, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		self = $clone(this, htmlIdImpl);
-		_r = self.getOrCreateAttribute("display", (function() {
+		self = [self];
+		self[0] = $clone(this, htmlIdImpl);
+		_r = self[0].getOrCreateAttribute("display", (function(self) { return function() {
 			var $ptr;
-			return NewDisplayAttr(self.t);
-		})); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+			return NewDisplayAttr(self[0].t);
+		}; })(self)); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_DisplayAttribute }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: htmlIdImpl.ptr.prototype.DisplayAttribute }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	htmlIdImpl.prototype.DisplayAttribute = function() { return this.$val.DisplayAttribute(); };
-	htmlIdImpl.ptr.prototype.CssExistenceAttribute = function $blocking_CssExistenceAttribute(clazz) {
+	htmlIdImpl.ptr.prototype.CssExistenceAttribute = function(clazz) {
 		var $ptr, _r, _r$1, clazz, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; clazz = $f.clazz; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		clazz = [clazz];
-		self = $clone(this, htmlIdImpl);
+		self = [self];
+		self[0] = $clone(this, htmlIdImpl);
 		_r = clazz[0].ClassName(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		_r$1 = self.getOrCreateAttribute("cssexist:" + _r, (function(clazz) { return function $b() {
+		_r$1 = self[0].getOrCreateAttribute("cssexist:" + _r, (function(clazz, self) { return function $b() {
 			var $ptr, _r$1, $s, $r;
 			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-			_r$1 = NewCssExistenceAttr(self.t, clazz[0]); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+			_r$1 = NewCssExistenceAttr(self[0].t, clazz[0]); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 			return _r$1;
 			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f.$s = $s; $f.$r = $r; return $f;
-		}; })(clazz)); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		}; })(clazz, self)); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		return _r$1;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_CssExistenceAttribute }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.clazz = clazz; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: htmlIdImpl.ptr.prototype.CssExistenceAttribute }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.clazz = clazz; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	htmlIdImpl.prototype.CssExistenceAttribute = function(clazz) { return this.$val.CssExistenceAttribute(clazz); };
-	htmlIdImpl.ptr.prototype.TextAttribute = function $blocking_TextAttribute() {
+	htmlIdImpl.ptr.prototype.TextAttribute = function() {
 		var $ptr, _r, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		self = $clone(this, htmlIdImpl);
-		_r = self.getOrCreateAttribute("text", (function() {
+		self = [self];
+		self[0] = $clone(this, htmlIdImpl);
+		_r = self[0].getOrCreateAttribute("text", (function(self) { return function() {
 			var $ptr;
-			return NewTextAttr(self.t);
-		})); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+			return NewTextAttr(self[0].t);
+		}; })(self)); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_TextAttribute }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: htmlIdImpl.ptr.prototype.TextAttribute }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	htmlIdImpl.prototype.TextAttribute = function() { return this.$val.TextAttribute(); };
 	newDomAttr = function(t, id, g, s) {
@@ -23320,35 +23483,35 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		result.attr = NewAttribute(2, g, s);
 		return result;
 	};
-	domAttr.ptr.prototype.getData = function $blocking_getData() {
+	domAttr.ptr.prototype.getData = function() {
 		var $ptr, _r, _r$1, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
 		_r = fmt.Sprintf("seven5_%s", new sliceType$1([new $String(self.id)])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_r$1 = self.t.Data(_r); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		return _r$1;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_getData }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: domAttr.ptr.prototype.getData }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	domAttr.prototype.getData = function() { return this.$val.getData(); };
-	domAttr.ptr.prototype.removeData = function $blocking_removeData() {
+	domAttr.ptr.prototype.removeData = function() {
 		var $ptr, _r, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
 		_r = fmt.Sprintf("seven5_%s", new sliceType$1([new $String(self.id)])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		$r = self.t.RemoveData(_r); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_removeData }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: domAttr.ptr.prototype.removeData }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	domAttr.prototype.removeData = function() { return this.$val.removeData(); };
-	domAttr.ptr.prototype.setData = function $blocking_setData(v) {
+	domAttr.ptr.prototype.setData = function(v) {
 		var $ptr, _r, self, v, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; self = $f.self; v = $f.v; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
 		_r = fmt.Sprintf("seven5_%s", new sliceType$1([new $String(self.id)])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		$r = self.t.SetData(_r, v); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_setData }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: domAttr.ptr.prototype.setData }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.v = v; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	domAttr.prototype.setData = function(v) { return this.$val.setData(v); };
-	domAttr.ptr.prototype.verifyConstraint = function $blocking_verifyConstraint(b) {
+	domAttr.ptr.prototype.verifyConstraint = function(b) {
 		var $ptr, _r, _r$1, _r$2, _r$3, b, s, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; b = $f.b; s = $f.s; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
@@ -23378,44 +23541,44 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 				$panic(new $String(_r$3));
 			/* } */ case 12:
 		/* } */ case 4:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_verifyConstraint }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.b = b; $f.s = s; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: domAttr.ptr.prototype.verifyConstraint }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.b = b; $f.s = s; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	domAttr.prototype.verifyConstraint = function(b) { return this.$val.verifyConstraint(b); };
-	domAttr.ptr.prototype.Attach = function $blocking_Attach(c) {
+	domAttr.ptr.prototype.Attach = function(c) {
 		var $ptr, c, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; c = $f.c; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
 		$r = self.verifyConstraint(false); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = self.attr.Attach(c); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = self.setData("constraint"); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Attach }; } $f.$ptr = $ptr; $f.c = c; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: domAttr.ptr.prototype.Attach }; } $f.$ptr = $ptr; $f.c = c; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	domAttr.prototype.Attach = function(c) { return this.$val.Attach(c); };
-	domAttr.ptr.prototype.Detach = function $blocking_Detach() {
+	domAttr.ptr.prototype.Detach = function() {
 		var $ptr, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
 		$r = self.verifyConstraint(true); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = self.attr.Detach(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = self.removeData(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Detach }; } $f.$ptr = $ptr; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: domAttr.ptr.prototype.Detach }; } $f.$ptr = $ptr; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	domAttr.prototype.Detach = function() { return this.$val.Detach(); };
-	domAttr.ptr.prototype.Demand = function $blocking_Demand() {
+	domAttr.ptr.prototype.Demand = function() {
 		var $ptr, _r, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
 		_r = self.attr.Demand(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Demand }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: domAttr.ptr.prototype.Demand }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	domAttr.prototype.Demand = function() { return this.$val.Demand(); };
-	domAttr.ptr.prototype.SetEqualer = function $blocking_SetEqualer(e) {
+	domAttr.ptr.prototype.SetEqualer = function(e) {
 		var $ptr, e, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; e = $f.e; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
 		$r = self.attr.SetEqualer(e); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_SetEqualer }; } $f.$ptr = $ptr; $f.e = e; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: domAttr.ptr.prototype.SetEqualer }; } $f.$ptr = $ptr; $f.e = e; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	domAttr.prototype.SetEqualer = function(e) { return this.$val.SetEqualer(e); };
 	domAttr.ptr.prototype.SetDebugName = function(n) {
@@ -23430,7 +23593,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		return self.id;
 	};
 	domAttr.prototype.Id = function() { return this.$val.Id(); };
-	NewStyleAttr = $pkg.NewStyleAttr = function $blocking_NewStyleAttr(n, t) {
+	NewStyleAttr = function(n, t) {
 		var $ptr, _arg, _arg$1, _arg$2, _arg$3, _r, _r$1, n, result, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$2 = $f._arg$2; _arg$3 = $f._arg$3; _r = $f._r; _r$1 = $f._r$1; n = $f.n; result = $f.result; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		result = new styleAttr.ptr(ptrType$1.nil, n);
@@ -23442,9 +23605,10 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		_r$1 = newDomAttr(_arg, _arg$1, _arg$2, _arg$3); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		result.domAttr = _r$1;
 		return result;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_NewStyleAttr }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._arg$3 = _arg$3; $f._r = _r; $f._r$1 = _r$1; $f.n = n; $f.result = result; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: NewStyleAttr }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._arg$3 = _arg$3; $f._r = _r; $f._r$1 = _r$1; $f.n = n; $f.result = result; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	styleAttr.ptr.prototype.get = function $blocking_get() {
+	$pkg.NewStyleAttr = NewStyleAttr;
+	styleAttr.ptr.prototype.get = function() {
 		var $ptr, _r, _r$1, self, x, x$1, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; self = $f.self; x = $f.x; x$1 = $f.x$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
@@ -23456,10 +23620,10 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		/* } */ case 2:
 		_r$1 = self.domAttr.t.Css(self.name); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		return (x$1 = new StringEqualer.ptr(_r$1), new x$1.constructor.elem(x$1));
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_get }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.self = self; $f.x = x; $f.x$1 = x$1; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: styleAttr.ptr.prototype.get }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.self = self; $f.x = x; $f.x$1 = x$1; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	styleAttr.prototype.get = function() { return this.$val.get(); };
-	styleAttr.ptr.prototype.set = function $blocking_set(e) {
+	styleAttr.ptr.prototype.set = function(e) {
 		var $ptr, _arg, _arg$1, _r, e, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _r = $f._r; e = $f.e; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
@@ -23467,49 +23631,51 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		_r = fmt.Sprintf("%s", new sliceType$1([e])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_arg$1 = _r;
 		$r = self.domAttr.t.SetCss(_arg, _arg$1); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_set }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._r = _r; $f.e = e; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: styleAttr.ptr.prototype.set }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._r = _r; $f.e = e; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	styleAttr.prototype.set = function(e) { return this.$val.set(e); };
-	NewTextAttr = $pkg.NewTextAttr = function(t) {
+	NewTextAttr = function(t) {
 		var $ptr, result, t;
 		result = new textAttr.ptr(ptrType$1.nil);
 		result.domAttr = newDomAttr(t, "text", $methodVal(result, "get"), $methodVal(result, "set"));
 		return result;
 	};
-	textAttr.ptr.prototype.get = function $blocking_get() {
+	$pkg.NewTextAttr = NewTextAttr;
+	textAttr.ptr.prototype.get = function() {
 		var $ptr, _r, self, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; self = $f.self; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
 		_r = self.domAttr.t.Text(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return (x = new StringEqualer.ptr(_r), new x.constructor.elem(x));
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_get }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: textAttr.ptr.prototype.get }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	textAttr.prototype.get = function() { return this.$val.get(); };
-	textAttr.ptr.prototype.set = function $blocking_set(e) {
+	textAttr.ptr.prototype.set = function(e) {
 		var $ptr, _r, e, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; e = $f.e; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
 		_r = fmt.Sprintf("%v", new sliceType$1([e])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		$r = self.domAttr.t.SetText(_r); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_set }; } $f.$ptr = $ptr; $f._r = _r; $f.e = e; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: textAttr.ptr.prototype.set }; } $f.$ptr = $ptr; $f._r = _r; $f.e = e; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	textAttr.prototype.set = function(e) { return this.$val.set(e); };
-	NewHtmlAttrAttr = $pkg.NewHtmlAttrAttr = function(t, a) {
+	NewHtmlAttrAttr = function(t, a) {
 		var $ptr, a, result, t;
 		result = new htmlAttrAttr.ptr(ptrType$1.nil, a);
 		result.domAttr = newDomAttr(t, "attr:" + a, $methodVal(result, "get"), $methodVal(result, "set"));
 		return result;
 	};
-	htmlAttrAttr.ptr.prototype.get = function $blocking_get() {
+	$pkg.NewHtmlAttrAttr = NewHtmlAttrAttr;
+	htmlAttrAttr.ptr.prototype.get = function() {
 		var $ptr, _r, self, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; self = $f.self; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
 		_r = self.domAttr.t.Attr(self.name); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return (x = new StringEqualer.ptr(_r), new x.constructor.elem(x));
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_get }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: htmlAttrAttr.ptr.prototype.get }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	htmlAttrAttr.prototype.get = function() { return this.$val.get(); };
-	htmlAttrAttr.ptr.prototype.set = function $blocking_set(e) {
+	htmlAttrAttr.ptr.prototype.set = function(e) {
 		var $ptr, _arg, _arg$1, _r, e, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _r = $f._r; e = $f.e; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
@@ -23517,7 +23683,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		_r = fmt.Sprintf("%v", new sliceType$1([e])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_arg$1 = _r;
 		$r = self.domAttr.t.SetAttr(_arg, _arg$1); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_set }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._r = _r; $f.e = e; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: htmlAttrAttr.ptr.prototype.set }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._r = _r; $f.e = e; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	htmlAttrAttr.prototype.set = function(e) { return this.$val.set(e); };
 	newAttrName = function(s) {
@@ -23528,7 +23694,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		var $ptr, s;
 		return s;
 	};
-	NewCssExistenceAttr = $pkg.NewCssExistenceAttr = function $blocking_NewCssExistenceAttr(t, clazz) {
+	NewCssExistenceAttr = function(t, clazz) {
 		var $ptr, _arg, _arg$1, _arg$2, _arg$3, _r, _r$1, clazz, result, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$2 = $f._arg$2; _arg$3 = $f._arg$3; _r = $f._r; _r$1 = $f._r$1; clazz = $f.clazz; result = $f.result; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		result = new cssExistenceAttr.ptr(ptrType$1.nil, clazz);
@@ -23540,19 +23706,20 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		_r$1 = newDomAttr(_arg, _arg$1, _arg$2, _arg$3); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		result.domAttr = _r$1;
 		return result;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_NewCssExistenceAttr }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._arg$3 = _arg$3; $f._r = _r; $f._r$1 = _r$1; $f.clazz = clazz; $f.result = result; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: NewCssExistenceAttr }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._arg$3 = _arg$3; $f._r = _r; $f._r$1 = _r$1; $f.clazz = clazz; $f.result = result; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	cssExistenceAttr.ptr.prototype.get = function $blocking_get() {
+	$pkg.NewCssExistenceAttr = NewCssExistenceAttr;
+	cssExistenceAttr.ptr.prototype.get = function() {
 		var $ptr, _r, _r$1, self, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; self = $f.self; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
 		_r = self.clazz.ClassName(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_r$1 = self.domAttr.t.HasClass(_r); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		return (x = new BoolEqualer.ptr(_r$1), new x.constructor.elem(x));
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_get }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.self = self; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: cssExistenceAttr.ptr.prototype.get }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.self = self; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	cssExistenceAttr.prototype.get = function() { return this.$val.get(); };
-	cssExistenceAttr.ptr.prototype.set = function $blocking_set(e) {
+	cssExistenceAttr.ptr.prototype.set = function(e) {
 		var $ptr, _r, _r$1, e, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; e = $f.e; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
@@ -23566,16 +23733,17 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			_r$1 = self.clazz.ClassName(); /* */ $s = 6; case 6: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 			$r = self.domAttr.t.RemoveClass(_r$1); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* } */ case 3:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_set }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.e = e; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: cssExistenceAttr.ptr.prototype.set }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.e = e; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	cssExistenceAttr.prototype.set = function(e) { return this.$val.set(e); };
-	NewDisplayAttr = $pkg.NewDisplayAttr = function(t) {
+	NewDisplayAttr = function(t) {
 		var $ptr, result, t;
 		result = new styleAttr.ptr(ptrType$1.nil, "display");
 		result.domAttr = newDomAttr(t, "style:display", $methodVal(result, "getDisplay"), $methodVal(result, "setDisplay"));
 		return result;
 	};
-	styleAttr.ptr.prototype.getDisplay = function $blocking_getDisplay() {
+	$pkg.NewDisplayAttr = NewDisplayAttr;
+	styleAttr.ptr.prototype.getDisplay = function() {
 		var $ptr, _r, _r$1, self, x, x$1, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; self = $f.self; x = $f.x; x$1 = $f.x$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
@@ -23587,10 +23755,10 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		/* } */ case 2:
 		_r$1 = self.domAttr.t.Css("display"); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		return (x$1 = new BoolEqualer.ptr(!(_r$1 === "none")), new x$1.constructor.elem(x$1));
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_getDisplay }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.self = self; $f.x = x; $f.x$1 = x$1; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: styleAttr.ptr.prototype.getDisplay }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.self = self; $f.x = x; $f.x$1 = x$1; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	styleAttr.prototype.getDisplay = function() { return this.$val.getDisplay(); };
-	styleAttr.ptr.prototype.setDisplay = function $blocking_setDisplay(e) {
+	styleAttr.ptr.prototype.setDisplay = function(e) {
 		var $ptr, e, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; e = $f.e; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
@@ -23602,10 +23770,10 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		/* } else { */ case 2:
 			$r = self.domAttr.t.SetCss("display", "none"); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* } */ case 3:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_setDisplay }; } $f.$ptr = $ptr; $f.e = e; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: styleAttr.ptr.prototype.setDisplay }; } $f.$ptr = $ptr; $f.e = e; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	styleAttr.prototype.setDisplay = function(e) { return this.$val.setDisplay(e); };
-	NewValueAttr = $pkg.NewValueAttr = function $blocking_NewValueAttr(t) {
+	NewValueAttr = function(t) {
 		var $ptr, result, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; result = $f.result; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		result = [result];
@@ -23624,9 +23792,10 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
 		}; })(result, t)); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		return result[0];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_NewValueAttr }; } $f.$ptr = $ptr; $f.result = result; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: NewValueAttr }; } $f.$ptr = $ptr; $f.result = result; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	DrainEagerQueue = $pkg.DrainEagerQueue = function $blocking_DrainEagerQueue() {
+	$pkg.NewValueAttr = NewValueAttr;
+	DrainEagerQueue = function() {
 		var $ptr, _i, _r, _ref, a, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _ref = $f._ref; a = $f.a; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_ref = eagerQueue;
@@ -23639,16 +23808,17 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			_i++;
 		/* } */ $s = 1; continue; case 2:
 		eagerQueue = sliceType.nil;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_DrainEagerQueue }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f.a = a; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: DrainEagerQueue }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f.a = a; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	newEdge = function $blocking_newEdge(src, dest) {
+	$pkg.DrainEagerQueue = DrainEagerQueue;
+	newEdge = function(src, dest) {
 		var $ptr, dest, e, src, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; dest = $f.dest; e = $f.e; src = $f.src; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		e = new edgeImpl.ptr(false, dest, src);
 		$r = src.addOut(e); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = dest.addIn(e); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		return e;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_newEdge }; } $f.$ptr = $ptr; $f.dest = dest; $f.e = e; $f.src = src; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: newEdge }; } $f.$ptr = $ptr; $f.dest = dest; $f.e = e; $f.src = src; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	edgeImpl.ptr.prototype.marked = function() {
 		var $ptr, self;
@@ -23674,7 +23844,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		return self.d;
 	};
 	edgeImpl.prototype.dest = function() { return this.$val.dest(); };
-	NewAttribute = $pkg.NewAttribute = function(nt, v, s) {
+	NewAttribute = function(nt, v, s) {
 		var $ptr, nt, result, s, v;
 		if (nt > 2) {
 			$panic(new $String("unexpected node type"));
@@ -23683,7 +23853,8 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		numNodes = numNodes + (1) >> 0;
 		return result;
 	};
-	AttributeImpl.ptr.prototype.Attach = function $blocking_Attach(c) {
+	$pkg.NewAttribute = NewAttribute;
+	AttributeImpl.ptr.prototype.Attach = function(c) {
 		var $ptr, _i, _r, _r$1, _r$2, _r$3, _r$4, _ref, c, edges, i, other, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _ref = $f._ref; c = $f.c; edges = $f.edges; i = $f.i; other = $f.other; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
@@ -23718,10 +23889,10 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			_r$4;
 		/* } */ case 11:
 		$r = DrainEagerQueue(); /* */ $s = 13; case 13: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Attach }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._ref = _ref; $f.c = c; $f.edges = edges; $f.i = i; $f.other = other; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: AttributeImpl.ptr.prototype.Attach }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._ref = _ref; $f.c = c; $f.edges = edges; $f.i = i; $f.other = other; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	AttributeImpl.prototype.Attach = function(c) { return this.$val.Attach(c); };
-	AttributeImpl.ptr.prototype.Detach = function $blocking_Detach() {
+	AttributeImpl.ptr.prototype.Detach = function() {
 		var $ptr, _i, _r, _ref, dead, e, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _ref = $f._ref; dead = $f.dead; e = $f.e; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		dead = [dead];
@@ -23745,7 +23916,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			_i++;
 		/* } */ $s = 2; continue; case 3:
 		$r = DrainEagerQueue(); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Detach }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f.dead = dead; $f.e = e; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: AttributeImpl.ptr.prototype.Detach }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f.dead = dead; $f.e = e; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	AttributeImpl.prototype.Detach = function() { return this.$val.Detach(); };
 	AttributeImpl.ptr.prototype.SetDebugName = function(n) {
@@ -23762,7 +23933,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		self.edge = $subslice(self.edge, 0, (self.edge.$length - 1 >> 0));
 	};
 	AttributeImpl.prototype.dropIthEdge = function(i) { return this.$val.dropIthEdge(i); };
-	AttributeImpl.ptr.prototype.removeIn = function $blocking_removeIn(id) {
+	AttributeImpl.ptr.prototype.removeIn = function(id) {
 		var $ptr, _i, _r, _r$1, _ref, _v, e, i, id, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _ref = $f._ref; _v = $f._v; e = $f.e; i = $f.i; id = $f.id; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
@@ -23784,10 +23955,10 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			/* } */ case 4:
 			_i++;
 		/* } */ $s = 1; continue; case 2:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_removeIn }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._ref = _ref; $f._v = _v; $f.e = e; $f.i = i; $f.id = id; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: AttributeImpl.ptr.prototype.removeIn }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._ref = _ref; $f._v = _v; $f.e = e; $f.i = i; $f.id = id; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	AttributeImpl.prototype.removeIn = function(id) { return this.$val.removeIn(id); };
-	AttributeImpl.ptr.prototype.removeOut = function $blocking_removeOut(id) {
+	AttributeImpl.ptr.prototype.removeOut = function(id) {
 		var $ptr, _i, _r, _r$1, _ref, _v, e, i, id, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _ref = $f._ref; _v = $f._v; e = $f.e; i = $f.i; id = $f.id; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
@@ -23809,7 +23980,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			/* } */ case 4:
 			_i++;
 		/* } */ $s = 1; continue; case 2:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_removeOut }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._ref = _ref; $f._v = _v; $f.e = e; $f.i = i; $f.id = id; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: AttributeImpl.ptr.prototype.removeOut }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._ref = _ref; $f._v = _v; $f.e = e; $f.i = i; $f.id = id; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	AttributeImpl.prototype.removeOut = function(id) { return this.$val.removeOut(id); };
 	AttributeImpl.ptr.prototype.id = function() {
@@ -23818,7 +23989,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		return self.n;
 	};
 	AttributeImpl.prototype.id = function() { return this.$val.id(); };
-	AttributeImpl.ptr.prototype.walkOutgoing = function $blocking_walkOutgoing(fn) {
+	AttributeImpl.ptr.prototype.walkOutgoing = function(fn) {
 		var $ptr, _i, _r, _ref, e, fn, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _ref = $f._ref; e = $f.e; fn = $f.fn; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
@@ -23837,10 +24008,10 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			$r = fn(e); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			_i++;
 		/* } */ $s = 1; continue; case 2:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_walkOutgoing }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f.e = e; $f.fn = fn; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: AttributeImpl.ptr.prototype.walkOutgoing }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f.e = e; $f.fn = fn; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	AttributeImpl.prototype.walkOutgoing = function(fn) { return this.$val.walkOutgoing(fn); };
-	AttributeImpl.ptr.prototype.walkIncoming = function $blocking_walkIncoming(fn) {
+	AttributeImpl.ptr.prototype.walkIncoming = function(fn) {
 		var $ptr, _i, _r, _ref, e, fn, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _ref = $f._ref; e = $f.e; fn = $f.fn; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
@@ -23859,7 +24030,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			$r = fn(e); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			_i++;
 		/* } */ $s = 1; continue; case 2:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_walkIncoming }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f.e = e; $f.fn = fn; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: AttributeImpl.ptr.prototype.walkIncoming }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f.e = e; $f.fn = fn; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	AttributeImpl.prototype.walkIncoming = function(fn) { return this.$val.walkIncoming(fn); };
 	AttributeImpl.ptr.prototype.dirty = function() {
@@ -23868,7 +24039,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		return !self.clean;
 	};
 	AttributeImpl.prototype.dirty = function() { return this.$val.dirty(); };
-	AttributeImpl.ptr.prototype.markDirty = function $blocking_markDirty() {
+	AttributeImpl.ptr.prototype.markDirty = function() {
 		var $ptr, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
@@ -23885,10 +24056,10 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		if (self.nType === 2) {
 			eagerQueue = $append(eagerQueue, self);
 		}
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_markDirty }; } $f.$ptr = $ptr; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: AttributeImpl.ptr.prototype.markDirty }; } $f.$ptr = $ptr; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	AttributeImpl.prototype.markDirty = function() { return this.$val.markDirty(); };
-	AttributeImpl.ptr.prototype.assign = function $blocking_assign(newval, wantSideEffect) {
+	AttributeImpl.ptr.prototype.assign = function(newval, wantSideEffect) {
 		var $ptr, newval, self, wantSideEffect, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; newval = $f.newval; self = $f.self; wantSideEffect = $f.wantSideEffect; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
@@ -23899,7 +24070,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		/* } */ case 2:
 		self.curr = newval;
 		return newval;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_assign }; } $f.$ptr = $ptr; $f.newval = newval; $f.self = self; $f.wantSideEffect = wantSideEffect; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: AttributeImpl.ptr.prototype.assign }; } $f.$ptr = $ptr; $f.newval = newval; $f.self = self; $f.wantSideEffect = wantSideEffect; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	AttributeImpl.prototype.assign = function(newval, wantSideEffect) { return this.$val.assign(newval, wantSideEffect); };
 	AttributeImpl.ptr.prototype.addOut = function(e) {
@@ -23920,16 +24091,16 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		self.edge = $append(self.edge, e);
 	};
 	AttributeImpl.prototype.addIn = function(e) { return this.$val.addIn(e); };
-	AttributeImpl.ptr.prototype.source = function $blocking_source() {
+	AttributeImpl.ptr.prototype.source = function() {
 		var $ptr, _r, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
 		_r = self.inDegree(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r === 0;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_source }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: AttributeImpl.ptr.prototype.source }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	AttributeImpl.prototype.source = function() { return this.$val.source(); };
-	AttributeImpl.ptr.prototype.inDegree = function $blocking_inDegree() {
+	AttributeImpl.ptr.prototype.inDegree = function() {
 		var $ptr, inDegree, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; inDegree = $f.inDegree; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		inDegree = [inDegree];
@@ -23940,10 +24111,10 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			inDegree[0] = inDegree[0] + (1) >> 0;
 		}; })(inDegree)); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		return inDegree[0];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_inDegree }; } $f.$ptr = $ptr; $f.inDegree = inDegree; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: AttributeImpl.ptr.prototype.inDegree }; } $f.$ptr = $ptr; $f.inDegree = inDegree; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	AttributeImpl.prototype.inDegree = function() { return this.$val.inDegree(); };
-	AttributeImpl.ptr.prototype.SetEqualer = function $blocking_SetEqualer(i) {
+	AttributeImpl.ptr.prototype.SetEqualer = function(i) {
 		var $ptr, _r, _r$1, _r$2, _v, i, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _v = $f._v; i = $f.i; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
@@ -23969,10 +24140,10 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		_r$2 = self.assign(i, true); /* */ $s = 10; case 10: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		_r$2;
 		$r = DrainEagerQueue(); /* */ $s = 11; case 11: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_SetEqualer }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._v = _v; $f.i = i; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: AttributeImpl.ptr.prototype.SetEqualer }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._v = _v; $f.i = i; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	AttributeImpl.prototype.SetEqualer = function(i) { return this.$val.SetEqualer(i); };
-	AttributeImpl.ptr.prototype.Demand = function $blocking_Demand() {
+	AttributeImpl.ptr.prototype.Demand = function() {
 		var $ptr, _r, _r$1, _r$2, _r$3, _r$4, _v, anyMarks, newval, params, pcount, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _v = $f._v; anyMarks = $f.anyMarks; newval = $f.newval; params = $f.params; pcount = $f.pcount; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		anyMarks = [anyMarks];
@@ -24031,10 +24202,10 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		}; })(anyMarks, params, pcount)); /* */ $s = 13; case 13: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		_r$4 = self.assign(newval, true); /* */ $s = 14; case 14: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
 		return _r$4;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Demand }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._v = _v; $f.anyMarks = anyMarks; $f.newval = newval; $f.params = params; $f.pcount = pcount; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: AttributeImpl.ptr.prototype.Demand }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._v = _v; $f.anyMarks = anyMarks; $f.newval = newval; $f.params = params; $f.pcount = pcount; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	AttributeImpl.prototype.Demand = function() { return this.$val.Demand(); };
-	EventName.prototype.String = function $blocking_String() {
+	EventName.prototype.String = function() {
 		var $ptr, _r, _ref, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _ref = $f._ref; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this.$val;
@@ -24070,25 +24241,25 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		}
 		_r = fmt.Sprintf("unknown event name %v", new sliceType$1([new EventName(self)])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		$panic(new $String(_r));
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_String }; } $f.$ptr = $ptr; $f._r = _r; $f._ref = _ref; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EventName.prototype.String }; } $f.$ptr = $ptr; $f._r = _r; $f._ref = _ref; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$ptrType(EventName).prototype.String = function() { return new EventName(this.$get()).String(); };
-	eventHandler.ptr.prototype.register = function $blocking_register() {
+	eventHandler.ptr.prototype.register = function() {
 		var $ptr, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = $clone(this, eventHandler);
 		$r = self.t.On(self.name, $methodVal(self, "handle")); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_register }; } $f.$ptr = $ptr; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: eventHandler.ptr.prototype.register }; } $f.$ptr = $ptr; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	eventHandler.prototype.register = function() { return this.$val.register(); };
-	eventHandler.ptr.prototype.handle = function $blocking_handle(event) {
+	eventHandler.ptr.prototype.handle = function(event) {
 		var $ptr, event, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; event = $f.event; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = $clone(this, eventHandler);
 		event = $clone(event, jquery.Event);
 		$r = self.fn(event); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = DrainEagerQueue(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_handle }; } $f.$ptr = $ptr; $f.event = event; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: eventHandler.ptr.prototype.handle }; } $f.$ptr = $ptr; $f.event = event; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	eventHandler.prototype.handle = function(event) { return this.$val.handle(event); };
 	wrap = function(j) {
@@ -24243,7 +24414,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		_key = name; (self.event || $throwRuntimeError("assignment to entry in nil map"))[_key] = { k: _key, v: fn };
 	};
 	testOpsImpl.prototype.On = function(name, fn) { return this.$val.On(name, fn); };
-	jqueryWrapper.ptr.prototype.On = function $blocking_On(n, fn) {
+	jqueryWrapper.ptr.prototype.On = function(n, fn) {
 		var $ptr, _r, _r$1, fn, handler, n, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; fn = $f.fn; handler = $f.handler; n = $f.n; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = $clone(this, jqueryWrapper);
@@ -24251,10 +24422,10 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		_r = new EventName(n).String(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_r$1 = self.jq.On(new sliceType$1([new $String(_r), new funcType($methodVal(handler, "handle"))])); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_r$1;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_On }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.fn = fn; $f.handler = handler; $f.n = n; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: jqueryWrapper.ptr.prototype.On }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.fn = fn; $f.handler = handler; $f.n = n; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	jqueryWrapper.prototype.On = function(n, fn) { return this.$val.On(n, fn); };
-	testOpsImpl.ptr.prototype.Trigger = function $blocking_Trigger(name) {
+	testOpsImpl.ptr.prototype.Trigger = function(name) {
 		var $ptr, _entry, _r, _tuple, fn, handler, name, ok, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _r = $f._r; _tuple = $f._tuple; fn = $f.fn; handler = $f.handler; name = $f.name; ok = $f.ok; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
@@ -24266,17 +24437,17 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			_r = new EventName(name).String(); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 			$r = handler.handle(new jquery.Event.ptr(null, 0, null, null, null, null, null, null, 0, "", false, 0, 0, _r)); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* } */ case 2:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Trigger }; } $f.$ptr = $ptr; $f._entry = _entry; $f._r = _r; $f._tuple = _tuple; $f.fn = fn; $f.handler = handler; $f.name = name; $f.ok = ok; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: testOpsImpl.ptr.prototype.Trigger }; } $f.$ptr = $ptr; $f._entry = _entry; $f._r = _r; $f._tuple = _tuple; $f.fn = fn; $f.handler = handler; $f.name = name; $f.ok = ok; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	testOpsImpl.prototype.Trigger = function(name) { return this.$val.Trigger(name); };
-	jqueryWrapper.ptr.prototype.Trigger = function $blocking_Trigger(n) {
+	jqueryWrapper.ptr.prototype.Trigger = function(n) {
 		var $ptr, _r, _r$1, n, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; n = $f.n; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = $clone(this, jqueryWrapper);
 		_r = new EventName(n).String(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_r$1 = self.jq.Trigger(new sliceType$1([new $String(_r)])); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_r$1;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Trigger }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.n = n; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: jqueryWrapper.ptr.prototype.Trigger }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.n = n; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	jqueryWrapper.prototype.Trigger = function(n) { return this.$val.Trigger(n); };
 	testOpsImpl.ptr.prototype.HasClass = function(k) {
@@ -24507,14 +24678,15 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		return jq.Val();
 	};
 	jqueryWrapper.prototype.RadioButton = function(groupName) { return this.$val.RadioButton(groupName); };
-	AjaxPost = $pkg.AjaxPost = function $blocking_AjaxPost(ptrToStruct, path) {
+	AjaxPost = function(ptrToStruct, path) {
 		var $ptr, _r, path, ptrToStruct, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; path = $f.path; ptrToStruct = $f.ptrToStruct; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = putPostDel(ptrToStruct, path, "POST", true); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_AjaxPost }; } $f.$ptr = $ptr; $f._r = _r; $f.path = path; $f.ptrToStruct = ptrToStruct; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: AjaxPost }; } $f.$ptr = $ptr; $f._r = _r; $f.path = path; $f.ptrToStruct = ptrToStruct; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	AjaxGet = $pkg.AjaxGet = function $blocking_AjaxGet(ptrToStruct, path) {
+	$pkg.AjaxPost = AjaxPost;
+	AjaxGet = function(ptrToStruct, path) {
 		var $ptr, _r, contentCh, errCh, path, ptrToStruct, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; contentCh = $f.contentCh; errCh = $f.errCh; path = $f.path; ptrToStruct = $f.ptrToStruct; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = isPointerToStructOrPanic(ptrToStruct); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
@@ -24523,8 +24695,9 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		errCh = new chanType$1(0);
 		ajaxRawChannels(ptrToStruct, "", contentCh, errCh, "GET", path);
 		return [contentCh, errCh];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_AjaxGet }; } $f.$ptr = $ptr; $f._r = _r; $f.contentCh = contentCh; $f.errCh = errCh; $f.path = path; $f.ptrToStruct = ptrToStruct; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: AjaxGet }; } $f.$ptr = $ptr; $f._r = _r; $f.contentCh = contentCh; $f.errCh = errCh; $f.path = path; $f.ptrToStruct = ptrToStruct; $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.AjaxGet = AjaxGet;
 	ajaxRawChannels = function(output, body, contentChan, errChan, method, path) {
 		var $ptr, _key, _key$1, _map, body, contentChan, errChan, m, method, output, path;
 		m = (_map = new $Map(), _key = "contentType", _map[_key] = { k: _key, v: new $String("application/json") }, _key = "dataType", _map[_key] = { k: _key, v: new $String("text") }, _key = "type", _map[_key] = { k: _key, v: new $String(method) }, _key = "url", _map[_key] = { k: _key, v: new $String(path) }, _key = "cache", _map[_key] = { k: _key, v: new $Bool(false) }, _map);
@@ -24576,11 +24749,12 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		}))]));
 		return $ifaceNil;
 	};
-	encodeBody = function $blocking_encodeBody(i) {
+	encodeBody = function(i) {
 		var $ptr, _r, _r$1, enc, err, i, w, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; enc = $f.enc; err = $f.err; i = $f.i; w = $f.w; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		w = $clone(new bytes.Buffer.ptr(), bytes.Buffer);
-		enc = json.NewEncoder(w);
+		w = [w];
+		w[0] = $clone(new bytes.Buffer.ptr(), bytes.Buffer);
+		enc = json.NewEncoder(w[0]);
 		_r = enc.Encode(i); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		err = _r;
 		/* */ if (!($interfaceIsEqual(err, $ifaceNil))) { $s = 2; continue; }
@@ -24589,10 +24763,10 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			_r$1 = fmt.Errorf("error encoding body: %v ", new sliceType$1([err])); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 			return ["", _r$1];
 		/* } */ case 3:
-		return [w.String(), $ifaceNil];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_encodeBody }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.enc = enc; $f.err = err; $f.i = i; $f.w = w; $f.$s = $s; $f.$r = $r; return $f;
+		return [w[0].String(), $ifaceNil];
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: encodeBody }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.enc = enc; $f.err = err; $f.i = i; $f.w = w; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	isPointerToStructOrPanic = function $blocking_isPointerToStructOrPanic(i) {
+	isPointerToStructOrPanic = function(i) {
 		var $ptr, _arg, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, i, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; i = $f.i; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = reflect.TypeOf(i);
@@ -24615,9 +24789,9 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			$panic(new $String(_r$6));
 		/* } */ case 6:
 		return t;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_isPointerToStructOrPanic }; } $f.$ptr = $ptr; $f._arg = _arg; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f.i = i; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: isPointerToStructOrPanic }; } $f.$ptr = $ptr; $f._arg = _arg; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f.i = i; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	putPostDel = function $blocking_putPostDel(ptrToStruct, path, method, sendBody) {
+	putPostDel = function(ptrToStruct, path, method, sendBody) {
 		var $ptr, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _tuple, body, contentCh, err, errCh, method, output, path, ptrToStruct, sendBody, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _tuple = $f._tuple; body = $f.body; contentCh = $f.contentCh; err = $f.err; errCh = $f.errCh; method = $f.method; output = $f.output; path = $f.path; ptrToStruct = $f.ptrToStruct; sendBody = $f.sendBody; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		err = [err];
@@ -24653,7 +24827,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		_r$5 = ajaxRawChannels(_r$4, body, contentCh, errCh[0], method, path); /* */ $s = 8; case 8: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
 		_r$5;
 		return [contentCh, errCh[0]];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_putPostDel }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._tuple = _tuple; $f.body = body; $f.contentCh = contentCh; $f.err = err; $f.errCh = errCh; $f.method = method; $f.output = output; $f.path = path; $f.ptrToStruct = ptrToStruct; $f.sendBody = sendBody; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: putPostDel }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._tuple = _tuple; $f.body = body; $f.contentCh = contentCh; $f.err = err; $f.errCh = errCh; $f.method = method; $f.output = output; $f.path = path; $f.ptrToStruct = ptrToStruct; $f.sendBody = sendBody; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	StringEqualer.ptr.prototype.Equal = function(e) {
 		var $ptr, e, self;
@@ -24661,47 +24835,48 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		return self.S === $assertType(e, StringEqualer).S;
 	};
 	StringEqualer.prototype.Equal = function(e) { return this.$val.Equal(e); };
-	StringEqualer.ptr.prototype.String = function $blocking_String() {
+	StringEqualer.ptr.prototype.String = function() {
 		var $ptr, _r, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = $clone(this, StringEqualer);
 		_r = fmt.Sprintf("%s", new sliceType$1([new $String(self.S)])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_String }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: StringEqualer.ptr.prototype.String }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	StringEqualer.prototype.String = function() { return this.$val.String(); };
-	StringSimple.ptr.prototype.Value = function $blocking_Value() {
+	StringSimple.ptr.prototype.Value = function() {
 		var $ptr, _r, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
 		_r = self.AttributeImpl.Demand(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return $assertType(_r, StringEqualer).S;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Value }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: StringSimple.ptr.prototype.Value }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	StringSimple.prototype.Value = function() { return this.$val.Value(); };
-	StringSimple.ptr.prototype.Set = function $blocking_Set(s) {
+	StringSimple.ptr.prototype.Set = function(s) {
 		var $ptr, s, self, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; s = $f.s; self = $f.self; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
 		$r = self.AttributeImpl.SetEqualer((x = new StringEqualer.ptr(s), new x.constructor.elem(x))); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Set }; } $f.$ptr = $ptr; $f.s = s; $f.self = self; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: StringSimple.ptr.prototype.Set }; } $f.$ptr = $ptr; $f.s = s; $f.self = self; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	StringSimple.prototype.Set = function(s) { return this.$val.Set(s); };
-	NewStringSimple = $pkg.NewStringSimple = function $blocking_NewStringSimple(s) {
+	NewStringSimple = function(s) {
 		var $ptr, result, s, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; result = $f.result; s = $f.s; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		result = new StringSimple.ptr(NewAttribute(0, $throwNilPointerError, $throwNilPointerError));
 		$r = result.Set(s); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		return result;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_NewStringSimple }; } $f.$ptr = $ptr; $f.result = result; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: NewStringSimple }; } $f.$ptr = $ptr; $f.result = result; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.NewStringSimple = NewStringSimple;
 	eqConstraint.ptr.prototype.Inputs = function() {
 		var $ptr, self;
 		self = $clone(this, eqConstraint);
 		return new sliceType$3([self.dep]);
 	};
 	eqConstraint.prototype.Inputs = function() { return this.$val.Inputs(); };
-	eqConstraint.ptr.prototype.Fn = function $blocking_Fn(in$1) {
+	eqConstraint.ptr.prototype.Fn = function(in$1) {
 		var $ptr, _r, in$1, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; in$1 = $f.in$1; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = $clone(this, eqConstraint);
@@ -24710,14 +24885,15 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		}
 		_r = self.dep.Demand(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Fn }; } $f.$ptr = $ptr; $f._r = _r; $f.in$1 = in$1; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: eqConstraint.ptr.prototype.Fn }; } $f.$ptr = $ptr; $f._r = _r; $f.in$1 = in$1; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	eqConstraint.prototype.Fn = function(in$1) { return this.$val.Fn(in$1); };
-	StringEquality = $pkg.StringEquality = function(src) {
+	StringEquality = function(src) {
 		var $ptr, src, x;
 		return (x = new eqConstraint.ptr(src), new x.constructor.elem(x));
 	};
-	Event = $pkg.Event = function(name, fn) {
+	$pkg.StringEquality = StringEquality;
+	Event = function(name, fn) {
 		var $ptr, fn, name;
 		return (function(self) {
 			var $ptr, self;
@@ -24725,7 +24901,8 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			return self;
 		});
 	};
-	Class = $pkg.Class = function(cl) {
+	$pkg.Event = Event;
+	Class = function(cl) {
 		var $ptr, cl;
 		return (function $b(self) {
 			var $ptr, _r, self, $s, $r;
@@ -24736,7 +24913,8 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 		});
 	};
-	Text = $pkg.Text = function(str) {
+	$pkg.Class = Class;
+	Text = function(str) {
 		var $ptr, str;
 		return (function(self) {
 			var $ptr, self;
@@ -24744,6 +24922,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			return self;
 		});
 	};
+	$pkg.Text = Text;
 	addBuilder = function(b) {
 		var $ptr, b;
 		return (function(self) {
@@ -24752,15 +24931,16 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			return self;
 		});
 	};
-	HtmlAttrConstant = $pkg.HtmlAttrConstant = function $blocking_HtmlAttrConstant(h, str) {
+	HtmlAttrConstant = function(h, str) {
 		var $ptr, _r, attr, h, str, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; attr = $f.attr; h = $f.h; str = $f.str; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = NewStringSimple(str); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		attr = _r;
 		return addBuilder(htmlAttrBuilder(h, attr, $ifaceNil));
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_HtmlAttrConstant }; } $f.$ptr = $ptr; $f._r = _r; $f.attr = attr; $f.h = h; $f.str = str; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: HtmlAttrConstant }; } $f.$ptr = $ptr; $f._r = _r; $f.attr = attr; $f.h = h; $f.str = str; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	ParseHtml = $pkg.ParseHtml = function(t) {
+	$pkg.HtmlAttrConstant = HtmlAttrConstant;
+	ParseHtml = function(t) {
 		var $ptr, div, nDom, parsed, t;
 		parsed = jquery.ParseHTML(t);
 		nDom = $ifaceNil;
@@ -24777,7 +24957,8 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		}
 		return nDom;
 	};
-	ViewImpl.ptr.prototype.Build = function $blocking_Build() {
+	$pkg.ParseHtml = ParseHtml;
+	ViewImpl.ptr.prototype.Build = function() {
 		var $ptr, _i, _i$1, _i$2, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _ref, _ref$1, _ref$2, b, built, child, classes, h, id, nDom, p, styles, t, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _i$1 = $f._i$1; _i$2 = $f._i$2; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _ref = $f._ref; _ref$1 = $f._ref$1; _ref$2 = $f._ref$2; b = $f.b; built = $f.built; child = $f.child; classes = $f.classes; h = $f.h; id = $f.id; nDom = $f.nDom; p = $f.p; styles = $f.styles; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
@@ -24856,24 +25037,26 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			/* } */ $s = 26; continue; case 27:
 		/* } */ case 25:
 		return nDom;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Build }; } $f.$ptr = $ptr; $f._i = _i; $f._i$1 = _i$1; $f._i$2 = _i$2; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._ref = _ref; $f._ref$1 = _ref$1; $f._ref$2 = _ref$2; $f.b = b; $f.built = built; $f.child = child; $f.classes = classes; $f.h = h; $f.id = id; $f.nDom = nDom; $f.p = p; $f.styles = styles; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: ViewImpl.ptr.prototype.Build }; } $f.$ptr = $ptr; $f._i = _i; $f._i$1 = _i$1; $f._i$2 = _i$2; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._ref = _ref; $f._ref$1 = _ref$1; $f._ref$2 = _ref$2; $f.b = b; $f.built = built; $f.child = child; $f.classes = classes; $f.h = h; $f.id = id; $f.nDom = nDom; $f.p = p; $f.styles = styles; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	ViewImpl.prototype.Build = function() { return this.$val.Build(); };
-	A = $pkg.A = function $blocking_A(obj) {
+	A = function(obj) {
 		var $ptr, _r, obj, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; obj = $f.obj; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = tag("a", obj); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_A }; } $f.$ptr = $ptr; $f._r = _r; $f.obj = obj; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: A }; } $f.$ptr = $ptr; $f._r = _r; $f.obj = obj; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	LI = $pkg.LI = function $blocking_LI(obj) {
+	$pkg.A = A;
+	LI = function(obj) {
 		var $ptr, _r, obj, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; obj = $f.obj; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = tag("li", obj); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_LI }; } $f.$ptr = $ptr; $f._r = _r; $f.obj = obj; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: LI }; } $f.$ptr = $ptr; $f._r = _r; $f.obj = obj; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	tag = function $blocking_tag(tagName, obj) {
+	$pkg.LI = LI;
+	tag = function(tagName, obj) {
 		var $ptr, _i, _r, _r$1, _ref, _tuple, _tuple$1, _tuple$2, i, isArray, obj, ok, opt, p, tagName, v, v$1, varr, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _ref = $f._ref; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; _tuple$2 = $f._tuple$2; i = $f.i; isArray = $f.isArray; obj = $f.obj; ok = $f.ok; opt = $f.opt; p = $f.p; tagName = $f.tagName; v = $f.v; v$1 = $f.v$1; varr = $f.varr; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = new ViewImpl.ptr(tagName, "", sliceType$10.nil, "", sliceType$14.nil, "", sliceType$12.nil, sliceType$13.nil, $ifaceNil);
@@ -24928,7 +25111,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			i = i + (1) >> 0;
 		/* } */ $s = 1; continue; case 2:
 		return p;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_tag }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._ref = _ref; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f._tuple$2 = _tuple$2; $f.i = i; $f.isArray = isArray; $f.obj = obj; $f.ok = ok; $f.opt = opt; $f.p = p; $f.tagName = tagName; $f.v = v; $f.v$1 = v$1; $f.varr = varr; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: tag }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._ref = _ref; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f._tuple$2 = _tuple$2; $f.i = i; $f.isArray = isArray; $f.obj = obj; $f.ok = ok; $f.opt = opt; $f.p = p; $f.tagName = tagName; $f.v = v; $f.v$1 = v$1; $f.varr = varr; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	BoolEqualer.methods = [{prop: "Equal", name: "Equal", pkg: "", typ: $funcType([Equaler], [$Bool], false)}, {prop: "String", name: "String", pkg: "", typ: $funcType([], [$String], false)}];
 	ptrType$11.methods = [{prop: "build", name: "build", pkg: "github.com/seven5/seven5/client", typ: $funcType([NarrowDom], [], false)}];
@@ -24988,7 +25171,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 	eqConstraint.init([{prop: "dep", name: "dep", pkg: "github.com/seven5/seven5/client", typ: Attribute, tag: ""}]);
 	ViewImpl.init([{prop: "tag", name: "tag", pkg: "github.com/seven5/seven5/client", typ: $String, tag: ""}, {prop: "id", name: "id", pkg: "github.com/seven5/seven5/client", typ: $String, tag: ""}, {prop: "classes", name: "classes", pkg: "github.com/seven5/seven5/client", typ: sliceType$10, tag: ""}, {prop: "style", name: "style", pkg: "github.com/seven5/seven5/client", typ: $String, tag: ""}, {prop: "children", name: "children", pkg: "github.com/seven5/seven5/client", typ: sliceType$14, tag: ""}, {prop: "text", name: "text", pkg: "github.com/seven5/seven5/client", typ: $String, tag: ""}, {prop: "builders", name: "builders", pkg: "github.com/seven5/seven5/client", typ: sliceType$12, tag: ""}, {prop: "event", name: "event", pkg: "github.com/seven5/seven5/client", typ: sliceType$13, tag: ""}, {prop: "ndom", name: "ndom", pkg: "github.com/seven5/seven5/client", typ: NarrowDom, tag: ""}]);
 	option.init([ptrType$6], [ptrType$6], false);
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = bytes.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
@@ -25019,6 +25202,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		numNodes = 0;
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["net/url"] = (function() {
@@ -25053,10 +25237,11 @@ $packages["net/url"] = (function() {
 		}
 		return true;
 	};
-	QueryEscape = $pkg.QueryEscape = function(s) {
+	QueryEscape = function(s) {
 		var $ptr, s;
 		return escape(s, 3);
 	};
+	$pkg.QueryEscape = QueryEscape;
 	escape = function(s, mode) {
 		var $ptr, _tmp, _tmp$1, c, c$1, hexCount, i, i$1, j, mode, s, spaceCount, t, x, x$1;
 		_tmp = 0; _tmp$1 = 0; spaceCount = _tmp; hexCount = _tmp$1;
@@ -25129,7 +25314,7 @@ $packages["net/url"] = (function() {
 		delete v[key];
 	};
 	$ptrType(Values).prototype.Del = function(key) { return new Values(this.$get()).Del(key); };
-	Values.prototype.Encode = function $blocking_Encode() {
+	Values.prototype.Encode = function() {
 		var $ptr, _entry, _entry$1, _i, _i$1, _i$2, _keys, _ref, _ref$1, _ref$2, buf, k, k$1, keys, prefix, v, v$1, vs, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _entry$1 = $f._entry$1; _i = $f._i; _i$1 = $f._i$1; _i$2 = $f._i$2; _keys = $f._keys; _ref = $f._ref; _ref$1 = $f._ref$1; _ref$2 = $f._ref$2; buf = $f.buf; k = $f.k; k$1 = $f.k$1; keys = $f.keys; prefix = $f.prefix; v = $f.v; v$1 = $f.v$1; vs = $f.vs; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		v = this.$val;
@@ -25175,12 +25360,12 @@ $packages["net/url"] = (function() {
 			_i$1++;
 		}
 		return buf.String();
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Encode }; } $f.$ptr = $ptr; $f._entry = _entry; $f._entry$1 = _entry$1; $f._i = _i; $f._i$1 = _i$1; $f._i$2 = _i$2; $f._keys = _keys; $f._ref = _ref; $f._ref$1 = _ref$1; $f._ref$2 = _ref$2; $f.buf = buf; $f.k = k; $f.k$1 = k$1; $f.keys = keys; $f.prefix = prefix; $f.v = v; $f.v$1 = v$1; $f.vs = vs; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: Values.prototype.Encode }; } $f.$ptr = $ptr; $f._entry = _entry; $f._entry$1 = _entry$1; $f._i = _i; $f._i$1 = _i$1; $f._i$2 = _i$2; $f._keys = _keys; $f._ref = _ref; $f._ref$1 = _ref$1; $f._ref$2 = _ref$2; $f.buf = buf; $f.k = k; $f.k$1 = k$1; $f.keys = keys; $f.prefix = prefix; $f.v = v; $f.v$1 = v$1; $f.vs = vs; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$ptrType(Values).prototype.Encode = function() { return new Values(this.$get()).Encode(); };
 	Values.methods = [{prop: "Get", name: "Get", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "Set", name: "Set", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "Add", name: "Add", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "Del", name: "Del", pkg: "", typ: $funcType([$String], [], false)}, {prop: "Encode", name: "Encode", pkg: "", typ: $funcType([], [$String], false)}];
 	Values.init($String, sliceType$1);
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = bytes.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
@@ -25190,6 +25375,7 @@ $packages["net/url"] = (function() {
 		$r = strings.$init(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["tutorial/shared"] = (function() {
@@ -25225,7 +25411,7 @@ $packages["tutorial/shared"] = (function() {
 			return;
 		}
 	});
-	UserRecord = $pkg.UserRecord = $newType(0, $kindStruct, "shared.UserRecord", "UserRecord", "tutorial/shared", function(UserUdid_, FirstName_, LastName_, EmailAddr_, Password_, Disabled_, Admin_) {
+	UserRecord = $pkg.UserRecord = $newType(0, $kindStruct, "shared.UserRecord", "UserRecord", "tutorial/shared", function(UserUdid_, FirstName_, LastName_, EmailAddr_, Password_, Admin_) {
 		this.$val = this;
 		if (arguments.length === 0) {
 			this.UserUdid = "";
@@ -25233,7 +25419,6 @@ $packages["tutorial/shared"] = (function() {
 			this.LastName = "";
 			this.EmailAddr = "";
 			this.Password = "";
-			this.Disabled = false;
 			this.Admin = false;
 			return;
 		}
@@ -25242,7 +25427,6 @@ $packages["tutorial/shared"] = (function() {
 		this.LastName = LastName_;
 		this.EmailAddr = EmailAddr_;
 		this.Password = Password_;
-		this.Disabled = Disabled_;
 		this.Admin = Admin_;
 	});
 	sliceType = $sliceType($emptyInterface);
@@ -25300,40 +25484,44 @@ $packages["tutorial/shared"] = (function() {
 		return "/rest/post";
 	};
 	urlgen.prototype.PostResource = function() { return this.$val.PostResource(); };
-	urlgen.ptr.prototype.Post = function $blocking_Post(id) {
-		var $ptr, _r, id, u, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; id = $f.id; u = $f.u; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+	urlgen.ptr.prototype.Post = function(id, wantMarkdown) {
+		var $ptr, _r, base, id, u, wantMarkdown, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; base = $f.base; id = $f.id; u = $f.u; wantMarkdown = $f.wantMarkdown; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		u = this;
 		_r = fmt.Sprint(new sliceType([id])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		return u.PostResource() + "/" + _r;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Post }; } $f.$ptr = $ptr; $f._r = _r; $f.id = id; $f.u = u; $f.$s = $s; $f.$r = $r; return $f;
+		base = u.PostResource() + "/" + _r;
+		if (wantMarkdown) {
+			base = base + ("?markdown=true");
+		}
+		return base;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: urlgen.ptr.prototype.Post }; } $f.$ptr = $ptr; $f._r = _r; $f.base = base; $f.id = id; $f.u = u; $f.wantMarkdown = wantMarkdown; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	urlgen.prototype.Post = function(id) { return this.$val.Post(id); };
+	urlgen.prototype.Post = function(id, wantMarkdown) { return this.$val.Post(id, wantMarkdown); };
 	urlgen.ptr.prototype.NewPost = function() {
 		var $ptr, u;
 		u = this;
 		return "/post/new.html";
 	};
 	urlgen.prototype.NewPost = function() { return this.$val.NewPost(); };
-	urlgen.ptr.prototype.PostView = function $blocking_PostView(id) {
+	urlgen.ptr.prototype.PostView = function(id) {
 		var $ptr, _r, id, u, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; id = $f.id; u = $f.u; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		u = this;
 		_r = fmt.Sprint(new sliceType([id])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return "/post/" + _r + "/view";
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_PostView }; } $f.$ptr = $ptr; $f._r = _r; $f.id = id; $f.u = u; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: urlgen.ptr.prototype.PostView }; } $f.$ptr = $ptr; $f._r = _r; $f.id = id; $f.u = u; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	urlgen.prototype.PostView = function(id) { return this.$val.PostView(id); };
-	urlgen.ptr.prototype.PostEdit = function $blocking_PostEdit(id) {
+	urlgen.ptr.prototype.PostEdit = function(id) {
 		var $ptr, _r, id, u, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; id = $f.id; u = $f.u; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		u = this;
 		_r = fmt.Sprint(new sliceType([id])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		return "/post/" + _r + "/edit";
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_PostEdit }; } $f.$ptr = $ptr; $f._r = _r; $f.id = id; $f.u = u; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: urlgen.ptr.prototype.PostEdit }; } $f.$ptr = $ptr; $f._r = _r; $f.id = id; $f.u = u; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	urlgen.prototype.PostEdit = function(id) { return this.$val.PostEdit(id); };
-	urlgen.ptr.prototype.Posts = function $blocking_Posts(start, limit) {
+	urlgen.ptr.prototype.Posts = function(start, limit) {
 		var $ptr, _arg, _arg$1, _key, _map, _r, _r$1, _r$2, limit, start, u, values, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _key = $f._key; _map = $f._map; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; limit = $f.limit; start = $f.start; u = $f.u; values = $f.values; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		u = this;
@@ -25346,14 +25534,14 @@ $packages["tutorial/shared"] = (function() {
 		$r = new url.Values(values).Add("limit", _arg$1); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		_r$2 = new url.Values(values).Encode(); /* */ $s = 5; case 5: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		return "/rest/post?" + _r$2;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Posts }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._key = _key; $f._map = _map; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.limit = limit; $f.start = start; $f.u = u; $f.values = values; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: urlgen.ptr.prototype.Posts }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._key = _key; $f._map = _map; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.limit = limit; $f.start = start; $f.u = u; $f.values = values; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	urlgen.prototype.Posts = function(start, limit) { return this.$val.Posts(start, limit); };
-	ptrType$1.methods = [{prop: "IndexPage", name: "IndexPage", pkg: "", typ: $funcType([], [$String], false)}, {prop: "LoginPage", name: "LoginPage", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SignupPage", name: "SignupPage", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Auth", name: "Auth", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Me", name: "Me", pkg: "", typ: $funcType([], [$String], false)}, {prop: "UserRecord", name: "UserRecord", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "UserRecordResource", name: "UserRecordResource", pkg: "", typ: $funcType([], [$String], false)}, {prop: "PostResource", name: "PostResource", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Post", name: "Post", pkg: "", typ: $funcType([$Int64], [$String], false)}, {prop: "NewPost", name: "NewPost", pkg: "", typ: $funcType([], [$String], false)}, {prop: "PostView", name: "PostView", pkg: "", typ: $funcType([$Int64], [$String], false)}, {prop: "PostEdit", name: "PostEdit", pkg: "", typ: $funcType([$Int64], [$String], false)}, {prop: "Posts", name: "Posts", pkg: "", typ: $funcType([$Int, $Int], [$String], false)}];
+	ptrType$1.methods = [{prop: "IndexPage", name: "IndexPage", pkg: "", typ: $funcType([], [$String], false)}, {prop: "LoginPage", name: "LoginPage", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SignupPage", name: "SignupPage", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Auth", name: "Auth", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Me", name: "Me", pkg: "", typ: $funcType([], [$String], false)}, {prop: "UserRecord", name: "UserRecord", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "UserRecordResource", name: "UserRecordResource", pkg: "", typ: $funcType([], [$String], false)}, {prop: "PostResource", name: "PostResource", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Post", name: "Post", pkg: "", typ: $funcType([$Int64, $Bool], [$String], false)}, {prop: "NewPost", name: "NewPost", pkg: "", typ: $funcType([], [$String], false)}, {prop: "PostView", name: "PostView", pkg: "", typ: $funcType([$Int64], [$String], false)}, {prop: "PostEdit", name: "PostEdit", pkg: "", typ: $funcType([$Int64], [$String], false)}, {prop: "Posts", name: "Posts", pkg: "", typ: $funcType([$Int, $Int], [$String], false)}];
 	Post.init([{prop: "Id", name: "Id", pkg: "", typ: $Int64, tag: "qbs:\"pk\""}, {prop: "Title", name: "Title", pkg: "", typ: $String, tag: ""}, {prop: "Updated", name: "Updated", pkg: "", typ: time.Time, tag: ""}, {prop: "Created", name: "Created", pkg: "", typ: time.Time, tag: ""}, {prop: "Text", name: "Text", pkg: "", typ: $String, tag: ""}, {prop: "TextShort", name: "TextShort", pkg: "", typ: $String, tag: ""}, {prop: "AuthorUdid", name: "AuthorUdid", pkg: "", typ: $String, tag: "qbs:\"fk:Author\""}, {prop: "Author", name: "Author", pkg: "", typ: ptrType, tag: ""}]);
 	urlgen.init([]);
-	UserRecord.init([{prop: "UserUdid", name: "UserUdid", pkg: "", typ: $String, tag: "qbs:\"pk\""}, {prop: "FirstName", name: "FirstName", pkg: "", typ: $String, tag: ""}, {prop: "LastName", name: "LastName", pkg: "", typ: $String, tag: ""}, {prop: "EmailAddr", name: "EmailAddr", pkg: "", typ: $String, tag: ""}, {prop: "Password", name: "Password", pkg: "", typ: $String, tag: ""}, {prop: "Disabled", name: "Disabled", pkg: "", typ: $Bool, tag: ""}, {prop: "Admin", name: "Admin", pkg: "", typ: $Bool, tag: ""}]);
-	$init = $pkg.$init = function() {
+	UserRecord.init([{prop: "UserUdid", name: "UserUdid", pkg: "", typ: $String, tag: "qbs:\"pk\""}, {prop: "FirstName", name: "FirstName", pkg: "", typ: $String, tag: ""}, {prop: "LastName", name: "LastName", pkg: "", typ: $String, tag: ""}, {prop: "EmailAddr", name: "EmailAddr", pkg: "", typ: $String, tag: ""}, {prop: "Password", name: "Password", pkg: "", typ: $String, tag: ""}, {prop: "Admin", name: "Admin", pkg: "", typ: $Bool, tag: ""}]);
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = fmt.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
@@ -25363,6 +25551,7 @@ $packages["tutorial/shared"] = (function() {
 		init();
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["tutorial/client/uicommon"] = (function() {
@@ -25441,7 +25630,7 @@ $packages["tutorial/client/uicommon"] = (function() {
 	chanType$1 = $chanType(client.AjaxError, false, false);
 	funcType$1 = $funcType([ptrType$4], [chanType, chanType$1], false);
 	funcType$2 = $funcType([ptrType$1], [], false);
-	SetCurrentPage = $pkg.SetCurrentPage = function(s) {
+	SetCurrentPage = function(s) {
 		var $ptr, curr, parts, result, s;
 		if (strings.HasPrefix(s, "/")) {
 			$global.window.location.pathname = $externalize(s, $String);
@@ -25458,7 +25647,8 @@ $packages["tutorial/client/uicommon"] = (function() {
 		result = strings.Join(parts, "/");
 		$global.window.location.pathname = $externalize(result, $String);
 	};
-	EditPostPage.ptr.prototype.FormIsBad = function $blocking_FormIsBad(raw) {
+	$pkg.SetCurrentPage = SetCurrentPage;
+	EditPostPage.ptr.prototype.FormIsBad = function(raw) {
 		var $ptr, _r, _r$1, content, raw, self, title, x, x$1, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; content = $f.content; raw = $f.raw; self = $f.self; title = $f.title; x = $f.x; x$1 = $f.x$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
@@ -25470,10 +25660,10 @@ $packages["tutorial/client/uicommon"] = (function() {
 			return (x = new client.BoolEqualer.ptr(true), new x.constructor.elem(x));
 		}
 		return (x$1 = new client.BoolEqualer.ptr(false), new x$1.constructor.elem(x$1));
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_FormIsBad }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.content = content; $f.raw = raw; $f.self = self; $f.title = title; $f.x = x; $f.x$1 = x$1; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EditPostPage.ptr.prototype.FormIsBad }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.content = content; $f.raw = raw; $f.self = self; $f.title = title; $f.x = x; $f.x$1 = x$1; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	EditPostPage.prototype.FormIsBad = function(raw) { return this.$val.FormIsBad(raw); };
-	NewEditPostPage = $pkg.NewEditPostPage = function $blocking_NewEditPostPage(curr, setup, success, network) {
+	NewEditPostPage = function(curr, setup, success, network) {
 		var $ptr, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, curr, network, result, setup, success, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; curr = $f.curr; network = $f.network; result = $f.result; setup = $f.setup; success = $f.success; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = client.NewStringSimple(""); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
@@ -25487,18 +25677,20 @@ $packages["tutorial/client/uicommon"] = (function() {
 		_r$8 = client.NewHtmlId("textarea", "content"); /* */ $s = 9; case 9: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
 		result = new EditPostPage.ptr(_r$2, _r, _r$1, setup, success, network, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, client.NewCssClass("disabled"));
 		return result;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_NewEditPostPage }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f.curr = curr; $f.network = network; $f.result = result; $f.setup = setup; $f.success = success; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: NewEditPostPage }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f.curr = curr; $f.network = network; $f.result = result; $f.setup = setup; $f.success = success; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	EditPostPage.ptr.prototype.SubmitPost = function $blocking_SubmitPost() {
+	$pkg.NewEditPostPage = NewEditPostPage;
+	EditPostPage.ptr.prototype.SubmitPost = function() {
 		var $ptr, _r, _r$1, _r$2, _tmp, _tmp$1, _tuple, contentChan, errorChan, index, p, raw, rest, self, short$1, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tuple = $f._tuple; contentChan = $f.contentChan; errorChan = $f.errorChan; index = $f.index; p = $f.p; raw = $f.raw; rest = $f.rest; self = $f.self; short$1 = $f.short$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		contentChan = [contentChan];
 		errorChan = [errorChan];
+		p = [p];
 		self = [self];
 		self[0] = this;
-		p = $clone(new shared.Post.ptr(), shared.Post);
+		p[0] = $clone(new shared.Post.ptr(), shared.Post);
 		_r = self[0].Title.Value(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		p.Title = _r;
+		p[0].Title = _r;
 		_r$1 = self[0].Content.Value(); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		raw = _r$1;
 		_tmp = ""; _tmp$1 = ""; short$1 = _tmp; rest = _tmp$1;
@@ -25514,11 +25706,11 @@ $packages["tutorial/client/uicommon"] = (function() {
 				rest = raw.substring(480);
 			}
 		}
-		p.TextShort = short$1;
-		p.Text = rest;
-		_r$2 = self[0].NetworkFunc(p); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+		p[0].TextShort = short$1;
+		p[0].Text = rest;
+		_r$2 = self[0].NetworkFunc(p[0]); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		_tuple = _r$2; contentChan[0] = _tuple[0]; errorChan[0] = _tuple[1];
-		$go((function(contentChan, errorChan, self) { return function $b() {
+		$go((function(contentChan, errorChan, p, self) { return function $b() {
 			var $ptr, _r$3, _selection, err, $s, $r;
 			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$3 = $f._r$3; _selection = $f._selection; err = $f.err; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 			_r$3 = $select([[contentChan[0]], [errorChan[0]]]); /* */ $s = 1; case 1: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
@@ -25534,11 +25726,11 @@ $packages["tutorial/client/uicommon"] = (function() {
 				$r = self[0].StandardPage.DisplayErrorText(err.Message, true); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			/* } */ case 4:
 			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._r$3 = _r$3; $f._selection = _selection; $f.err = err; $f.$s = $s; $f.$r = $r; return $f;
-		}; })(contentChan, errorChan, self), []);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_SubmitPost }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tuple = _tuple; $f.contentChan = contentChan; $f.errorChan = errorChan; $f.index = index; $f.p = p; $f.raw = raw; $f.rest = rest; $f.self = self; $f.short$1 = short$1; $f.$s = $s; $f.$r = $r; return $f;
+		}; })(contentChan, errorChan, p, self), []);
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EditPostPage.ptr.prototype.SubmitPost }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tuple = _tuple; $f.contentChan = contentChan; $f.errorChan = errorChan; $f.index = index; $f.p = p; $f.raw = raw; $f.rest = rest; $f.self = self; $f.short$1 = short$1; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	EditPostPage.prototype.SubmitPost = function() { return this.$val.SubmitPost(); };
-	EditPostPage.ptr.prototype.Start = function $blocking_Start() {
+	EditPostPage.ptr.prototype.Start = function() {
 		var $ptr, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = [self];
@@ -25571,10 +25763,10 @@ $packages["tutorial/client/uicommon"] = (function() {
 			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f.evt = evt; $f.$s = $s; $f.$r = $r; return $f;
 		}; })(self)); /* */ $s = 14; case 14: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = self[0].SetupFunc(); /* */ $s = 15; case 15: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_Start }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: EditPostPage.ptr.prototype.Start }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	EditPostPage.prototype.Start = function() { return this.$val.Start(); };
-	SlideDown = $pkg.SlideDown = function $blocking_SlideDown(id) {
+	SlideDown = function(id) {
 		var $ptr, _r, _r$1, id, jq, selector, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; id = $f.id; jq = $f.jq; selector = $f.selector; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = id.TagName(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
@@ -25584,9 +25776,10 @@ $packages["tutorial/client/uicommon"] = (function() {
 			jq = $clone(jquery.NewJQuery(new sliceType$1([new $String(selector)])), jquery.JQuery);
 			jq.Underlying().slideDown($externalize("slow", $String));
 		}
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_SlideDown }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.id = id; $f.jq = jq; $f.selector = selector; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: SlideDown }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.id = id; $f.jq = jq; $f.selector = selector; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	SlideUp = $pkg.SlideUp = function $blocking_SlideUp(id) {
+	$pkg.SlideDown = SlideDown;
+	SlideUp = function(id) {
 		var $ptr, _r, _r$1, id, jq, selector, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; id = $f.id; jq = $f.jq; selector = $f.selector; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = id.TagName(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
@@ -25596,9 +25789,10 @@ $packages["tutorial/client/uicommon"] = (function() {
 			jq = $clone(jquery.NewJQuery(new sliceType$1([new $String(selector)])), jquery.JQuery);
 			jq.Underlying().slideUp($externalize("slow", $String));
 		}
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_SlideUp }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.id = id; $f.jq = jq; $f.selector = selector; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: SlideUp }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.id = id; $f.jq = jq; $f.selector = selector; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	displayErrorText = function $blocking_displayErrorText(text, clazzAdd, clazzRemove, errText, errRegion) {
+	$pkg.SlideUp = SlideUp;
+	displayErrorText = function(text, clazzAdd, clazzRemove, errText, errRegion) {
 		var $ptr, _r, _r$1, _r$2, _r$3, _r$4, clazzAdd, clazzRemove, errRegion, errText, text, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; clazzAdd = $f.clazzAdd; clazzRemove = $f.clazzRemove; errRegion = $f.errRegion; errText = $f.errText; text = $f.text; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		errRegion = [errRegion];
@@ -25617,9 +25811,9 @@ $packages["tutorial/client/uicommon"] = (function() {
 			$r = SlideUp(errRegion[0]); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f.$s = $s; $f.$r = $r; return $f;
 		}; })(errRegion), funcType), 15000);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_displayErrorText }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f.clazzAdd = clazzAdd; $f.clazzRemove = clazzRemove; $f.errRegion = errRegion; $f.errText = errText; $f.text = text; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: displayErrorText }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f.clazzAdd = clazzAdd; $f.clazzRemove = clazzRemove; $f.errRegion = errRegion; $f.errText = errText; $f.text = text; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	NewStandardPage = $pkg.NewStandardPage = function $blocking_NewStandardPage(logoutTarget, includeRightNav, userArrival) {
+	NewStandardPage = function(logoutTarget, includeRightNav, userArrival) {
 		var $ptr, _r, _r$1, _r$2, _r$3, includeRightNav, logoutTarget, self, userArrival, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; includeRightNav = $f.includeRightNav; logoutTarget = $f.logoutTarget; self = $f.self; userArrival = $f.userArrival; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = new StandardPage.ptr($ifaceNil, $ifaceNil, $ifaceNil, $ifaceNil, false, ptrType$1.nil, "", $throwNilPointerError);
@@ -25635,15 +25829,16 @@ $packages["tutorial/client/uicommon"] = (function() {
 		self.includeRightNav = includeRightNav;
 		self.arrivalFunc = userArrival;
 		return self;
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_NewStandardPage }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.includeRightNav = includeRightNav; $f.logoutTarget = logoutTarget; $f.self = self; $f.userArrival = userArrival; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: NewStandardPage }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.includeRightNav = includeRightNav; $f.logoutTarget = logoutTarget; $f.self = self; $f.userArrival = userArrival; $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.NewStandardPage = NewStandardPage;
 	StandardPage.ptr.prototype.CurrentUser = function() {
 		var $ptr, self;
 		self = this;
 		return self.user;
 	};
 	StandardPage.prototype.CurrentUser = function() { return this.$val.CurrentUser(); };
-	StandardPage.ptr.prototype.AddCurrentUserNav = function $blocking_AddCurrentUserNav() {
+	StandardPage.ptr.prototype.AddCurrentUserNav = function() {
 		var $ptr, _r, _r$1, _r$2, _r$3, self, tree, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; self = $f.self; tree = $f.tree; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
@@ -25656,28 +25851,28 @@ $packages["tutorial/client/uicommon"] = (function() {
 		tree = _r$2;
 		_r$3 = self.navRight.Dom(); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
 		$r = _r$3.Append(new sliceType$2([tree])); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_AddCurrentUserNav }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.self = self; $f.tree = tree; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: StandardPage.ptr.prototype.AddCurrentUserNav }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.self = self; $f.tree = tree; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	StandardPage.prototype.AddCurrentUserNav = function() { return this.$val.AddCurrentUserNav(); };
-	StandardPage.ptr.prototype.AddLogInNav = function $blocking_AddLogInNav() {
+	StandardPage.ptr.prototype.AddLogInNav = function() {
 		var $ptr, _r, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
 		_r = shared.URLGen.LoginPage(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		$r = self.AddRightNav(_r, "Log In"); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_AddLogInNav }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: StandardPage.ptr.prototype.AddLogInNav }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	StandardPage.prototype.AddLogInNav = function() { return this.$val.AddLogInNav(); };
-	StandardPage.ptr.prototype.AddSignUpNav = function $blocking_AddSignUpNav() {
+	StandardPage.ptr.prototype.AddSignUpNav = function() {
 		var $ptr, _r, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
 		_r = shared.URLGen.SignupPage(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		$r = self.AddRightNav(_r, "Sign Up"); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_AddSignUpNav }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: StandardPage.ptr.prototype.AddSignUpNav }; } $f.$ptr = $ptr; $f._r = _r; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	StandardPage.prototype.AddSignUpNav = function() { return this.$val.AddSignUpNav(); };
-	StandardPage.ptr.prototype.AddRightNav = function $blocking_AddRightNav(target, text) {
+	StandardPage.ptr.prototype.AddRightNav = function(target, text) {
 		var $ptr, _r, _r$1, _r$2, _r$3, _r$4, self, target, text, tree, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; self = $f.self; target = $f.target; text = $f.text; tree = $f.tree; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
@@ -25688,25 +25883,26 @@ $packages["tutorial/client/uicommon"] = (function() {
 		tree = _r$3;
 		_r$4 = self.navRight.Dom(); /* */ $s = 5; case 5: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
 		$r = _r$4.Append(new sliceType$2([tree])); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_AddRightNav }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f.self = self; $f.target = target; $f.text = text; $f.tree = tree; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: StandardPage.ptr.prototype.AddRightNav }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f.self = self; $f.target = target; $f.text = text; $f.tree = tree; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	StandardPage.prototype.AddRightNav = function(target, text) { return this.$val.AddRightNav(target, text); };
-	StandardPage.ptr.prototype.PerformLogOut = function $blocking_PerformLogOut() {
+	StandardPage.ptr.prototype.PerformLogOut = function() {
 		var $ptr, _arg, _arg$1, _r, _r$1, _tuple, contentCh, errCh, pap, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _r = $f._r; _r$1 = $f._r$1; _tuple = $f._tuple; contentCh = $f.contentCh; errCh = $f.errCh; pap = $f.pap; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		contentCh = [contentCh];
 		errCh = [errCh];
+		pap = [pap];
 		self = [self];
 		self[0] = this;
-		pap = $clone(new client.PasswordAuthParameters.ptr(), client.PasswordAuthParameters);
-		pap.Username = self[0].user.EmailAddr;
-		pap.Op = "logout";
-		_arg = pap;
+		pap[0] = $clone(new client.PasswordAuthParameters.ptr(), client.PasswordAuthParameters);
+		pap[0].Username = self[0].user.EmailAddr;
+		pap[0].Op = "logout";
+		_arg = pap[0];
 		_r = shared.URLGen.Auth(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_arg$1 = _r;
 		_r$1 = client.AjaxPost(_arg, _arg$1); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_tuple = _r$1; contentCh[0] = _tuple[0]; errCh[0] = _tuple[1];
-		$go((function(contentCh, errCh, self) { return function $b() {
+		$go((function(contentCh, errCh, pap, self) { return function $b() {
 			var $ptr, _r$2, _selection, err, $s, $r;
 			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _selection = $f._selection; err = $f.err; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 			_r$2 = $select([[contentCh[0]], [errCh[0]]]); /* */ $s = 1; case 1: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
@@ -25723,11 +25919,11 @@ $packages["tutorial/client/uicommon"] = (function() {
 				$r = self[0].DisplayErrorText("Log Out Trouble: " + err.Message, true); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			/* } */ case 4:
 			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._selection = _selection; $f.err = err; $f.$s = $s; $f.$r = $r; return $f;
-		}; })(contentCh, errCh, self), []);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_PerformLogOut }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._r = _r; $f._r$1 = _r$1; $f._tuple = _tuple; $f.contentCh = contentCh; $f.errCh = errCh; $f.pap = pap; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		}; })(contentCh, errCh, pap, self), []);
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: StandardPage.ptr.prototype.PerformLogOut }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._r = _r; $f._r$1 = _r$1; $f._tuple = _tuple; $f.contentCh = contentCh; $f.errCh = errCh; $f.pap = pap; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	StandardPage.prototype.PerformLogOut = function() { return this.$val.PerformLogOut(); };
-	StandardPage.ptr.prototype.AddLogOutNav = function $blocking_AddLogOutNav() {
+	StandardPage.ptr.prototype.AddLogOutNav = function() {
 		var $ptr, _r, _r$1, _r$2, _r$3, _r$4, self, tree, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; self = $f.self; tree = $f.tree; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = [self];
@@ -25745,28 +25941,28 @@ $packages["tutorial/client/uicommon"] = (function() {
 		tree = _r$3;
 		_r$4 = self[0].navRight.Dom(); /* */ $s = 5; case 5: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
 		$r = _r$4.Append(new sliceType$2([tree])); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_AddLogOutNav }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f.self = self; $f.tree = tree; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: StandardPage.ptr.prototype.AddLogOutNav }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f.self = self; $f.tree = tree; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	StandardPage.prototype.AddLogOutNav = function() { return this.$val.AddLogOutNav(); };
-	StandardPage.ptr.prototype.AddNewPostNav = function $blocking_AddNewPostNav(isActive) {
+	StandardPage.ptr.prototype.AddNewPostNav = function(isActive) {
 		var $ptr, _r, isActive, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; isActive = $f.isActive; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
 		_r = shared.URLGen.NewPost(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		$r = self.AddLeftNav(_r, "New Post", isActive); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_AddNewPostNav }; } $f.$ptr = $ptr; $f._r = _r; $f.isActive = isActive; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: StandardPage.ptr.prototype.AddNewPostNav }; } $f.$ptr = $ptr; $f._r = _r; $f.isActive = isActive; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	StandardPage.prototype.AddNewPostNav = function(isActive) { return this.$val.AddNewPostNav(isActive); };
-	StandardPage.ptr.prototype.AddBlogNav = function $blocking_AddBlogNav(isActive) {
+	StandardPage.ptr.prototype.AddBlogNav = function(isActive) {
 		var $ptr, _r, isActive, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; isActive = $f.isActive; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
 		_r = shared.URLGen.IndexPage(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		$r = self.AddLeftNav(_r, "Fresno", isActive); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_AddBlogNav }; } $f.$ptr = $ptr; $f._r = _r; $f.isActive = isActive; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: StandardPage.ptr.prototype.AddBlogNav }; } $f.$ptr = $ptr; $f._r = _r; $f.isActive = isActive; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	StandardPage.prototype.AddBlogNav = function(isActive) { return this.$val.AddBlogNav(isActive); };
-	StandardPage.ptr.prototype.AddLeftNav = function $blocking_AddLeftNav(target, text, isActive) {
+	StandardPage.ptr.prototype.AddLeftNav = function(target, text, isActive) {
 		var $ptr, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, a, isActive, li, self, target, text, tree, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; a = $f.a; isActive = $f.isActive; li = $f.li; self = $f.self; target = $f.target; text = $f.text; tree = $f.tree; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
@@ -25800,10 +25996,10 @@ $packages["tutorial/client/uicommon"] = (function() {
 		tree = _r$5;
 		_r$6 = self.navLeft.Dom(); /* */ $s = 13; case 13: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
 		$r = _r$6.Append(new sliceType$2([tree])); /* */ $s = 14; case 14: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_AddLeftNav }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f.a = a; $f.isActive = isActive; $f.li = li; $f.self = self; $f.target = target; $f.text = text; $f.tree = tree; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: StandardPage.ptr.prototype.AddLeftNav }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f.a = a; $f.isActive = isActive; $f.li = li; $f.self = self; $f.target = target; $f.text = text; $f.tree = tree; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	StandardPage.prototype.AddLeftNav = function(target, text, isActive) { return this.$val.AddLeftNav(target, text, isActive); };
-	StandardPage.ptr.prototype.DisplayErrorText = function $blocking_DisplayErrorText(text, danger) {
+	StandardPage.ptr.prototype.DisplayErrorText = function(text, danger) {
 		var $ptr, add, danger, remove, self, text, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; add = $f.add; danger = $f.danger; remove = $f.remove; self = $f.self; text = $f.text; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
@@ -25814,17 +26010,17 @@ $packages["tutorial/client/uicommon"] = (function() {
 			remove = $pkg.BgWarn;
 		}
 		$r = displayErrorText(text, add, remove, self.errText, self.errRegion); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_DisplayErrorText }; } $f.$ptr = $ptr; $f.add = add; $f.danger = danger; $f.remove = remove; $f.self = self; $f.text = text; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: StandardPage.ptr.prototype.DisplayErrorText }; } $f.$ptr = $ptr; $f.add = add; $f.danger = danger; $f.remove = remove; $f.self = self; $f.text = text; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	StandardPage.prototype.DisplayErrorText = function(text, danger) { return this.$val.DisplayErrorText(text, danger); };
-	StandardPage.ptr.prototype.GetLoggedInUser = function $blocking_GetLoggedInUser() {
+	StandardPage.ptr.prototype.GetLoggedInUser = function() {
 		var $ptr, _arg, _arg$1, _r, _r$1, _tuple, chLoggedIn, chLoginErr, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _r = $f._r; _r$1 = $f._r$1; _tuple = $f._tuple; chLoggedIn = $f.chLoggedIn; chLoginErr = $f.chLoginErr; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		chLoggedIn = [chLoggedIn];
 		chLoginErr = [chLoginErr];
 		self = [self];
 		self[0] = this;
-		_arg = new shared.UserRecord.ptr("", "", "", "", "", false, false);
+		_arg = new shared.UserRecord.ptr("", "", "", "", "", false);
 		_r = shared.URLGen.Me(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_arg$1 = _r;
 		_r$1 = client.AjaxGet(_arg, _arg$1); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
@@ -25863,14 +26059,14 @@ $packages["tutorial/client/uicommon"] = (function() {
 			/* } */ case 4:
 			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._selection = _selection; $f.raw = raw; $f.$s = $s; $f.$r = $r; return $f;
 		}; })(chLoggedIn, chLoginErr, self), []);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_GetLoggedInUser }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._r = _r; $f._r$1 = _r$1; $f._tuple = _tuple; $f.chLoggedIn = chLoggedIn; $f.chLoginErr = chLoginErr; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: StandardPage.ptr.prototype.GetLoggedInUser }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._r = _r; $f._r$1 = _r$1; $f._tuple = _tuple; $f.chLoggedIn = chLoggedIn; $f.chLoginErr = chLoginErr; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	StandardPage.prototype.GetLoggedInUser = function() { return this.$val.GetLoggedInUser(); };
 	ptrType$3.methods = [{prop: "FormIsBad", name: "FormIsBad", pkg: "", typ: $funcType([sliceType$3], [client.Equaler], false)}, {prop: "SubmitPost", name: "SubmitPost", pkg: "", typ: $funcType([], [], false)}, {prop: "Start", name: "Start", pkg: "", typ: $funcType([], [], false)}];
 	ptrType.methods = [{prop: "CurrentUser", name: "CurrentUser", pkg: "", typ: $funcType([], [ptrType$1], false)}, {prop: "AddCurrentUserNav", name: "AddCurrentUserNav", pkg: "", typ: $funcType([], [], false)}, {prop: "AddLogInNav", name: "AddLogInNav", pkg: "", typ: $funcType([], [], false)}, {prop: "AddSignUpNav", name: "AddSignUpNav", pkg: "", typ: $funcType([], [], false)}, {prop: "AddRightNav", name: "AddRightNav", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "PerformLogOut", name: "PerformLogOut", pkg: "", typ: $funcType([], [], false)}, {prop: "AddLogOutNav", name: "AddLogOutNav", pkg: "", typ: $funcType([], [], false)}, {prop: "AddNewPostNav", name: "AddNewPostNav", pkg: "", typ: $funcType([$Bool], [], false)}, {prop: "AddBlogNav", name: "AddBlogNav", pkg: "", typ: $funcType([$Bool], [], false)}, {prop: "AddLeftNav", name: "AddLeftNav", pkg: "", typ: $funcType([$String, $String, $Bool], [], false)}, {prop: "DisplayErrorText", name: "DisplayErrorText", pkg: "", typ: $funcType([$String, $Bool], [], false)}, {prop: "GetLoggedInUser", name: "GetLoggedInUser", pkg: "", typ: $funcType([], [], false)}];
 	EditPostPage.init([{prop: "StandardPage", name: "", pkg: "", typ: ptrType, tag: ""}, {prop: "Title", name: "Title", pkg: "", typ: client.StringAttribute, tag: ""}, {prop: "Content", name: "Content", pkg: "", typ: client.StringAttribute, tag: ""}, {prop: "SetupFunc", name: "SetupFunc", pkg: "", typ: funcType, tag: ""}, {prop: "SuccessFunc", name: "SuccessFunc", pkg: "", typ: funcType, tag: ""}, {prop: "NetworkFunc", name: "NetworkFunc", pkg: "", typ: funcType$1, tag: ""}, {prop: "errRegion", name: "errRegion", pkg: "tutorial/client/uicommon", typ: client.HtmlId, tag: ""}, {prop: "errText", name: "errText", pkg: "tutorial/client/uicommon", typ: client.HtmlId, tag: ""}, {prop: "button", name: "button", pkg: "tutorial/client/uicommon", typ: client.HtmlId, tag: ""}, {prop: "cancel", name: "cancel", pkg: "tutorial/client/uicommon", typ: client.HtmlId, tag: ""}, {prop: "titleInput", name: "titleInput", pkg: "tutorial/client/uicommon", typ: client.HtmlId, tag: ""}, {prop: "contentTextArea", name: "contentTextArea", pkg: "tutorial/client/uicommon", typ: client.HtmlId, tag: ""}, {prop: "disabled", name: "disabled", pkg: "tutorial/client/uicommon", typ: client.CssClass, tag: ""}]);
 	StandardPage.init([{prop: "errRegion", name: "errRegion", pkg: "tutorial/client/uicommon", typ: client.HtmlId, tag: ""}, {prop: "errText", name: "errText", pkg: "tutorial/client/uicommon", typ: client.HtmlId, tag: ""}, {prop: "navRight", name: "navRight", pkg: "tutorial/client/uicommon", typ: client.HtmlId, tag: ""}, {prop: "navLeft", name: "navLeft", pkg: "tutorial/client/uicommon", typ: client.HtmlId, tag: ""}, {prop: "includeRightNav", name: "includeRightNav", pkg: "tutorial/client/uicommon", typ: $Bool, tag: ""}, {prop: "user", name: "user", pkg: "tutorial/client/uicommon", typ: ptrType$1, tag: ""}, {prop: "logoutTarget", name: "logoutTarget", pkg: "tutorial/client/uicommon", typ: $String, tag: ""}, {prop: "arrivalFunc", name: "arrivalFunc", pkg: "tutorial/client/uicommon", typ: funcType$2, tag: ""}]);
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = fmt.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
@@ -25907,6 +26103,7 @@ $packages["tutorial/client/uicommon"] = (function() {
 		$pkg.TextCenter = client.NewCssClass("text-center");
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["main"] = (function() {
@@ -25914,38 +26111,40 @@ $packages["main"] = (function() {
 	client = $packages["github.com/seven5/seven5/client"];
 	uicommon = $packages["tutorial/client/uicommon"];
 	shared = $packages["tutorial/shared"];
-	main = function $blocking_main() {
-		var $ptr, _arg, _arg$1, _arg$2, _r, ep, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$2 = $f._arg$2; _r = $f._r; ep = $f.ep; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		_arg = (function() {
+	main = function() {
+		var $ptr, _arg, _arg$1, _arg$2, _arg$3, _r, _r$1, ep, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$2 = $f._arg$2; _arg$3 = $f._arg$3; _r = $f._r; _r$1 = $f._r$1; ep = $f.ep; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		_r = shared.URLGen.IndexPage(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		_arg = _r;
+		_arg$1 = (function() {
 			var $ptr;
 		});
-		_arg$1 = (function $b() {
-			var $ptr, _r, $s, $r;
-			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-			_r = shared.URLGen.IndexPage(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-			$r = uicommon.SetCurrentPage(_r); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._r = _r; $f.$s = $s; $f.$r = $r; return $f;
+		_arg$2 = (function $b() {
+			var $ptr, _r$1, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			_r$1 = shared.URLGen.IndexPage(); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+			$r = uicommon.SetCurrentPage(_r$1); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f.$s = $s; $f.$r = $r; return $f;
 		});
-		_arg$2 = (function $b(p) {
-			var $ptr, _arg$2, _arg$3, _r, _r$1, p, $s, $r;
-			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg$2 = $f._arg$2; _arg$3 = $f._arg$3; _r = $f._r; _r$1 = $f._r$1; p = $f.p; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-			_arg$2 = p;
-			_r = shared.URLGen.PostResource(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-			_arg$3 = _r;
-			_r$1 = client.AjaxPost(_arg$2, _arg$3); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-			return _r$1;
-			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._arg$2 = _arg$2; $f._arg$3 = _arg$3; $f._r = _r; $f._r$1 = _r$1; $f.p = p; $f.$s = $s; $f.$r = $r; return $f;
+		_arg$3 = (function $b(p) {
+			var $ptr, _arg$3, _arg$4, _r$1, _r$2, p, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg$3 = $f._arg$3; _arg$4 = $f._arg$4; _r$1 = $f._r$1; _r$2 = $f._r$2; p = $f.p; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			_arg$3 = p;
+			_r$1 = shared.URLGen.PostResource(); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+			_arg$4 = _r$1;
+			_r$2 = client.AjaxPost(_arg$3, _arg$4); /* */ $s = 2; case 2: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+			return _r$2;
+			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._arg$3 = _arg$3; $f._arg$4 = _arg$4; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.p = p; $f.$s = $s; $f.$r = $r; return $f;
 		});
-		_r = uicommon.NewEditPostPage("/posts/", _arg, _arg$1, _arg$2); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		ep = _r;
-		$r = ep.StandardPage.GetLoggedInUser(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = ep.StandardPage.AddBlogNav(false); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = ep.StandardPage.AddNewPostNav(true); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_r$1 = uicommon.NewEditPostPage(_arg, _arg$1, _arg$2, _arg$3); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		ep = _r$1;
+		$r = ep.StandardPage.GetLoggedInUser(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = ep.StandardPage.AddBlogNav(false); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = ep.StandardPage.AddNewPostNav(true); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		client.Main(ep);
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $blocking_main }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._r = _r; $f.ep = ep; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: main }; } $f.$ptr = $ptr; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._arg$3 = _arg$3; $f._r = _r; $f._r$1 = _r$1; $f.ep = ep; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	$init = $pkg.$init = function() {
+	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = client.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
@@ -25954,6 +26153,7 @@ $packages["main"] = (function() {
 		$r = main(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
+	$pkg.$init = $init;
 	return $pkg;
 })();
 $synthesizeMethods();

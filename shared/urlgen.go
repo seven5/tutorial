@@ -32,7 +32,7 @@ type URLGenerator interface {
 	UserRecordResource() string
 	PostResource() string
 	Posts(offset int, limit int) string
-	Post(id int64) string
+	Post(id int64, wantMarkdown bool) string
 	PostView(id int64) string
 	PostEdit(id int64) string
 	NewPost() string
@@ -85,8 +85,12 @@ func (u *urlgen) PostResource() string {
 }
 
 //compute the rest resource url for a given post
-func (u *urlgen) Post(id int64) string {
-	return u.PostResource() + "/" + fmt.Sprint(id)
+func (u *urlgen) Post(id int64, wantMarkdown bool) string {
+	base := u.PostResource() + "/" + fmt.Sprint(id)
+	if wantMarkdown {
+		base += "?markdown=true"
+	}
+	return base
 }
 
 //page for retreiving the new post form
