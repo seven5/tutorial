@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"os"
 
-	//_ "github.com/gopherjs/gopherjs" //force godep to save this package
-	//_ "github.com/gopherjs/jquery"   //force godep to save this package
-	//_ "github.com/tools/godep"       //force godep to save this package
+	_ "github.com/gopherjs/gopherjs" //force godep to save this package
+	_ "github.com/gopherjs/jquery"   //force godep to save this package
+	_ "github.com/tools/godep"       //force godep to save this package
 
 	_ "github.com/lib/pq"
 	//it is customary to use the named import version for seven5 as "s5"

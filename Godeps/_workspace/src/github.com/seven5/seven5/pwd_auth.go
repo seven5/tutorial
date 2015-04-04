@@ -157,7 +157,7 @@ func (self *SimplePasswordHandler) AuthHandler(w http.ResponseWriter, r *http.Re
 	//PW RESET REQ? (Can be done without being logged in)
 	//
 	if auth.Op == AUTH_OP_PWD_RESET_REQ {
-		resetUdid, err := self.vsm.GenerateResetRequest(auth.UserUdid)
+		resetUdid, err := self.vsm.GenerateResetRequest(auth.Username)
 		if err != nil {
 			WriteError(w, err)
 			log.Printf("[AUTH] error returned from GenerateResetRequest %v", err)
@@ -165,6 +165,30 @@ func (self *SimplePasswordHandler) AuthHandler(w http.ResponseWriter, r *http.Re
 		}
 		log.Printf("[AUTH] generated password reset req for user %s: %s",
 			auth.UserUdid, resetUdid)
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("{}")) //need to prevent the client-side dying
+		return
+	}
+
+	//
+	//PW RESET? (Can be done without being logged in)
+	//
+	if auth.Op == AUTH_OP_PWD_RESET {
+		//UseResetRequest(userId string, requestId string, newpwd string) (bool, error) {
+
+		ok, err := self.vsm.UseResetRequest(auth.UserUdid, auth.ResetRequestUdid, auth.Password)
+		if err != nil {
+			WriteError(w, err)
+			log.Printf("[AUTH] error returned from UseResetRequest %v", err)
+			return
+		}
+		if !ok {
+			w.WriteHeader(http.StatusUnauthorized)
+			log.Printf("[AUTH] UseResetRequest refused to update password: %s", auth.ResetRequestUdid)
+			return
+		}
+		log.Printf("[AUTH] reset password for user %s with token %s",
+			auth.UserUdid, auth.ResetRequestUdid)
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("{}")) //need to prevent the client-side dying
 		return

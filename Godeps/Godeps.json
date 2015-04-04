@@ -50,8 +50,8 @@
 		},
 		{
 			"ImportPath": "github.com/seven5/seven5",
-			"Comment": "cure.1",
-			"Rev": "34f40c704a085cdf07538022aefbdf46a521499a"
+			"Comment": "cure.2",
+			"Rev": "2151a1cdc03746ea7ab108c7ce1b91325971c7b7"
 		},
 		{
 			"ImportPath": "github.com/shurcooL/sanitized_anchor_name",
