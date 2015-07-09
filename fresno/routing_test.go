@@ -65,6 +65,7 @@ func TestRouting(t *testing.T) {
 	matcher := testConfig.matcher
 
 	result := matcher.Match(nil, "/")
+
 	checkComponentResult(t, "route /", result, http.StatusMovedPermanently, "/posts/index.html")
 
 	result = matcher.Match(nil, "/en/web/post/")

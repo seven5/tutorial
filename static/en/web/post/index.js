@@ -22727,7 +22727,7 @@ $packages["encoding/json"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/seven5/seven5/client"] = (function() {
-	var $pkg = {}, $init, bytes, json, fmt, js, jquery, reflect, strings, time, PasswordAuthParameters, BooleanAttribute, BooleanSimple, BoolEqualer, BoolEq, builder, getDomAttrFunc, builderBase, anyBuilder, booleanBuilder, Collection, Joiner, EqList, computedEmpty, computedLength, Puller, FoldingIterator, foldedConstraint, Equaler, Attribute, Constraint, ConstraintFunc, simpleConstraint, CssClass, cssClassImpl, HtmlId, htmlIdImpl, DomAttribute, domAttr, styleAttr, textAttr, htmlAttrAttr, htmlAttrName, cssExistenceAttr, edgeImpl, NodeType, node, AttributeImpl, ValueFunc, SideEffectFunc, EventFunc, EventName, eventHandler, IntegerAttribute, IntEqualer, NarrowDom, jqueryWrapper, testOpsImpl, AjaxError, StringAttribute, StringSimple, StringEqualer, eqConstraint, ModelName, Model, ModelImpl, ViewImpl, option, ptrType, sliceType, sliceType$1, sliceType$3, sliceType$4, sliceType$5, ptrType$1, ptrType$2, sliceType$6, sliceType$7, ptrType$3, sliceType$9, funcType, chanType, chanType$1, ptrType$4, funcType$1, sliceType$10, sliceType$11, sliceType$12, ptrType$5, sliceType$13, ptrType$6, sliceType$14, ptrType$8, ptrType$10, ptrType$11, ptrType$13, ptrType$14, ptrType$15, ptrType$16, ptrType$17, funcType$3, mapType, ptrType$19, ptrType$20, ptrType$21, ptrType$23, funcType$4, mapType$2, mapType$3, mapType$4, mapType$5, ptrType$28, ptrType$29, eagerQueue, numNodes, count, Main, NewBooleanSimple, textAttrBuilder, htmlAttrBuilder, cssExistenceBuilder, NewList, NewSimpleConstraint, NewCssClass, newHtmlIdNoCheck, NewHtmlId, newDomAttr, NewStyleAttr, NewTextAttr, NewHtmlAttrAttr, newAttrName, newPropName, NewCssExistenceAttr, NewDisplayAttr, DrainEagerQueue, newEdge, dropEdge, NewAttribute, wrap, newTestOps, AjaxDelete, AjaxPost, AjaxIndex, AjaxGet, ajaxRawChannels, encodeBody, isPointerToStructOrPanic, isPointerToSliceOfPointerToStructOrPanic, putPostDel, NewStringSimple, NewModelName, Event, Class, Text, ModelId, addBuilder, CssExistence, HtmlAttrConstant, TextEqual, HtmlIdFromModel, ParseHtml, HtmlConstant, DIV, A, SPAN, LI, BUTTON, tag;
+	var $pkg = {}, $init, bytes, json, fmt, js, jquery, reflect, strings, PasswordAuthParameters, BooleanAttribute, BooleanSimple, BoolEqualer, BoolEq, builder, getDomAttrFunc, builderBase, anyBuilder, booleanBuilder, Collection, Joiner, EqList, computedEmpty, computedLength, Puller, FoldingIterator, foldedConstraint, Equaler, Attribute, Constraint, ConstraintFunc, simpleConstraint, CssClass, cssClassImpl, HtmlId, htmlIdImpl, DomAttribute, domAttr, styleAttr, textAttr, htmlAttrAttr, htmlAttrName, cssExistenceAttr, edgeImpl, NodeType, node, AttributeImpl, ValueFunc, SideEffectFunc, EventFunc, EventName, eventHandler, IntegerAttribute, IntEqualer, NarrowDom, jqueryWrapper, testOpsImpl, AjaxError, StringAttribute, StringSimple, StringEqualer, eqConstraint, ModelName, Model, ModelImpl, ViewImpl, option, ptrType, sliceType, sliceType$1, sliceType$3, sliceType$4, sliceType$5, ptrType$1, ptrType$2, sliceType$6, sliceType$7, ptrType$3, sliceType$9, funcType, chanType, chanType$1, mapType, ptrType$4, funcType$1, sliceType$10, sliceType$11, sliceType$12, ptrType$5, sliceType$13, ptrType$6, sliceType$14, ptrType$8, ptrType$10, ptrType$11, ptrType$13, ptrType$14, ptrType$15, ptrType$16, ptrType$17, funcType$3, mapType$1, ptrType$19, ptrType$20, ptrType$21, ptrType$23, funcType$4, mapType$3, mapType$4, mapType$5, mapType$6, ptrType$28, ptrType$29, eagerQueue, numNodes, count, Main, NewBooleanSimple, textAttrBuilder, htmlAttrBuilder, cssExistenceBuilder, NewList, NewSimpleConstraint, NewCssClass, newHtmlIdNoCheck, NewHtmlId, newDomAttr, NewStyleAttr, NewTextAttr, NewHtmlAttrAttr, newAttrName, newPropName, NewCssExistenceAttr, NewDisplayAttr, DrainEagerQueue, newEdge, dropEdge, NewAttribute, wrap, newTestOps, AjaxDelete, AjaxPost, AjaxIndex, AjaxGet, AjaxRawChannels, encodeBody, isPointerToStructOrPanic, isPointerToSliceOfPointerToStructOrPanic, putPostDel, NewStringSimple, NewModelName, Event, Class, Text, ModelId, addBuilder, CssExistence, HtmlAttrConstant, TextEqual, HtmlIdFromModel, ParseHtml, HtmlConstant, DIV, A, SPAN, LI, BUTTON, tag;
 	bytes = $packages["bytes"];
 	json = $packages["encoding/json"];
 	fmt = $packages["fmt"];
@@ -22735,7 +22735,6 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 	jquery = $packages["github.com/gopherjs/jquery"];
 	reflect = $packages["reflect"];
 	strings = $packages["strings"];
-	time = $packages["time"];
 	PasswordAuthParameters = $pkg.PasswordAuthParameters = $newType(0, $kindStruct, "client.PasswordAuthParameters", "PasswordAuthParameters", "github.com/seven5/seven5/client", function(Username_, Password_, ResetRequestUdid_, UserUdid_, Op_) {
 		this.$val = this;
 		if (arguments.length === 0) {
@@ -23146,6 +23145,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 	funcType = $funcType([jquery.Event], [], false);
 	chanType = $chanType($emptyInterface, false, false);
 	chanType$1 = $chanType(AjaxError, false, false);
+	mapType = $mapType($String, $emptyInterface);
 	ptrType$4 = $ptrType(js.Object);
 	funcType$1 = $funcType([ptrType$4], [], false);
 	sliceType$10 = $sliceType($String);
@@ -23164,16 +23164,16 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 	ptrType$16 = $ptrType(computedLength);
 	ptrType$17 = $ptrType(foldedConstraint);
 	funcType$3 = $funcType([], [DomAttribute], false);
-	mapType = $mapType($String, DomAttribute);
+	mapType$1 = $mapType($String, DomAttribute);
 	ptrType$19 = $ptrType(styleAttr);
 	ptrType$20 = $ptrType(textAttr);
 	ptrType$21 = $ptrType(htmlAttrAttr);
 	ptrType$23 = $ptrType(cssExistenceAttr);
 	funcType$4 = $funcType([ptrType$2], [], false);
-	mapType$2 = $mapType($String, $String);
-	mapType$3 = $mapType($String, $Bool);
-	mapType$4 = $mapType($String, $Int);
-	mapType$5 = $mapType(EventName, EventFunc);
+	mapType$3 = $mapType($String, $String);
+	mapType$4 = $mapType($String, $Bool);
+	mapType$5 = $mapType($String, $Int);
+	mapType$6 = $mapType(EventName, EventFunc);
 	ptrType$28 = $ptrType(StringSimple);
 	ptrType$29 = $ptrType(ModelImpl);
 	Main = function(app) {
@@ -25054,7 +25054,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		_r;
 		contentCh = new chanType(0);
 		errCh = new chanType$1(0);
-		ajaxRawChannels(ptrToSliceOfPtrToStruct, "", contentCh, errCh, "GET", path);
+		AjaxRawChannels(ptrToSliceOfPtrToStruct, "", contentCh, errCh, "GET", path, false);
 		return [contentCh, errCh];
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: AjaxIndex }; } $f.$ptr = $ptr; $f._r = _r; $f.contentCh = contentCh; $f.errCh = errCh; $f.path = path; $f.ptrToSliceOfPtrToStruct = ptrToSliceOfPtrToStruct; $f.$s = $s; $f.$r = $r; return $f;
 	};
@@ -25066,16 +25066,19 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		_r;
 		contentCh = new chanType(0);
 		errCh = new chanType$1(0);
-		ajaxRawChannels(ptrToStruct, "", contentCh, errCh, "GET", path);
+		AjaxRawChannels(ptrToStruct, "", contentCh, errCh, "GET", path, false);
 		return [contentCh, errCh];
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: AjaxGet }; } $f.$ptr = $ptr; $f._r = _r; $f.contentCh = contentCh; $f.errCh = errCh; $f.path = path; $f.ptrToStruct = ptrToStruct; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.AjaxGet = AjaxGet;
-	ajaxRawChannels = function(output, body, contentChan, errChan, method, path) {
-		var $ptr, _key, _key$1, _map, body, contentChan, errChan, m, method, output, path;
+	AjaxRawChannels = function(output, body, contentChan, errChan, method, path, extraHeaders) {
+		var $ptr, _key, _key$1, _key$2, _map, body, contentChan, errChan, extraHeaders, m, method, output, path;
 		m = (_map = new $Map(), _key = "contentType", _map[_key] = { k: _key, v: new $String("application/json") }, _key = "dataType", _map[_key] = { k: _key, v: new $String("text") }, _key = "type", _map[_key] = { k: _key, v: new $String(method) }, _key = "url", _map[_key] = { k: _key, v: new $String(path) }, _key = "cache", _map[_key] = { k: _key, v: new $Bool(false) }, _map);
 		if (!(body === "")) {
 			_key$1 = "data"; (m || $throwRuntimeError("assignment to entry in nil map"))[_key$1] = { k: _key$1, v: new $String(body) };
+		}
+		if (!(extraHeaders === false)) {
+			_key$2 = "headers"; (m || $throwRuntimeError("assignment to entry in nil map"))[_key$2] = { k: _key$2, v: new mapType(extraHeaders) };
 		}
 		jquery.Ajax(m).Then(new sliceType$1([new funcType$1((function $b(valueCreated) {
 			var $ptr, _r, dec, err, rd, valueCreated, $s, $r;
@@ -25122,6 +25125,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		}))]));
 		return $ifaceNil;
 	};
+	$pkg.AjaxRawChannels = AjaxRawChannels;
 	encodeBody = function(i) {
 		var $ptr, _r, _r$1, enc, err, i, w, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; enc = $f.enc; err = $f.err; i = $f.i; w = $f.w; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -25250,7 +25254,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 			}
 		/* } */ case 5:
 		_r$4 = output.Interface(); /* */ $s = 7; case 7: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
-		_r$5 = ajaxRawChannels(_r$4, body, contentCh, errCh[0], method, path); /* */ $s = 8; case 8: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+		_r$5 = AjaxRawChannels(_r$4, body, contentCh, errCh[0], method, path, false); /* */ $s = 8; case 8: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
 		_r$5;
 		return [contentCh, errCh[0]];
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: putPostDel }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._tuple = _tuple; $f.body = body; $f.contentCh = contentCh; $f.err = err; $f.errCh = errCh; $f.method = method; $f.output = output; $f.path = path; $f.ptrToStruct = ptrToStruct; $f.sendBody = sendBody; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
@@ -25688,7 +25692,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 	CssClass.init([{prop: "ClassName", name: "ClassName", pkg: "", typ: $funcType([], [$String], false)}]);
 	cssClassImpl.init([{prop: "name", name: "name", pkg: "github.com/seven5/seven5/client", typ: $String, tag: ""}]);
 	HtmlId.init([{prop: "CssExistenceAttribute", name: "CssExistenceAttribute", pkg: "", typ: $funcType([CssClass], [DomAttribute], false)}, {prop: "DisplayAttribute", name: "DisplayAttribute", pkg: "", typ: $funcType([], [DomAttribute], false)}, {prop: "Dom", name: "Dom", pkg: "", typ: $funcType([], [NarrowDom], false)}, {prop: "Id", name: "Id", pkg: "", typ: $funcType([], [$String], false)}, {prop: "StyleAttribute", name: "StyleAttribute", pkg: "", typ: $funcType([$String], [DomAttribute], false)}, {prop: "TagName", name: "TagName", pkg: "", typ: $funcType([], [$String], false)}, {prop: "TextAttribute", name: "TextAttribute", pkg: "", typ: $funcType([], [DomAttribute], false)}]);
-	htmlIdImpl.init([{prop: "tag", name: "tag", pkg: "github.com/seven5/seven5/client", typ: $String, tag: ""}, {prop: "id", name: "id", pkg: "github.com/seven5/seven5/client", typ: $String, tag: ""}, {prop: "t", name: "t", pkg: "github.com/seven5/seven5/client", typ: NarrowDom, tag: ""}, {prop: "cache", name: "cache", pkg: "github.com/seven5/seven5/client", typ: mapType, tag: ""}]);
+	htmlIdImpl.init([{prop: "tag", name: "tag", pkg: "github.com/seven5/seven5/client", typ: $String, tag: ""}, {prop: "id", name: "id", pkg: "github.com/seven5/seven5/client", typ: $String, tag: ""}, {prop: "t", name: "t", pkg: "github.com/seven5/seven5/client", typ: NarrowDom, tag: ""}, {prop: "cache", name: "cache", pkg: "github.com/seven5/seven5/client", typ: mapType$1, tag: ""}]);
 	DomAttribute.init([{prop: "Attach", name: "Attach", pkg: "", typ: $funcType([Constraint], [], false)}, {prop: "Demand", name: "Demand", pkg: "", typ: $funcType([], [Equaler], false)}, {prop: "Detach", name: "Detach", pkg: "", typ: $funcType([], [], false)}, {prop: "Id", name: "Id", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetDebugName", name: "SetDebugName", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetEqualer", name: "SetEqualer", pkg: "", typ: $funcType([Equaler], [], false)}]);
 	domAttr.init([{prop: "attr", name: "attr", pkg: "github.com/seven5/seven5/client", typ: ptrType, tag: ""}, {prop: "t", name: "t", pkg: "github.com/seven5/seven5/client", typ: NarrowDom, tag: ""}, {prop: "id", name: "id", pkg: "github.com/seven5/seven5/client", typ: $String, tag: ""}, {prop: "set", name: "set", pkg: "github.com/seven5/seven5/client", typ: SideEffectFunc, tag: ""}, {prop: "get", name: "get", pkg: "github.com/seven5/seven5/client", typ: ValueFunc, tag: ""}]);
 	styleAttr.init([{prop: "domAttr", name: "", pkg: "github.com/seven5/seven5/client", typ: ptrType$1, tag: ""}, {prop: "name", name: "name", pkg: "github.com/seven5/seven5/client", typ: $String, tag: ""}]);
@@ -25706,7 +25710,7 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 	IntEqualer.init([{prop: "I", name: "I", pkg: "", typ: $Int, tag: ""}]);
 	NarrowDom.init([{prop: "AddClass", name: "AddClass", pkg: "", typ: $funcType([$String], [], false)}, {prop: "Append", name: "Append", pkg: "", typ: $funcType([sliceType$11], [], true)}, {prop: "Attr", name: "Attr", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "Before", name: "Before", pkg: "", typ: $funcType([NarrowDom], [], false)}, {prop: "Clear", name: "Clear", pkg: "", typ: $funcType([], [], false)}, {prop: "Css", name: "Css", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "Data", name: "Data", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "HasClass", name: "HasClass", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "On", name: "On", pkg: "", typ: $funcType([EventName, EventFunc], [], false)}, {prop: "Prepend", name: "Prepend", pkg: "", typ: $funcType([sliceType$11], [], true)}, {prop: "Prop", name: "Prop", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "Remove", name: "Remove", pkg: "", typ: $funcType([], [], false)}, {prop: "RemoveClass", name: "RemoveClass", pkg: "", typ: $funcType([$String], [], false)}, {prop: "RemoveData", name: "RemoveData", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetAttr", name: "SetAttr", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "SetCss", name: "SetCss", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "SetData", name: "SetData", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "SetProp", name: "SetProp", pkg: "", typ: $funcType([$String, $Bool], [], false)}, {prop: "SetText", name: "SetText", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetVal", name: "SetVal", pkg: "", typ: $funcType([$String], [], false)}, {prop: "Text", name: "Text", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Trigger", name: "Trigger", pkg: "", typ: $funcType([EventName], [], false)}, {prop: "Val", name: "Val", pkg: "", typ: $funcType([], [$String], false)}]);
 	jqueryWrapper.init([{prop: "jq", name: "jq", pkg: "github.com/seven5/seven5/client", typ: jquery.JQuery, tag: ""}]);
-	testOpsImpl.init([{prop: "data", name: "data", pkg: "github.com/seven5/seven5/client", typ: mapType$2, tag: ""}, {prop: "css", name: "css", pkg: "github.com/seven5/seven5/client", typ: mapType$2, tag: ""}, {prop: "text", name: "text", pkg: "github.com/seven5/seven5/client", typ: $String, tag: ""}, {prop: "val", name: "val", pkg: "github.com/seven5/seven5/client", typ: $String, tag: ""}, {prop: "attr", name: "attr", pkg: "github.com/seven5/seven5/client", typ: mapType$2, tag: ""}, {prop: "prop", name: "prop", pkg: "github.com/seven5/seven5/client", typ: mapType$3, tag: ""}, {prop: "radio", name: "radio", pkg: "github.com/seven5/seven5/client", typ: mapType$2, tag: ""}, {prop: "classes", name: "classes", pkg: "github.com/seven5/seven5/client", typ: mapType$4, tag: ""}, {prop: "event", name: "event", pkg: "github.com/seven5/seven5/client", typ: mapType$5, tag: ""}, {prop: "parent", name: "parent", pkg: "github.com/seven5/seven5/client", typ: ptrType$3, tag: ""}, {prop: "children", name: "children", pkg: "github.com/seven5/seven5/client", typ: sliceType$9, tag: ""}]);
+	testOpsImpl.init([{prop: "data", name: "data", pkg: "github.com/seven5/seven5/client", typ: mapType$3, tag: ""}, {prop: "css", name: "css", pkg: "github.com/seven5/seven5/client", typ: mapType$3, tag: ""}, {prop: "text", name: "text", pkg: "github.com/seven5/seven5/client", typ: $String, tag: ""}, {prop: "val", name: "val", pkg: "github.com/seven5/seven5/client", typ: $String, tag: ""}, {prop: "attr", name: "attr", pkg: "github.com/seven5/seven5/client", typ: mapType$3, tag: ""}, {prop: "prop", name: "prop", pkg: "github.com/seven5/seven5/client", typ: mapType$4, tag: ""}, {prop: "radio", name: "radio", pkg: "github.com/seven5/seven5/client", typ: mapType$3, tag: ""}, {prop: "classes", name: "classes", pkg: "github.com/seven5/seven5/client", typ: mapType$5, tag: ""}, {prop: "event", name: "event", pkg: "github.com/seven5/seven5/client", typ: mapType$6, tag: ""}, {prop: "parent", name: "parent", pkg: "github.com/seven5/seven5/client", typ: ptrType$3, tag: ""}, {prop: "children", name: "children", pkg: "github.com/seven5/seven5/client", typ: sliceType$9, tag: ""}]);
 	AjaxError.init([{prop: "StatusCode", name: "StatusCode", pkg: "", typ: $Int, tag: ""}, {prop: "Message", name: "Message", pkg: "", typ: $String, tag: ""}]);
 	StringAttribute.init([{prop: "Attach", name: "Attach", pkg: "", typ: $funcType([Constraint], [], false)}, {prop: "Demand", name: "Demand", pkg: "", typ: $funcType([], [Equaler], false)}, {prop: "Detach", name: "Detach", pkg: "", typ: $funcType([], [], false)}, {prop: "Set", name: "Set", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetDebugName", name: "SetDebugName", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetEqualer", name: "SetEqualer", pkg: "", typ: $funcType([Equaler], [], false)}, {prop: "Value", name: "Value", pkg: "", typ: $funcType([], [$String], false)}]);
 	StringSimple.init([{prop: "AttributeImpl", name: "", pkg: "", typ: ptrType, tag: ""}]);
@@ -25727,7 +25731,6 @@ $packages["github.com/seven5/seven5/client"] = (function() {
 		$r = jquery.$init(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = reflect.$init(); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = strings.$init(); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = time.$init(); /* */ $s = 8; case 8: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$pkg.TestMode = false;
 		$pkg.REL = newAttrName("rel");
 		$pkg.LINK = newAttrName("link");

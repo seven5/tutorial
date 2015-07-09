@@ -1,6 +1,6 @@
 {
 	"ImportPath": "tutorial",
-	"GoVersion": "go1.4.1",
+	"GoVersion": "go1.4.2",
 	"Packages": [
 		"./..."
 	],
@@ -50,8 +50,8 @@
 		},
 		{
 			"ImportPath": "github.com/seven5/seven5",
-			"Comment": "cure.2",
-			"Rev": "2151a1cdc03746ea7ab108c7ce1b91325971c7b7"
+			"Comment": "cure.3-3-gbcc3299",
+			"Rev": "bcc329916dfab26229cd77a42be4482fdb0aa299"
 		},
 		{
 			"ImportPath": "github.com/shurcooL/sanitized_anchor_name",

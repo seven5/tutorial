@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"os"
 
-	_ "github.com/gopherjs/gopherjs" //force godep to save this package
-	_ "github.com/gopherjs/jquery"   //force godep to save this package
-	_ "github.com/tools/godep"       //force godep to save this package
+	//_ "github.com/gopherjs/gopherjs" //force godep to save this package
+	//_ "github.com/gopherjs/jquery"   //force godep to save this package
+	//_ "github.com/tools/godep"       //force godep to save this package
 
 	_ "github.com/lib/pq"
 	//it is customary to use the named import version for seven5 as "s5"
@@ -125,14 +125,14 @@ func setup() *fresnoConfig {
 	if staticDir == "" {
 		log.Fatalf("unable to get STATIC_DIR from environment!")
 	}
-	//what do we do if given empty URL, note we use the SINGULAR here
+	//what do we do if given empty URL, note we use the PLURAL here
 	homepage := s5.ComponentResult{
 		Status: http.StatusMovedPermanently,
-		Redir:  "/post/index.html",
+		Redir:  "/posts/index.html",
 	}
 
 	postComponent := s5.NewSimpleIdComponent("post", existCheck, newCheck, viewEditCheck)
-	indexComponent := s5.NewIndexOnlyComponent("posts", "post/index.html") //SINGULAR for index
+	indexComponent := s5.NewIndexOnlyComponent("posts", "post", "post/index.html") //SINGULAR for index
 
 	result.matcher = s5.NewSimpleComponentMatcher(result.cm, result.sm, staticDir,
 		homepage, result.heroku.IsTest(), postComponent, indexComponent)
