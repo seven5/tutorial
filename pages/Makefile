@@ -10,7 +10,7 @@
 GOPHERJSOPTS:=
 
 ##
-## WARNING: This makefile does not have dependencies on libraries used by the 
+## WARNING: This makefile does not have dependencies on libraries used by the
 ## WARNING: go packages in pages such as seven5.  If you change those libraries
 ## WARNING: you have to do "make clean; make" to rebuild and include the new
 ## WARNING: library versions.  This is rare.
@@ -37,7 +37,7 @@ js: $(JS)
 
 ##
 ## CLIENT SIDE
-## 
+##
 ../static/en/web/signup.js:
 	gopherjs build $(GOPHERJSOPTS) -o  ../static/en/web/signup.js ../client/signup.go
 
@@ -59,7 +59,7 @@ js: $(JS)
 
 ##
 ## HTML PAGES
-## 
+##
 ../static/en/web/signup.html: template/signup.html template/signup.json template/support/*.tmpl
 	pagegen --support=support --dir=template --start=signup.html --json=signup.json > ../static/en/web/signup.html
 

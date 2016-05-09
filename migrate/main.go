@@ -7,7 +7,7 @@ import (
 
 	"github.com/seven5/seven5/migrate"
 
-	"tutorial/shared"
+	"github.com/seven5/tutorial/shared"
 )
 
 //
@@ -76,7 +76,7 @@ func oneUp(tx *sql.Tx) error {
 	updated TIMESTAMP WITH TIME ZONE,
 	created TIMESTAMP WITH TIME ZONE,
 	text TEXT,
-	author_udid CHAR(36) REFERENCES user_record(user_udid) 
+	author_udid CHAR(36) REFERENCES user_record(user_udid)
 	)`)
 	if err != nil {
 		return err

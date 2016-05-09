@@ -9,7 +9,7 @@ import (
 	"github.com/coocood/qbs"
 	s5 "github.com/seven5/seven5"
 
-	"tutorial/shared"
+	"github.com/seven5/tutorial/shared"
 )
 
 type UserRecordResource struct {

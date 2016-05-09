@@ -12,7 +12,7 @@ import (
 	"github.com/coocood/qbs"
 	s5 "github.com/seven5/seven5"
 
-	"tutorial/shared"
+	"github.com/seven5/tutorial/shared"
 )
 
 //passwordResetRequest is a struct that is useful to store in the database

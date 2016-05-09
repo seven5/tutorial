@@ -16,8 +16,8 @@ import (
 	"github.com/coocood/qbs"
 	s5 "github.com/seven5/seven5"
 
-	"tutorial/resource"
-	"tutorial/shared"
+	"github.com/seven5/tutorial/resource"
+	"github.com/seven5/tutorial/shared"
 )
 
 const (

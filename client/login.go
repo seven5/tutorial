@@ -7,8 +7,8 @@ import (
 	//note that this is importing the CLIENT SIDE of seven5
 	s5 "github.com/seven5/seven5/client"
 
-	"tutorial/client/uicommon"
-	"tutorial/shared"
+	"github.com/seven5/tutorial/client/uicommon"
+	"github.com/seven5/tutorial/shared"
 )
 
 var (

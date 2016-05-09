@@ -10,8 +10,8 @@ import (
 	"github.com/gopherjs/gopherjs/js"
 	s5 "github.com/seven5/seven5/client"
 
-	"tutorial/client/uicommon"
-	"tutorial/shared"
+	"github.com/seven5/tutorial/client/uicommon"
+	"github.com/seven5/tutorial/shared"
 )
 
 func main() {
@@ -72,4 +72,5 @@ func main() {
 	ep.StandardPage.AddLeftNav("#", "Edit #"+fmt.Sprint(id), true)
 
 	s5.Main(ep)
+
 }

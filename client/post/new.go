@@ -5,8 +5,8 @@ package main
 import (
 	s5 "github.com/seven5/seven5/client"
 
-	"tutorial/client/uicommon"
-	"tutorial/shared"
+	"github.com/seven5/tutorial/client/uicommon"
+	"github.com/seven5/tutorial/shared"
 )
 
 func main() {

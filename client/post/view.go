@@ -5,14 +5,15 @@ package main
 import (
 	"fmt"
 
-	"github.com/gopherjs/gopherjs/js"
-	s5 "github.com/seven5/seven5/client"
 	"strconv"
 	"strings"
 	"time"
 
-	"tutorial/client/uicommon"
-	"tutorial/shared"
+	"github.com/gopherjs/gopherjs/js"
+	s5 "github.com/seven5/seven5/client"
+
+	"github.com/seven5/tutorial/client/uicommon"
+	"github.com/seven5/tutorial/shared"
 )
 
 var (

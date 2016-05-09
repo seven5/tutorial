@@ -6,7 +6,7 @@ import (
 	"github.com/gopherjs/jquery"
 	s5 "github.com/seven5/seven5/client" //client side
 
-	"tutorial/shared"
+	"github.com/seven5/tutorial/shared"
 )
 
 //

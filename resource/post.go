@@ -12,7 +12,7 @@ import (
 	"github.com/russross/blackfriday"
 	s5 "github.com/seven5/seven5"
 
-	"tutorial/shared"
+	"github.com/seven5/tutorial/shared"
 )
 
 type PostResource struct {
