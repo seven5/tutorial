@@ -2,13 +2,6 @@
 	"version": 0,
 	"dependencies": [
 		{
-			"importpath": "code.google.com/p/gomock/gomock",
-			"repository": "https://code.google.com/p/gomock",
-			"revision": "526771f51633c1315ac61c3d832f536f479e1501",
-			"branch": "master",
-			"path": "/gomock"
-		},
-		{
 			"importpath": "github.com/codegangsta/inject",
 			"repository": "https://github.com/codegangsta/inject",
 			"revision": "33e0aa1cb7c019ccc3fbe049a8262a6403d30504",
