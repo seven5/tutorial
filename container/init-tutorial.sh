@@ -29,7 +29,7 @@ gb build github.com/seven5/tutorial/...
 #create and init db
 #because this is ONlY used at container build time, we let postgres run on 5432
 /etc/init.d/postgresql start
-sleep 2
+sleep 5
 su postgres bash -c "psql -c \"CREATE USER root WITH PASSWORD '';\""
 su postgres -c "createdb -O root fresno"
 export DATABASE_URL="postgres://root@localhost:5432/fresno"
