@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+	{{template "BOOTSTRAP_HEAD_SECTION" .}}
+
+
+<body>
+	<div id="primary" class="container">
+
+    <h3>Constraint Demo</h3>
+
+    <div class ="row">
+	   <div class="col-sm-12" style="min-height:500px; height:auto">
+			 <div style="position:relative; height:auto; border:1px solid black; width:800px; height:410px;" id="bordered">
+			 	<button style="position:absolute; left:0; top:0;" id="top-left" class="btn btn-primary" type="button">Top Left</button>
+				<button style="position:absolute; top:400px; left:400px;" id="bottom-right" class="btn btn-warning" type="button">Bottom Right</button>
+			</div>
+	   </div>
+	 </div>
+   {{template "MISC_FOOTER" .}}
+  </div> <!--container -->
+
+	{{template "MISC_JSLOAD" .}}
+</body>
+</html>

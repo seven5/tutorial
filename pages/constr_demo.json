@@ -1,0 +1,5 @@
+{
+	"title":"Constraint Demo",
+	"css_page": "/fixed/index.css",
+	"js_file" : "constr_demo.js"
+}
