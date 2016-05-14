@@ -14,6 +14,7 @@ cd /seven5/tutorial/src/github.com/seven5
 git clone -b tutorial https://github.com/seven5/tutorial.git
 git clone https://github.com/seven5/seven5.git
 git clone https://github.com/seven5/gb-seven5.git
+git clone https://github.com/seven5/heroku-buildpack-seven5.git
 
 #configuration
 cp tutorial/manifest /seven5/tutorial/vendor/manifest
@@ -27,11 +28,14 @@ gb vendor restore
 gb build github.com/seven5/tutorial/...
 
 #create and init db
-#because this is ONlY used at container build time, we let postgres run on 5432
-/etc/init.d/postgresql start
+su postgres -c "/usr/lib/postgresql/9.5/bin/postgres -p 5433 -D /var/lib/postgresql/9.5/main -c config_file=/etc/postgresql/9.5/main/postgresql.conf" &
+echo $! > /tmp/postgres.pid
+
 sleep 5
-su postgres bash -c "psql -c \"CREATE USER root WITH PASSWORD '';\""
-su postgres -c "createdb -O root fresno"
-export DATABASE_URL="postgres://root@localhost:5432/fresno"
+
+su postgres bash -c "psql -p 5433 -c \"CREATE USER root WITH PASSWORD '';\""
+su postgres -c "createdb -p 5433 -O root fresno"
+export DATABASE_URL="postgres://root@localhost:5433/fresno"
 migrate --up
-/etc/init.d/postgresql stop
+kill `cat /tmp/postgres.pid`
+rm -f /tmp/postgres.pid

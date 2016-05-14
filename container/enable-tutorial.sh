@@ -26,6 +26,7 @@ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/li
 ## ENVIRONMENT FOR LOCAL DEVELOPMENT
 ##
 export FRESNO_TEST=true  ##allows you to differentiate running on heroku or not
+#if you are not using heroku, just leave this as is (don't delete it)
 export HEROKU_NAME=damp-sierra-7161 ##put your heroku app name
 export PORT=5000
 
@@ -50,3 +51,8 @@ export SERVER_SESSION_KEY='777936327336633637393632726b4476'
 ##to the location where you run fresno, so you may want to make this an absolute
 ##path
 export STATIC_DIR=src/github.com/seven5/tutorial/static
+
+# delete all stopped containers
+# docker rm $(docker ps -a -q)
+# remove all untagged images
+# docker rmi $(docker images | grep "^<none>" | awk "{print $3}")

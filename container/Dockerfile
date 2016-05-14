@@ -30,15 +30,18 @@ COPY enable-tutorial.sh /enable-tutorial.sh
 ENV GOROOT=/usr/lib/go-1.6/
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/go-1.6/bin:/seven5/bootstrap/bin:/seven5/tutorial/bin
 ENV FRESNO_TEST=true
+ENV HEROKU_NAME=damp-sierra-7161
 ENV PORT=80
 ENV PGPORT=5433
 ENV DATABASE_URL="postgres://root@localhost:5433/fresno"
-ENV PGUSER=root
 ENV PGSSLMODE=disable
 ENV SERVER_SESSION_KEY='777936327336633637393632726b4476'
 ENV STATIC_DIR=/seven5/tutorial/src/github.com/seven5/tutorial/static
 
 RUN sh /init-tutorial.sh
+
+#this has to be after we init the DB or the perms are all hosed up
+ENV PGUSER=root
 
 EXPOSE 22 80
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
