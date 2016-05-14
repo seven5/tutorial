@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+	
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="fixme">
+    <link rel="shortcut icon" href="/fixme.ico">
+
+    <title>Edit An Existing New Post</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="/fixed/bootstrap-3.3.1.min.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Custom styles for this page -->
+    <link href="/fixed/index.css" rel="stylesheet"/>
+  </head>
+
+
+<body>
+  	
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="http://seven5.github.io/tutorial.html">Tutorial</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul id="nav-left" class="nav navbar-nav">
+        </ul>
+        <ul id="nav-right" class="nav navbar-nav navbar-right">
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+	<div class="container">
+
+    <h3>Edit Post <span id="postnumber"></span></h3>
+  	  
+  <div id="err-region" class="row" style="display:none;">
+    <h5 id="err-text" class="col-sm-offset-1 col-sm-10"></h5>
+  </div>
+
+
+      
+    <div class ="row">
+	   <form class="col-sm-offset-1 col-sm-9">
+ 		   <div class="form-group">
+    	 	<label for="title">Post Title</label>
+    		<input type="text" class="form-control" id="title" placeholder="Title of post">
+  		</div>
+
+  		<div class="form-group">
+    		<label for="content">Post Content</label>
+    		<textarea class="form-control" rows=20 id="content" placeholder="Put your markdown here."></textarea>
+  		</div>
+
+  		<div class="form-group">
+        <div class="col-sm-2">
+            <button id="post" class="disabled btn btn-primary">Post</button>
+        </div>
+        <div class="col-sm-offset-8 col-sm-2">
+            <button id="cancel" class="btn btn-danger">Cancel</button>
+        </div>
+  		</div>
+	   </form>
+	 </div>
+
+
+      
+  <hr>
+
+  <footer>
+    <p style="font-variant:small-caps;">&copy; Fresno Rocked The House In 2016</p>
+  </footer>
+
+	
+  </div> <!--container -->
+	
+	
+    <script src="/fixed/jquery-2.1.1.js"></script>
+    
+      <script src="edit.js"></script>
+      
+    
+
+</body>
+</html>

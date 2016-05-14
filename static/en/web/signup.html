@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+	
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="fixme">
+    <link rel="shortcut icon" href="/fixme.ico">
+
+    <title>Sign Up</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="/fixed/bootstrap-3.3.1.min.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Custom styles for this page -->
+    <link href="/fixed/index.css" rel="stylesheet"/>
+  </head>
+
+
+<body>
+	<div id="primary" class="container">
+	
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="http://seven5.github.io/tutorial.html">Tutorial</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul id="nav-left" class="nav navbar-nav">
+        </ul>
+        <ul id="nav-right" class="nav navbar-nav navbar-right">
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+    <h3>Sign Up For Fresno</h3>
+	 
+  <div id="err-region" class="row" style="display:none;">
+    <h5 id="err-text" class="col-sm-offset-1 col-sm-10"></h5>
+  </div>
+
+
+	<form class="form-horizontal">
+
+		
+ 	<div class="form-group" id="fg_first_name">
+    	<label for=first_name class="col-sm-2 control-label">
+    		First Name
+    	</label>
+    	<div class="col-sm-5">
+      		<input type="text" 
+      		maxlen="40" 
+      		class="form-control" 
+      		id="first_name" 
+      		placeholder="John"/>
+    	</div>
+    	<div class="col-sm-5">
+    		<label class="text-info control-label" 
+    		id="feedback_first_name"></label>
+    	</div>
+
+  </div>
+ 
+		
+ 	<div class="form-group" id="fg_last_name">
+    	<label for=last_name class="col-sm-2 control-label">
+    		Last Name
+    	</label>
+    	<div class="col-sm-5">
+      		<input type="text" 
+      		maxlen="40" 
+      		class="form-control" 
+      		id="last_name" 
+      		placeholder="Public"/>
+    	</div>
+    	<div class="col-sm-5">
+    		<label class="text-info control-label" 
+    		id="feedback_last_name"></label>
+    	</div>
+
+  </div>
+ 
+		
+ 	<div class="form-group" id="fg_email">
+    	<label for=email class="col-sm-2 control-label">
+    		Email
+    	</label>
+    	<div class="col-sm-5">
+      		<input type="text" 
+      		maxlen="40" 
+      		class="form-control" 
+      		id="email" 
+      		placeholder="foo@example.com"/>
+    	</div>
+    	<div class="col-sm-5">
+    		<label class="text-info control-label" 
+    		id="feedback_email"></label>
+    	</div>
+
+  </div>
+ 
+		
+ 	<div class="form-group" id="fg_password">
+    	<label for=password class="col-sm-2 control-label">
+    		Password
+    	</label>
+    	<div class="col-sm-5">
+      		<input type="password" 
+      		maxlen="40" 
+      		class="form-control" 
+      		id="password" 
+      		placeholder=""/>
+    	</div>
+    	<div class="col-sm-5">
+    		<label class="text-info control-label" 
+    		id="feedback_password"></label>
+    	</div>
+
+  </div>
+ 
+		
+ 	<div class="form-group" id="fg_confirm_password">
+    	<label for=confirm_password class="col-sm-2 control-label">
+    		Confirm Password
+    	</label>
+    	<div class="col-sm-5">
+      		<input type="password" 
+      		maxlen="40" 
+      		class="form-control" 
+      		id="confirm_password" 
+      		placeholder=""/>
+    	</div>
+    	<div class="col-sm-5">
+    		<label class="text-info control-label" 
+    		id="feedback_confirm_password"></label>
+    	</div>
+
+  </div>
+ 
+  	
+  		<div class="form-group">
+    		<div class="col-sm-offset-2 col-sm-6">
+      			<button id="signup" class="disabled btn btn-primary">Sign up</button>
+    		</div>
+  		</div>
+	</form>
+
+	 
+  <hr>
+
+  <footer>
+    <p style="font-variant:small-caps;">&copy; Fresno Rocked The House In 2016</p>
+  </footer>
+
+	
+  </div> <!--container -->
+  <div id="secondary" class="container hide">
+    <div class="row">
+      <h3 class="col-sm-12" class="bg-warning">You are already logged in.</h3>
+    </div>
+   
+  <hr>
+
+  <footer>
+    <p style="font-variant:small-caps;">&copy; Fresno Rocked The House In 2016</p>
+  </footer>
+
+  </div>
+
+	
+    <script src="/fixed/jquery-2.1.1.js"></script>
+    
+      <script src="signup.js"></script>
+      
+    
+
+</body>
+</html>

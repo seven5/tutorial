@@ -1,0 +1,187 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/codegangsta/inject",
+			"repository": "https://github.com/codegangsta/inject",
+			"revision": "33e0aa1cb7c019ccc3fbe049a8262a6403d30504",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/coocood/mysql",
+			"repository": "https://github.com/coocood/mysql",
+			"revision": "d22091ecccb5947a9facf52a748b23b10c1f062b",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/coocood/qbs",
+			"repository": "https://github.com/coocood/qbs",
+			"revision": "fd3760a61793dd4333e0c29ce9856cff9e4a7323",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/fsnotify/fsnotify",
+			"repository": "https://github.com/fsnotify/fsnotify",
+			"revision": "30411dbcefb7a1da7e84f75530ad3abe4011b4f8",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/garyburd/go-oauth/oauth",
+			"repository": "https://github.com/garyburd/go-oauth",
+			"revision": "719b069913e1151a73ea30d2ea4f90deda3ce234",
+			"branch": "master",
+			"path": "/oauth"
+		},
+		{
+			"importpath": "github.com/go-martini/martini",
+			"repository": "https://github.com/go-martini/martini",
+			"revision": "0c6ad5903d2bf9337762caa9c357247279c230c3",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/golang/oauth2",
+			"repository": "https://github.com/golang/oauth2",
+			"revision": "e86e2718db89775a4604abc10a5d3a5672e7336e",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/gopherjs/gopherjs",
+			"repository": "https://github.com/gopherjs/gopherjs",
+			"revision": "f3c437955da554f2643747a598b0cc772a749f3f",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/gopherjs/jquery",
+			"repository": "https://github.com/gopherjs/jquery",
+			"revision": "fbbfc4bbe29a29cb05788b66be44e0ac7f43cac7",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/kardianos/osext",
+			"repository": "https://github.com/kardianos/osext",
+			"revision": "29ae4ffbc9a6fe9fb2bc5029050ce6996ea1d3bc",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/lib/pq",
+			"repository": "https://github.com/lib/pq",
+			"revision": "dd3290b2f71a8b30bee8e4e75a337a825263d26f",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/martini-contrib/render",
+			"repository": "https://github.com/martini-contrib/render",
+			"revision": "ec18f8345a1181146728238980606fb1d6f40e8c",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/microcosm-cc/bluemonday",
+			"repository": "https://github.com/microcosm-cc/bluemonday",
+			"revision": "4ac6f27528d0a3f2a59e0b0a6f6b3ff0bb89fe20",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/neelance/astrewrite",
+			"repository": "https://github.com/neelance/astrewrite",
+			"revision": "fad75ab64ef927530cab4b4dfbadaddc5f6b14e2",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/neelance/sourcemap",
+			"repository": "https://github.com/neelance/sourcemap",
+			"revision": "8c68805598ab8d5637b1a72b5f7d381ea0f39c31",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/oxtoacart/bpool",
+			"repository": "https://github.com/oxtoacart/bpool",
+			"revision": "4e1c5567d7c2dd59fa4c7c83d34c2f3528b025d6",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/rusco/qunit",
+			"repository": "https://github.com/rusco/qunit",
+			"revision": "62ce4e4e74725503434407728bfb75269659a603",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/russross/blackfriday",
+			"repository": "https://github.com/russross/blackfriday",
+			"revision": "43529be3978d5a7b8e144f459e3f96491acc569c",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/shurcooL/sanitized_anchor_name",
+			"repository": "https://github.com/shurcooL/sanitized_anchor_name",
+			"revision": "10ef21a441db47d8b13ebcc5fd2310f636973c77",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/spf13/cobra",
+			"repository": "https://github.com/spf13/cobra",
+			"revision": "336d629de064dbb12166b46c06039dbcfb935de1",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/spf13/pflag",
+			"repository": "https://github.com/spf13/pflag",
+			"revision": "cb88ea77998c3f024757528e3305022ab50b43be",
+			"branch": "master"
+		},
+		{
+			"importpath": "golang.org/x/crypto/ssh/terminal",
+			"repository": "https://go.googlesource.com/crypto",
+			"revision": "019870fc9d457ee8abd13a2e93e3f2a3b55b7119",
+			"branch": "master",
+			"path": "/ssh/terminal"
+		},
+		{
+			"importpath": "golang.org/x/net/context",
+			"repository": "https://go.googlesource.com/net",
+			"revision": "7e42c0e1329bb108f7376a7618a2871ab90f1c4d",
+			"branch": "master",
+			"path": "/context"
+		},
+		{
+			"importpath": "golang.org/x/net/html",
+			"repository": "https://go.googlesource.com/net",
+			"revision": "7e42c0e1329bb108f7376a7618a2871ab90f1c4d",
+			"branch": "master",
+			"path": "/html"
+		},
+		{
+			"importpath": "golang.org/x/oauth2",
+			"repository": "https://go.googlesource.com/oauth2",
+			"revision": "e86e2718db89775a4604abc10a5d3a5672e7336e",
+			"branch": "master"
+		},
+		{
+			"importpath": "golang.org/x/sys/unix",
+			"repository": "https://go.googlesource.com/sys",
+			"revision": "b776ec39b3e54652e09028aaaaac9757f4f8211a",
+			"branch": "master",
+			"path": "/unix"
+		},
+		{
+			"importpath": "golang.org/x/tools/go/types/typeutil",
+			"repository": "https://go.googlesource.com/tools",
+			"revision": "2c200eec40d70d74e01852aad22cf6637e8f8f3d",
+			"branch": "master",
+			"path": "/go/types/typeutil"
+		},
+		{
+			"importpath": "google.golang.org/cloud/compute/metadata",
+			"repository": "https://code.googlesource.com/gocloud",
+			"revision": "200292f09e3aaa34878d801ab71fe823b1f7d36a",
+			"branch": "master",
+			"path": "/compute/metadata"
+		},
+		{
+			"importpath": "google.golang.org/cloud/internal",
+			"repository": "https://code.googlesource.com/gocloud",
+			"revision": "200292f09e3aaa34878d801ab71fe823b1f7d36a",
+			"branch": "master",
+			"path": "/internal"
+		}
+	]
+}
