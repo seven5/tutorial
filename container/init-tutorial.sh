@@ -11,7 +11,7 @@ go get github.com/gopherjs/gopherjs
 unset GOPATH
 mkdir -p /seven5/tutorial/src/github.com/seven5
 cd /seven5/tutorial/src/github.com/seven5
-git clone -b tutorial https://github.com/seven5/tutorial.git
+git tutorial https://github.com/seven5/tutorial.git
 git clone https://github.com/seven5/seven5.git
 git clone https://github.com/seven5/gb-seven5.git
 git clone https://github.com/seven5/heroku-buildpack-seven5.git
